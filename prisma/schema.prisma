@@ -1,0 +1,167 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  SERVICE
+  RH
+  FINANCE
+  GUEST
+}
+
+model User {
+  id                String            @id @default(uuid())
+  name              String
+  sector            String
+  email             String            @unique
+  password_hash     String
+  role              Role              @default(GUEST)
+  avatar            String?
+  created_at        DateTime          @default(now())
+  employees         Employee[]
+  service_providers ServiceProvider[]
+  interventions     Intervention[]
+  projects          Project[]
+  purchase_orders   PurchaseOrder[]
+  skills            Skill[]
+  sites             Site[]
+
+  @@map("users")
+}
+
+model Intervention {
+  id                String           @id @default(uuid())
+  description       String
+  customer_email    String
+  initial_at        DateTime         @default(now())
+  finished_at       DateTime?
+  employees         Employee?        @relation(fields: [employeeId], references: [id])
+  employeeId        String?
+  service_providers ServiceProvider? @relation(fields: [serviceProviderId], references: [id])
+  serviceProviderId String?
+  purchase_order    PurchaseOrder?   @relation(fields: [purchaseOrderId], references: [id])
+  purchaseOrderId   String?
+  site              Site?            @relation(fields: [siteId], references: [id])
+  siteId            String?
+  User              User?            @relation(fields: [userEmail], references: [email])
+  userEmail         String?
+
+  @@map("interventions")
+}
+
+model Employee {
+  id            String         @id @default(uuid())
+  cpf           String         @unique
+  rg            String         @unique
+  name          String
+  email         String         @unique
+  admission_at  DateTime       @default(now())
+  phone         String
+  cep           String
+  street        String
+  number        String
+  complement    String
+  city          String
+  uf            String
+  avatar        String?
+  salary        Int
+  User          User?          @relation(fields: [userEmail], references: [email])
+  userEmail     String?
+  interventions Intervention[]
+
+  @@map("employees")
+}
+
+model ServiceProvider {
+  id                String         @id @default(uuid())
+  cpf               String         @unique
+  rg                String         @unique
+  cnpj              String         @unique
+  name              String
+  email             String         @unique
+  contract_validity DateTime       @default(now())
+  phone             String
+  cep               String
+  street            String
+  number            String
+  complement        String
+  city              String
+  uf                String
+  avatar            String?
+  contract_value    Int
+  normal_hour       Int
+  extra_hour        Int
+  day_hour          Int
+  User              User?          @relation(fields: [userEmail], references: [email])
+  userEmail         String?
+  interventions     Intervention[]
+
+  @@map("service_providers")
+}
+
+model Project {
+  id             String    @id @default(uuid())
+  title          String?
+  purchase_order String    @unique
+  customer       String
+  customer_email String
+  description    String
+  initial_at     DateTime  @default(now())
+  finished_at    DateTime?
+  site           String
+  estimate       Int
+  User           User?     @relation(fields: [userEmail], references: [email])
+  userEmail      String?
+
+  @@map("projects")
+}
+
+model PurchaseOrder {
+  id                          String         @id @default(uuid())
+  name                        String         @unique
+  description                 String
+  factor_HE_onshore           Int
+  factor_HE_offshore          Int
+  factor_HN                   Int
+  day_H_before_extra_onshore  Int
+  day_H_before_extra_offshore Int
+  created_at                  DateTime       @default(now())
+  User                        User?          @relation(fields: [userEmail], references: [email])
+  userEmail                   String?
+  skills                      Skill[]
+  Intervention                Intervention[]
+
+  @@map("purchase_orders")
+}
+
+model Skill {
+  id                String         @id @default(uuid())
+  skill_description String
+  HN_onshore        Int
+  HN_offshore       Int
+  created_at        DateTime       @default(now())
+  PurchaseOrder     PurchaseOrder? @relation(fields: [id_PO], references: [id])
+  id_PO             String?
+  User              User?          @relation(fields: [userEmail], references: [email])
+  userEmail         String?
+
+  @@map("skills")
+}
+
+model Site {
+  id           String         @id @default(uuid())
+  description  String
+  on_offshore  Boolean
+  created_at   DateTime       @default(now())
+  User         User?          @relation(fields: [userEmail], references: [email])
+  userEmail    String?
+  Intervention Intervention[]
+
+  @@map("sites")
+}

@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  api-solid-pg-gesb2:
+    image: bitnami/postgresql
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRESQL_USERNAME=sa
+      - POSTGRESQL_PASSWORD=T&Tsistemi
+      - POSTGRESQL_DATABASE=gesb2
