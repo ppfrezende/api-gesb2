@@ -1,8 +1,12 @@
 {
-  "name": "backend",
+  "name": "api-gesb2",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": "18",
+    "@fastify/cookie": "8.3.0"
+  },
   "scripts": {
     "test:create-prisma-environment": "npm link ./prisma/vitest-environment-prisma",
     "test:install-prisma-environment": "npm link vitest-environment-prisma",
