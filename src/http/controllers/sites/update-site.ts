@@ -5,8 +5,8 @@ import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-err
 
 export async function updateSite(request: FastifyRequest, reply: FastifyReply) {
   const updateSiteBodySchema = z.object({
-    description: z.string(),
-    on_offshore: z.boolean(),
+    description: z.string().optional(),
+    on_offshore: z.boolean().optional(),
   });
 
   const updateSiteQuerySchema = z.object({
