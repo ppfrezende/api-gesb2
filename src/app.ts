@@ -12,6 +12,7 @@ import { projectsRoutes } from './http/controllers/projects/routes';
 import { purchaseOrdersRoutes } from './http/controllers/purchase-orders/routes';
 import { sitesRoutes } from './http/controllers/sites/routes';
 import { interventionRoutes } from './http/controllers/interventions/routes';
+import { timeSheetsRoutes } from './http/controllers/timesheets/routes';
 
 export const app = fastify();
 
@@ -44,6 +45,7 @@ app.register(projectsRoutes);
 app.register(purchaseOrdersRoutes);
 app.register(sitesRoutes);
 app.register(interventionRoutes);
+app.register(timeSheetsRoutes);
 
 app.setErrorHandler((error, request, reply) => {
   if (error instanceof ZodError) {

@@ -17,7 +17,7 @@ enum Role {
 
 model User {
   id                String            @id @default(uuid())
-  name              String
+  name              String            @unique
   sector            String
   email             String            @unique
   password_hash     String
@@ -31,6 +31,8 @@ model User {
   purchase_orders   PurchaseOrder[]
   skills            Skill[]
   sites             Site[]
+  timesheetsdata    TimeSheetData[]
+  timesheetday      TimeSheetDay[]
 
   @@map("users")
 }
@@ -164,4 +166,48 @@ model Site {
   Intervention Intervention[]
 
   @@map("sites")
+}
+
+model TimeSheetDay {
+  id              String         @id @default(uuid())
+  day             DateTime       @default(now())
+  departure       Float?
+  arrival         Float?
+  rangeAfrom      Float?
+  rangeAto        Float?
+  rangeBfrom      Float?
+  rangeBto        Float?
+  rangeCfrom      Float?
+  rangeCto        Float?
+  rangeDfrom      Float?
+  rangeDto        Float?
+  on_offshore     Boolean?
+  technician_id   String?
+  TimeSheetData   TimeSheetData? @relation(fields: [timeSheetDataId], references: [id])
+  timeSheetDataId String?
+  User            User?          @relation(fields: [userName], references: [name])
+  userName        String?
+
+  @@map("timesheet_days")
+}
+
+model TimeSheetData {
+  id                       String         @id @default(uuid())
+  departure_date           DateTime?
+  arrival_date             DateTime?
+  traveled_hours           Float?
+  normal_hours_range_A     Float?
+  normal_hours_range_B     Float?
+  extra_hours_range_C      Float?
+  extra_hours_range_D      Float?
+  technician_id            String?
+  intervention_description String?
+  site                     String?
+  international_allowance  Boolean?
+  timesheetdays            TimeSheetDay[]
+  created_at               DateTime       @default(now())
+  User                     User?          @relation(fields: [userName], references: [name])
+  userName                 String?
+
+  @@map("timesheet_data")
 }
