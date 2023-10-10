@@ -32,7 +32,7 @@ export async function timeSheetsRoutes(app: FastifyInstance) {
   );
 
   app.get(
-    '/timesheet/:timesheetdataId',
+    '/timesheet/data/:timesheetdataId',
     {
       onRequest: [
         verifyJWT,
