@@ -6,6 +6,7 @@ import { createTimeSheetData } from './timesheet-data/create-timesheet-data';
 import { deleteTimeSheet } from './timesheet-data/delete-timesheet-data';
 import { getTimeSheetDataList } from './timesheet-data/get-timesheetdata-list';
 import { getTimeSheetDataListByTechId } from './timesheet-data/get-timesheet-data-list-by-tech-id';
+import { getTimeSheet } from './timesheet-data/get-timesheet-data';
 
 export async function timeSheetsRoutes(app: FastifyInstance) {
   app.post(
@@ -28,6 +29,17 @@ export async function timeSheetsRoutes(app: FastifyInstance) {
       ],
     },
     getTimeSheetDataList,
+  );
+
+  app.get(
+    '/timesheet/:timesheetdataId',
+    {
+      onRequest: [
+        verifyJWT,
+        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
+      ],
+    },
+    getTimeSheet,
   );
 
   app.get(
