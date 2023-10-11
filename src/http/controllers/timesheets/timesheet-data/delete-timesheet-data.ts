@@ -26,7 +26,7 @@ export async function deleteTimeSheet(
       timesheetdataId,
     });
 
-    return reply.status(200).send();
+    return reply.status(204).send();
   } catch (err) {
     console.log(err);
     if (err instanceof ResourceNotFoundError) {
