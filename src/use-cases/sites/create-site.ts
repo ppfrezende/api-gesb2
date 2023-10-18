@@ -4,7 +4,7 @@ import { Site } from '@prisma/client';
 interface CreateSiteUseCaseRequest {
   description: string;
   on_offshore: boolean;
-  userEmail: string;
+  userName: string;
 }
 
 interface CreateSiteUseCaseResponse {
@@ -17,12 +17,12 @@ export class CreateSiteUseCase {
   async execute({
     description,
     on_offshore,
-    userEmail,
+    userName,
   }: CreateSiteUseCaseRequest): Promise<CreateSiteUseCaseResponse> {
     const site = await this.sitesRepository.create({
       description,
       on_offshore,
-      userEmail,
+      userName,
     });
 
     return {

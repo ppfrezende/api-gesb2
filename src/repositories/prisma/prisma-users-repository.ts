@@ -10,8 +10,8 @@ export class PrismaUsersRepository implements UsersRepository {
           contains: query,
         },
       },
-      take: 20,
-      skip: (page - 1) * 20,
+      take: 100,
+      skip: (page - 1) * 100,
     });
 
     return users;
@@ -19,8 +19,8 @@ export class PrismaUsersRepository implements UsersRepository {
 
   async listMany(page: number) {
     const users = await prisma.user.findMany({
-      take: 20,
-      skip: (page - 1) * 20,
+      take: 100,
+      skip: (page - 1) * 100,
     });
 
     return users;

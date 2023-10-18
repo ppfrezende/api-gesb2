@@ -32,8 +32,8 @@ export class PrismaTimeSheetDaysRepository implements TimeSheetDaysRepository {
 
   async listMany(page: number) {
     const timesheetdays = await prisma.timeSheetDay.findMany({
-      take: 20,
-      skip: (page - 1) * 20,
+      take: 16,
+      skip: (page - 1) * 16,
       include: {
         TimeSheetData: true,
       },

@@ -30,8 +30,8 @@ export class PrismaPurchaseOrdersRepository
 
   async listMany(page: number) {
     const purchase_orders = await prisma.purchaseOrder.findMany({
-      take: 20,
-      skip: (page - 1) * 20,
+      take: 100,
+      skip: (page - 1) * 100,
       include: {
         skills: true,
       },
@@ -47,8 +47,8 @@ export class PrismaPurchaseOrdersRepository
           contains: query,
         },
       },
-      take: 20,
-      skip: (page - 1) * 20,
+      take: 100,
+      skip: (page - 1) * 100,
       include: {
         skills: true,
       },

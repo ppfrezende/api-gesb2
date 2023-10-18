@@ -1,4 +1,5 @@
 import { makeUpdateEmployeeProfileUseCase } from '@/use-cases/_factories/employee_factories/make-update-employee-profile-use-case';
+import { makeUpdateTechnicianUseCase } from '@/use-cases/_factories/technicians_factories/make-update-technician-use-case';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
@@ -20,6 +21,7 @@ export async function updateEmployeeProfile(
     complement: z.string().optional(),
     city: z.string().optional(),
     uf: z.string().optional(),
+    job_title: z.string().optional(),
     salary: z.number().optional(),
   });
   const updateEmployeeProfileQuerySchema = z.object({
@@ -39,6 +41,7 @@ export async function updateEmployeeProfile(
     complement,
     city,
     uf,
+    job_title,
     salary,
   } = updateEmployeeBodySchema.parse(request.body);
 
@@ -46,8 +49,9 @@ export async function updateEmployeeProfile(
 
   try {
     const updateEmployeeProfile = makeUpdateEmployeeProfileUseCase();
+    const updateTechnician = makeUpdateTechnicianUseCase();
 
-    const updatedEmployee = await updateEmployeeProfile.execute({
+    const { updatedEmployee } = await updateEmployeeProfile.execute({
       employeeId: employeeId,
       data: {
         name,
@@ -62,11 +66,21 @@ export async function updateEmployeeProfile(
         complement,
         city,
         uf,
+        job_title,
         salary,
       },
     });
 
-    return reply.status(200).send(updatedEmployee);
+    const { updatedTechnician } = await updateTechnician.execute({
+      technicianId: employeeId,
+      data: {
+        name,
+        email,
+        job_title,
+      },
+    });
+
+    return reply.status(200).send({ updatedEmployee, updatedTechnician });
   } catch (err) {
     if (err instanceof ResourceNotFoundError) {
       return reply.status(409).send({ message: err.message });

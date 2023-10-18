@@ -15,7 +15,8 @@ interface RegisterEmployeeUseCaseRequest {
   complement: string;
   city: string;
   uf: string;
-  userEmail: string;
+  job_title: string;
+  userName: string;
   salary: number;
 }
 
@@ -38,9 +39,10 @@ export class RegisterEmployeeUseCase {
     number,
     complement,
     city,
-    userEmail,
     uf,
     salary,
+    job_title,
+    userName,
   }: RegisterEmployeeUseCaseRequest): Promise<RegisterEmployeeUseCaseResponse> {
     const employeesWithSameEmail = await this.employeeRepository.findByEmail(
       email,
@@ -65,8 +67,9 @@ export class RegisterEmployeeUseCase {
       complement,
       city,
       uf,
-      userEmail,
       salary,
+      job_title,
+      userName,
     });
 
     return {

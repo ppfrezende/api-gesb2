@@ -57,8 +57,8 @@ export class PrismaServiceProvidersRepository
 
   async listMany(page: number) {
     const service_providers = await prisma.serviceProvider.findMany({
-      take: 20,
-      skip: (page - 1) * 20,
+      take: 100,
+      skip: (page - 1) * 100,
     });
 
     return service_providers;
@@ -71,8 +71,8 @@ export class PrismaServiceProvidersRepository
           contains: query,
         },
       },
-      take: 20,
-      skip: (page - 1) * 20,
+      take: 100,
+      skip: (page - 1) * 100,
     });
 
     return service_providers;

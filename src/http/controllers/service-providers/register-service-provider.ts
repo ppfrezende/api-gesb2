@@ -3,6 +3,7 @@ import { makeRegisterServiceProviderUseCase } from '@/use-cases/_factories/servi
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-get-user-profile';
+import { makeCreateTechnicianUseCase } from '@/use-cases/_factories/technicians_factories/make-create-technician-use-case';
 
 export async function registerServiceProvider(
   request: FastifyRequest,
@@ -21,6 +22,7 @@ export async function registerServiceProvider(
     number: z.string(),
     complement: z.string(),
     city: z.string(),
+    job_title: z.string(),
     uf: z.string(),
     normal_hour: z.number(),
     extra_hour: z.number(),
@@ -48,6 +50,7 @@ export async function registerServiceProvider(
     complement,
     city,
     uf,
+    job_title,
     normal_hour,
     extra_hour,
     day_hour,
@@ -56,6 +59,7 @@ export async function registerServiceProvider(
 
   try {
     const registerServiceProvider = makeRegisterServiceProviderUseCase();
+    const createTechnician = makeCreateTechnicianUseCase();
 
     const { service_provider } = await registerServiceProvider.execute({
       name,
@@ -71,15 +75,25 @@ export async function registerServiceProvider(
       complement,
       city,
       uf,
+      job_title,
       normal_hour,
       extra_hour,
       day_hour,
-      userEmail: user.email,
       contract_value,
+      userName: user.name,
+    });
+
+    const { technician } = await createTechnician.execute({
+      id: service_provider.id,
+      name,
+      email,
+      job_title,
+      userName: user.name,
     });
 
     return reply.status(201).send({
       service_provider,
+      technician,
     });
   } catch (err) {
     if (err instanceof ResourceAlreadyExists) {

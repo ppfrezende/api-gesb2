@@ -44,8 +44,8 @@ export class PrismaEmployeesRepository implements EmployeesRepository {
 
   async listMany(page: number) {
     const employees = await prisma.employee.findMany({
-      take: 20,
-      skip: (page - 1) * 20,
+      take: 100,
+      skip: (page - 1) * 100,
     });
 
     return employees;
@@ -58,8 +58,8 @@ export class PrismaEmployeesRepository implements EmployeesRepository {
           contains: query,
         },
       },
-      take: 20,
-      skip: (page - 1) * 20,
+      take: 100,
+      skip: (page - 1) * 100,
     });
 
     return employees;
@@ -83,6 +83,7 @@ export class PrismaEmployeesRepository implements EmployeesRepository {
 
     return employee;
   }
+
   async delete(id: string) {
     await prisma.employee.delete({
       where: {

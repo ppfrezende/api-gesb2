@@ -10,8 +10,8 @@ import { employeesRoutes } from './http/controllers/employees/routes';
 import { serviceProvidersRoutes } from './http/controllers/service-providers/routes';
 import { purchaseOrdersRoutes } from './http/controllers/purchase-orders/routes';
 import { sitesRoutes } from './http/controllers/sites/routes';
-import { interventionRoutes } from './http/controllers/interventions/routes';
 import { timeSheetsRoutes } from './http/controllers/timesheets/routes';
+import { techniciansRoutes } from './http/controllers/technicians/routes';
 
 export const app = fastify();
 
@@ -40,9 +40,9 @@ app.register(fastifyCookie);
 app.register(usersRoutes);
 app.register(employeesRoutes);
 app.register(serviceProvidersRoutes);
+app.register(techniciansRoutes);
 app.register(purchaseOrdersRoutes);
 app.register(sitesRoutes);
-app.register(interventionRoutes);
 app.register(timeSheetsRoutes);
 
 app.setErrorHandler((error, request, reply) => {

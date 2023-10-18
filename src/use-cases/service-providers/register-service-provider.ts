@@ -20,7 +20,8 @@ interface RegisterServiceProviderUseCaseRequest {
   extra_hour: number;
   day_hour: number;
   contract_value: number;
-  userEmail: string;
+  job_title: string;
+  userName: string;
 }
 
 interface RegisterServiceProviderUseCaseResponse {
@@ -43,12 +44,13 @@ export class RegisterServiceProviderUseCase {
     number,
     complement,
     city,
-    userEmail,
     normal_hour,
     extra_hour,
     day_hour,
     uf,
     contract_value,
+    job_title,
+    userName,
   }: RegisterServiceProviderUseCaseRequest): Promise<RegisterServiceProviderUseCaseResponse> {
     const serviceProviderWithSameEmail =
       await this.serviceProviderRepository.findByEmail(email);
@@ -85,8 +87,9 @@ export class RegisterServiceProviderUseCase {
       normal_hour,
       extra_hour,
       day_hour,
-      userEmail,
       contract_value,
+      job_title,
+      userName,
     });
 
     return {

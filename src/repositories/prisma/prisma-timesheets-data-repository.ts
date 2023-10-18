@@ -23,8 +23,8 @@ export class PrismaTimeSheetsDataRepository
       where: {
         technician_id,
       },
-      take: 20,
-      skip: (page - 1) * 20,
+      take: 100,
+      skip: (page - 1) * 100,
       include: {
         timesheetdays: true,
       },
@@ -35,8 +35,8 @@ export class PrismaTimeSheetsDataRepository
 
   async listMany(page: number) {
     const timesheetsdata = await prisma.timeSheetData.findMany({
-      take: 20,
-      skip: (page - 1) * 20,
+      take: 100,
+      skip: (page - 1) * 100,
       include: {
         timesheetdays: true,
       },
