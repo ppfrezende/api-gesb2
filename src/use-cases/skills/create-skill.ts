@@ -3,10 +3,10 @@ import { Skill } from '@prisma/client';
 
 interface CreateSkillUseCaseRequest {
   skill_description?: string;
-  HN_onshore?: number;
-  HN_offshore?: number;
+  travel_hour?: number;
+  normal_hour?: number;
   id_PO?: string;
-  userEmail: string;
+  userName: string;
 }
 
 interface CreateSkillUseCaseResponse {
@@ -18,17 +18,17 @@ export class CreateSkillUseCase {
 
   async execute({
     skill_description,
-    HN_onshore,
-    HN_offshore,
+    travel_hour,
+    normal_hour,
     id_PO,
-    userEmail,
+    userName,
   }: CreateSkillUseCaseRequest): Promise<CreateSkillUseCaseResponse> {
     const skill = await this.skillsRepository.create({
       skill_description,
-      HN_onshore,
-      HN_offshore,
+      travel_hour,
+      normal_hour,
       id_PO,
-      userEmail,
+      userName,
     });
 
     return {

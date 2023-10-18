@@ -7,10 +7,19 @@ interface CreatePurchaseOrderUseCaseRequest {
   description: string;
   factor_HE_onshore: number;
   factor_HE_offshore: number;
-  factor_HN: number;
-  day_H_before_extra_onshore: number;
-  day_H_before_extra_offshore: number;
-  userEmail: string;
+  factor_HN_onshore: number;
+  factor_HN_offshore: number;
+  factor_holiday: number;
+  factor_night: number;
+  factor_over_xd: number;
+  time_onshore: number;
+  time_offshore: number;
+  time_travel: number;
+  isMonthly: boolean;
+  whatsCalendar: number;
+  currency: string;
+  adictional: number;
+  userName: string;
 }
 
 interface CreatePurchaseOrderUseCaseResponse {
@@ -25,10 +34,19 @@ export class CreatePurchaseOrderUseCase {
     description,
     factor_HE_onshore,
     factor_HE_offshore,
-    factor_HN,
-    day_H_before_extra_onshore,
-    day_H_before_extra_offshore,
-    userEmail,
+    factor_HN_onshore,
+    factor_HN_offshore,
+    factor_holiday,
+    factor_night,
+    factor_over_xd,
+    time_onshore,
+    time_offshore,
+    time_travel,
+    isMonthly,
+    whatsCalendar,
+    currency,
+    adictional,
+    userName,
   }: CreatePurchaseOrderUseCaseRequest): Promise<CreatePurchaseOrderUseCaseResponse> {
     const purchaseWithSameName = await this.purchaseOrderRepository.findByName(
       name,
@@ -43,10 +61,19 @@ export class CreatePurchaseOrderUseCase {
       description,
       factor_HE_onshore,
       factor_HE_offshore,
-      factor_HN,
-      day_H_before_extra_onshore,
-      day_H_before_extra_offshore,
-      userEmail,
+      factor_HN_onshore,
+      factor_HN_offshore,
+      factor_holiday,
+      factor_night,
+      factor_over_xd,
+      time_onshore,
+      time_offshore,
+      time_travel,
+      isMonthly,
+      whatsCalendar,
+      currency,
+      adictional,
+      userName,
     });
 
     return {

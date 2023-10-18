@@ -14,14 +14,23 @@ export async function createPurchaseOrder(
     description: z.string(),
     factor_HE_onshore: z.number(),
     factor_HE_offshore: z.number(),
-    factor_HN: z.number(),
-    day_H_before_extra_onshore: z.number(),
-    day_H_before_extra_offshore: z.number(),
+    factor_HN_onshore: z.number(),
+    factor_HN_offshore: z.number(),
+    factor_holiday: z.number(),
+    factor_night: z.number(),
+    factor_over_xd: z.number(),
+    time_onshore: z.number(),
+    time_offshore: z.number(),
+    time_travel: z.number(),
+    isMonthly: z.boolean(),
+    whatsCalendar: z.number(),
+    currency: z.string(),
+    adictional: z.number(),
     skills: z.array(
       z.object({
         skill_description: z.string(),
-        HN_onshore: z.number(),
-        HN_offshore: z.number(),
+        travel_hour: z.number(),
+        normal_hour: z.number(),
       }),
     ),
   });
@@ -37,9 +46,18 @@ export async function createPurchaseOrder(
     description,
     factor_HE_onshore,
     factor_HE_offshore,
-    factor_HN,
-    day_H_before_extra_onshore,
-    day_H_before_extra_offshore,
+    factor_HN_onshore,
+    factor_HN_offshore,
+    factor_holiday,
+    factor_night,
+    factor_over_xd,
+    time_onshore,
+    time_offshore,
+    time_travel,
+    isMonthly,
+    whatsCalendar,
+    currency,
+    adictional,
     skills,
   } = createPurchaseOrderBodySchema.parse(request.body);
 
@@ -52,21 +70,30 @@ export async function createPurchaseOrder(
       description,
       factor_HE_onshore,
       factor_HE_offshore,
-      factor_HN,
-      day_H_before_extra_onshore,
-      day_H_before_extra_offshore,
-      userEmail: user.email,
+      factor_HN_onshore,
+      factor_HN_offshore,
+      factor_holiday,
+      factor_night,
+      factor_over_xd,
+      time_onshore,
+      time_offshore,
+      time_travel,
+      isMonthly,
+      whatsCalendar,
+      currency,
+      adictional,
+      userName: user.name,
     });
 
     for (const skill of skills) {
-      const { skill_description, HN_onshore, HN_offshore } = skill;
+      const { skill_description, travel_hour, normal_hour } = skill;
 
       await createSkill.execute({
         id_PO: purchase_order.id,
         skill_description,
-        HN_onshore,
-        HN_offshore,
-        userEmail: user.email,
+        travel_hour,
+        normal_hour,
+        userName: user.name,
       });
     }
 

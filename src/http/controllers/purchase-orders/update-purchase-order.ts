@@ -16,15 +16,24 @@ export async function updatePurchaseOrder(
     description: z.string().optional(),
     factor_HE_onshore: z.number().optional(),
     factor_HE_offshore: z.number().optional(),
-    factor_HN: z.number().optional(),
-    day_H_before_extra_onshore: z.number().optional(),
-    day_H_before_extra_offshore: z.number().optional(),
+    factor_HN_onshore: z.number().optional(),
+    factor_HN_offshore: z.number().optional(),
+    factor_holiday: z.number().optional(),
+    factor_night: z.number().optional(),
+    factor_over_xd: z.number().optional(),
+    time_onshore: z.number().optional(),
+    time_offshore: z.number().optional(),
+    time_travel: z.number().optional(),
+    isMonthly: z.boolean().optional(),
+    whatsCalendar: z.number().optional(),
+    currency: z.string().optional(),
+    adictional: z.number().optional(),
     skills: z
       .array(
         z.object({
           skill_description: z.string().optional(),
-          HN_onshore: z.number().optional(),
-          HN_offshore: z.number().optional(),
+          travel_hour: z.number().optional(),
+          normal_hour: z.number().optional(),
         }),
       )
       .optional(),
@@ -45,9 +54,18 @@ export async function updatePurchaseOrder(
     description,
     factor_HE_onshore,
     factor_HE_offshore,
-    factor_HN,
-    day_H_before_extra_onshore,
-    day_H_before_extra_offshore,
+    factor_HN_onshore,
+    factor_HN_offshore,
+    factor_holiday,
+    factor_night,
+    factor_over_xd,
+    time_onshore,
+    time_offshore,
+    time_travel,
+    isMonthly,
+    whatsCalendar,
+    currency,
+    adictional,
     skills,
   } = updatePurchaseOrderBodySchema.parse(request.body);
 
@@ -77,14 +95,14 @@ export async function updatePurchaseOrder(
 
     if (skills) {
       for (const skill of skills) {
-        const { skill_description, HN_onshore, HN_offshore } = skill;
+        const { skill_description, travel_hour, normal_hour } = skill;
 
         await createSkill.execute({
           id_PO: purchaseOrderId,
           skill_description,
-          HN_onshore,
-          HN_offshore,
-          userEmail: user.email,
+          travel_hour,
+          normal_hour,
+          userName: user.name,
         });
       }
     }
@@ -96,9 +114,18 @@ export async function updatePurchaseOrder(
         description,
         factor_HE_onshore,
         factor_HE_offshore,
-        factor_HN,
-        day_H_before_extra_onshore,
-        day_H_before_extra_offshore,
+        factor_HN_onshore,
+        factor_HN_offshore,
+        factor_holiday,
+        factor_night,
+        factor_over_xd,
+        time_onshore,
+        time_offshore,
+        time_travel,
+        isMonthly,
+        whatsCalendar,
+        currency,
+        adictional,
       },
     });
 

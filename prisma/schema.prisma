@@ -27,7 +27,6 @@ model User {
   employees         Employee[]
   service_providers ServiceProvider[]
   interventions     Intervention[]
-  projects          Project[]
   purchase_orders   PurchaseOrder[]
   skills            Skill[]
   sites             Site[]
@@ -47,8 +46,6 @@ model Intervention {
   employeeId        String?
   service_providers ServiceProvider? @relation(fields: [serviceProviderId], references: [id])
   serviceProviderId String?
-  purchase_order    PurchaseOrder?   @relation(fields: [purchaseOrderId], references: [id])
-  purchaseOrderId   String?
   site              Site?            @relation(fields: [siteId], references: [id])
   siteId            String?
   User              User?            @relation(fields: [userEmail], references: [email])
@@ -107,37 +104,28 @@ model ServiceProvider {
   @@map("service_providers")
 }
 
-model Project {
-  id             String    @id @default(uuid())
-  title          String?
-  purchase_order String    @unique
-  customer       String
-  customer_email String
-  description    String
-  initial_at     DateTime  @default(now())
-  finished_at    DateTime?
-  site           String
-  estimate       Int
-  User           User?     @relation(fields: [userEmail], references: [email])
-  userEmail      String?
-
-  @@map("projects")
-}
-
 model PurchaseOrder {
-  id                          String         @id @default(uuid())
-  name                        String         @unique
-  description                 String
-  factor_HE_onshore           Int
-  factor_HE_offshore          Int
-  factor_HN                   Int
-  day_H_before_extra_onshore  Int
-  day_H_before_extra_offshore Int
-  created_at                  DateTime       @default(now())
-  User                        User?          @relation(fields: [userEmail], references: [email])
-  userEmail                   String?
-  skills                      Skill[]
-  Intervention                Intervention[]
+  id                 String   @id @default(uuid())
+  name               String   @unique
+  description        String
+  factor_HE_onshore  Float
+  factor_HE_offshore Float
+  factor_HN_onshore  Float
+  factor_HN_offshore Float
+  factor_holiday     Float
+  factor_night       Float
+  factor_over_xd     Float
+  time_onshore       Float
+  time_offshore      Float
+  time_travel        Float
+  isMonthly          Boolean
+  whatsCalendar      Int
+  currency           String
+  adictional         Float
+  created_at         DateTime @default(now())
+  User               User?    @relation(fields: [userName], references: [name])
+  userName           String?
+  skills             Skill[]
 
   @@map("purchase_orders")
 }
@@ -145,13 +133,13 @@ model PurchaseOrder {
 model Skill {
   id                String         @id @default(uuid())
   skill_description String
-  HN_onshore        Int
-  HN_offshore       Int
+  travel_hour       Int
+  normal_hour       Int
   created_at        DateTime       @default(now())
   PurchaseOrder     PurchaseOrder? @relation(fields: [id_PO], references: [id])
   id_PO             String?
-  User              User?          @relation(fields: [userEmail], references: [email])
-  userEmail         String?
+  User              User?          @relation(fields: [userName], references: [name])
+  userName          String?
 
   @@map("skills")
 }
@@ -161,8 +149,8 @@ model Site {
   description  String
   on_offshore  Boolean
   created_at   DateTime       @default(now())
-  User         User?          @relation(fields: [userEmail], references: [email])
-  userEmail    String?
+  User         User?          @relation(fields: [userName], references: [name])
+  userName     String?
   Intervention Intervention[]
 
   @@map("sites")
