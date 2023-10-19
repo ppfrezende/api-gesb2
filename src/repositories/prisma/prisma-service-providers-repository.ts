@@ -59,6 +59,9 @@ export class PrismaServiceProvidersRepository
     const service_providers = await prisma.serviceProvider.findMany({
       take: 100,
       skip: (page - 1) * 100,
+      orderBy: {
+        created_at: 'desc',
+      },
     });
 
     return service_providers;
@@ -73,6 +76,9 @@ export class PrismaServiceProvidersRepository
       },
       take: 100,
       skip: (page - 1) * 100,
+      orderBy: {
+        created_at: 'desc',
+      },
     });
 
     return service_providers;

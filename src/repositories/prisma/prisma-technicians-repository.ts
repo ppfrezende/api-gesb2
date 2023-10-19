@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { Technician, Prisma } from '@prisma/client';
-import { TechniciansRepository } from '../technician-repository';
+import { TechniciansRepository } from '../technicians-repository';
 
 export class PrismaTechniciansRepository implements TechniciansRepository {
   async findById(id: string): Promise<Technician | null> {
@@ -26,6 +26,9 @@ export class PrismaTechniciansRepository implements TechniciansRepository {
     const technicians = await prisma.technician.findMany({
       take: 100,
       skip: (page - 1) * 100,
+      orderBy: {
+        created_at: 'desc',
+      },
     });
 
     return technicians;

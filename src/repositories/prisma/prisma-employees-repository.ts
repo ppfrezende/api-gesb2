@@ -46,6 +46,9 @@ export class PrismaEmployeesRepository implements EmployeesRepository {
     const employees = await prisma.employee.findMany({
       take: 100,
       skip: (page - 1) * 100,
+      orderBy: {
+        created_at: 'desc',
+      },
     });
 
     return employees;
@@ -60,6 +63,9 @@ export class PrismaEmployeesRepository implements EmployeesRepository {
       },
       take: 100,
       skip: (page - 1) * 100,
+      orderBy: {
+        created_at: 'desc',
+      },
     });
 
     return employees;

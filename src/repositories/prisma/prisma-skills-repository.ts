@@ -25,8 +25,8 @@ export class PrismaSkillsRepository implements SkillsRepository {
 
   async listMany(page: number) {
     const skills = await prisma.skill.findMany({
-      take: 20,
-      skip: (page - 1) * 20,
+      take: 100,
+      skip: (page - 1) * 100,
     });
 
     return skills;
@@ -50,6 +50,7 @@ export class PrismaSkillsRepository implements SkillsRepository {
 
     return skill;
   }
+
   async delete(id: string) {
     await prisma.skill.delete({
       where: {

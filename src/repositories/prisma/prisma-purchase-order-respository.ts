@@ -35,6 +35,9 @@ export class PrismaPurchaseOrdersRepository
       include: {
         skills: true,
       },
+      orderBy: {
+        created_at: 'desc',
+      },
     });
 
     return purchase_orders;
@@ -51,6 +54,9 @@ export class PrismaPurchaseOrdersRepository
       skip: (page - 1) * 100,
       include: {
         skills: true,
+      },
+      orderBy: {
+        created_at: 'desc',
       },
     });
 

@@ -31,6 +31,7 @@ model User {
   technicians       Technician[]
   customers         Customer[]
   timesheetsdata    TimeSheetData[]
+  consultives       Consultive[]
 
   @@map("users")
 }
@@ -52,6 +53,7 @@ model Employee {
   job_title    String
   avatar       String?
   salary       Int
+  created_at   DateTime @default(now())
   User         User?    @relation(fields: [userName], references: [name])
   userName     String?
 
@@ -79,6 +81,7 @@ model ServiceProvider {
   normal_hour       Int
   extra_hour        Int
   day_hour          Int
+  created_at        DateTime @default(now())
   User              User?    @relation(fields: [userName], references: [name])
   userName          String?
 
@@ -90,6 +93,7 @@ model Technician {
   name        String
   email       String       @unique
   job_title   String
+  created_at  DateTime     @default(now())
   sites       Site[]
   consultives Consultive[]
   TechSite    TechSite[]
@@ -204,28 +208,36 @@ model TimeSheetData {
 }
 
 model Consultive {
-  id                  String      @id @default(uuid())
-  progressive         String
-  intervention_number String
-  po_number           String
-  job_number          String
-  on_offshore         Boolean
-  initial_at          DateTime?
-  finished_at         DateTime?
-  created_at          DateTime    @default(now())
-  Technician          Technician? @relation(fields: [technicianId], references: [id])
-  technicianId        String?
-  Site                Site?       @relation(fields: [siteId], references: [id])
-  siteId              String?
+  id                       String                  @id @default(uuid())
+  progressive              String                  @unique
+  intervention_number      String
+  po_number                String
+  job_number               String
+  on_offshore              Boolean
+  initial_at               DateTime?
+  finished_at              DateTime?
+  created_at               DateTime                @default(now())
+  Technician               Technician?             @relation(fields: [technicianId], references: [id])
+  technicianId             String?
+  Site                     Site?                   @relation(fields: [siteId], references: [id])
+  siteId                   String?
+  User                     User?                   @relation(fields: [userName], references: [name])
+  userName                 String?
+  Customer                 Customer?               @relation(fields: [customerId], references: [id])
+  customerId               String?
+  CustomerProjectManager   CustomerProjectManager? @relation(fields: [customerProjectManagerId], references: [id])
+  customerProjectManagerId String?
 
   @@map("consultives")
 }
 
 model Customer {
-  id   String @id @default(uuid())
-  name String
+  id         String   @id @default(uuid())
+  name       String
+  created_at DateTime @default(now())
 
   project_managers CustomerProjectManager[]
+  consultives      Consultive[]
   User             User?                    @relation(fields: [userName], references: [name])
   userName         String?
 
@@ -233,10 +245,13 @@ model Customer {
 }
 
 model CustomerProjectManager {
-  id         String    @id @default(uuid())
+  id         String   @id @default(uuid())
   name       String
-  Customer   Customer? @relation(fields: [customerId], references: [id])
-  customerId String?
+  created_at DateTime @default(now())
+
+  consultives Consultive[]
+  Customer    Customer?    @relation(fields: [customerId], references: [id])
+  customerId  String?
 
   @@map("customer_project_managers")
 }

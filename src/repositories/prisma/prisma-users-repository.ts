@@ -12,6 +12,9 @@ export class PrismaUsersRepository implements UsersRepository {
       },
       take: 100,
       skip: (page - 1) * 100,
+      orderBy: {
+        created_at: 'desc',
+      },
     });
 
     return users;
@@ -21,6 +24,9 @@ export class PrismaUsersRepository implements UsersRepository {
     const users = await prisma.user.findMany({
       take: 100,
       skip: (page - 1) * 100,
+      orderBy: {
+        created_at: 'desc',
+      },
     });
 
     return users;

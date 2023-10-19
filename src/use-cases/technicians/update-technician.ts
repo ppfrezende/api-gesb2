@@ -1,4 +1,4 @@
-import { TechniciansRepository } from '@/repositories/technician-repository';
+import { TechniciansRepository } from '@/repositories/technicians-repository';
 import { Prisma, Technician } from '@prisma/client';
 import { ResourceNotFoundError } from '../errors/resource-not-found-error';
 

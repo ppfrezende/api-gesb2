@@ -15,8 +15,11 @@ export class PrismaSitesRepository implements SitesRepository {
 
   async listMany(page: number) {
     const sites = await prisma.site.findMany({
-      take: 20,
-      skip: (page - 1) * 20,
+      take: 100,
+      skip: (page - 1) * 100,
+      orderBy: {
+        created_at: 'desc',
+      },
     });
 
     return sites;
@@ -29,8 +32,11 @@ export class PrismaSitesRepository implements SitesRepository {
           contains: query,
         },
       },
-      take: 20,
-      skip: (page - 1) * 20,
+      take: 100,
+      skip: (page - 1) * 100,
+      orderBy: {
+        created_at: 'desc',
+      },
     });
 
     return sites;

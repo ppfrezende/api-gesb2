@@ -1,4 +1,4 @@
-import { TechniciansRepository } from '@/repositories/technician-repository';
+import { TechniciansRepository } from '@/repositories/technicians-repository';
 import { ResourceNotFoundError } from '../errors/resource-not-found-error';
 
 interface DeleteTechnicianUseCaseRequest {

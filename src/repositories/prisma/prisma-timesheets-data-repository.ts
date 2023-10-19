@@ -28,6 +28,9 @@ export class PrismaTimeSheetsDataRepository
       include: {
         timesheetdays: true,
       },
+      orderBy: {
+        created_at: 'desc',
+      },
     });
 
     return timesheetsdata;
@@ -39,6 +42,9 @@ export class PrismaTimeSheetsDataRepository
       skip: (page - 1) * 100,
       include: {
         timesheetdays: true,
+      },
+      orderBy: {
+        created_at: 'desc',
       },
     });
 
