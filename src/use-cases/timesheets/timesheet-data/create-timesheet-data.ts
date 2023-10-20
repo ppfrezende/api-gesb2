@@ -19,7 +19,7 @@ export class CreateTimeSheetDataUseCase {
     technician_id,
     intervention_description,
     site,
-    international_allowance,
+    isInternational,
     userName,
   }: TimeSheetData): Promise<CreateTimeSheetDataUseCaseResponse> {
     const timesheetdata = await this.timesheetdataRepository.create({
@@ -33,7 +33,7 @@ export class CreateTimeSheetDataUseCase {
       technician_id,
       intervention_description,
       site,
-      international_allowance,
+      isInternational,
       userName,
     });
 

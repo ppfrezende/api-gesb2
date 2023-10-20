@@ -7,7 +7,7 @@ import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories
 export async function createSite(request: FastifyRequest, reply: FastifyReply) {
   const createSiteBodySchema = z.object({
     description: z.string(),
-    on_offshore: z.boolean(),
+    isOffshore: z.boolean(),
   });
 
   const getUserProfile = makeGetUserProfileUseCase();
@@ -16,14 +16,14 @@ export async function createSite(request: FastifyRequest, reply: FastifyReply) {
     userId: request.user.sub,
   });
 
-  const { description, on_offshore } = createSiteBodySchema.parse(request.body);
+  const { description, isOffshore } = createSiteBodySchema.parse(request.body);
 
   try {
     const createSite = makeCreateSiteUseCase();
 
     const { site } = await createSite.execute({
       description,
-      on_offshore,
+      isOffshore,
       userName: user.email,
     });
 

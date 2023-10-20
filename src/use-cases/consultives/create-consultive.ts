@@ -7,7 +7,7 @@ interface CreateConsultiveUseCaseRequest {
   intervention_number: string;
   po_number: string;
   job_number: string;
-  on_offshore: boolean;
+  isOffshore: boolean;
   initial_at: Date;
   finished_at: Date;
   technicianId: string;
@@ -29,7 +29,7 @@ export class CreateConsultiveUseCase {
     intervention_number,
     po_number,
     job_number,
-    on_offshore,
+    isOffshore,
     initial_at,
     finished_at,
     technicianId,
@@ -50,7 +50,7 @@ export class CreateConsultiveUseCase {
       intervention_number,
       po_number,
       job_number,
-      on_offshore,
+      isOffshore,
       initial_at,
       finished_at,
       technicianId,

@@ -12,7 +12,7 @@ type TimeSheetDayData = {
   rangeCto?: number;
   rangeDfrom?: number;
   rangeDto?: number;
-  on_offshore?: boolean;
+  isOffshore?: boolean;
   technician_id: string;
   userName: string;
   timeSheetDataId: string;

@@ -67,8 +67,7 @@ export async function createTimeSheetData(
         rangeCto: convertHourToDecimal(rangeCto[index].__EMPTY_14),
         rangeDfrom: convertHourToDecimal(rangeDfrom[index].__EMPTY_15),
         rangeDto: convertHourToDecimal(rangeDto[index].__EMPTY_17),
-        on_offshore:
-          on_offshore[index].__EMPTY_25 === 'OffShore' ? false : true,
+        isOffshore: on_offshore[index].__EMPTY_25 === 'OffShore' ? true : false,
         technician_id: technicianId,
         userName: user.name,
         timeSheetDataId: timesheetdata.id!,
@@ -104,7 +103,7 @@ export async function createTimeSheetData(
         normal_hours_range_B: result.sumB,
         extra_hours_range_C: result.sumC,
         extra_hours_range_D: result.sumD,
-        international_allowance: isInternationalJob,
+        isInternational: isInternationalJob,
         intervention_description: interventionDescription,
         site: site,
       },

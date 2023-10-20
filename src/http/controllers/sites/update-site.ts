@@ -6,14 +6,14 @@ import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-err
 export async function updateSite(request: FastifyRequest, reply: FastifyReply) {
   const updateSiteBodySchema = z.object({
     description: z.string().optional(),
-    on_offshore: z.boolean().optional(),
+    isOffshore: z.boolean().optional(),
   });
 
   const updateSiteQuerySchema = z.object({
     siteId: z.string(),
   });
 
-  const { description, on_offshore } = updateSiteBodySchema.parse(request.body);
+  const { description, isOffshore } = updateSiteBodySchema.parse(request.body);
 
   const { siteId } = updateSiteQuerySchema.parse(request.params);
 
@@ -24,7 +24,7 @@ export async function updateSite(request: FastifyRequest, reply: FastifyReply) {
       siteId: siteId,
       data: {
         description,
-        on_offshore,
+        isOffshore,
       },
     });
 

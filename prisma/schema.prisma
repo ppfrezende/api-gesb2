@@ -106,7 +106,7 @@ model Technician {
 model Site {
   id          String       @id @default(uuid())
   description String
-  on_offshore Boolean
+  isOffshore  Boolean?     @default(false)
   created_at  DateTime     @default(now())
   User        User?        @relation(fields: [userName], references: [name])
   userName    String?
@@ -178,7 +178,7 @@ model TimeSheetDay {
   rangeCto        Float?
   rangeDfrom      Float?
   rangeDto        Float?
-  on_offshore     Boolean?
+  isOffshore      Boolean?       @default(false)
   technician_id   String?
   TimeSheetData   TimeSheetData? @relation(fields: [timeSheetDataId], references: [id])
   timeSheetDataId String?
@@ -198,7 +198,7 @@ model TimeSheetData {
   technician_id            String?
   intervention_description String?
   site                     String?
-  international_allowance  Boolean?
+  isInternational          Boolean?       @default(false)
   timesheetdays            TimeSheetDay[]
   created_at               DateTime       @default(now())
   User                     User?          @relation(fields: [userName], references: [name])
@@ -213,7 +213,7 @@ model Consultive {
   intervention_number      String
   po_number                String
   job_number               String
-  on_offshore              Boolean
+  isOffshore               Boolean?                @default(false)
   initial_at               DateTime?
   finished_at              DateTime?
   created_at               DateTime                @default(now())
