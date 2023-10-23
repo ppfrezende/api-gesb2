@@ -12,11 +12,11 @@ interface CreatePurchaseOrderUseCaseRequest {
   factor_holiday: number;
   factor_night: number;
   factor_over_xd: number;
-  time_onshore: number;
-  time_offshore: number;
-  time_travel: number;
+  time_onshore: string;
+  time_offshore: string;
+  time_travel: string;
   isMonthly: boolean;
-  whatsCalendar: number;
+  whatsCalendar: string;
   currency: string;
   adictional: number;
   userName: string;

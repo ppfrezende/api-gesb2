@@ -138,11 +138,11 @@ model PurchaseOrder {
   factor_holiday     Float
   factor_night       Float
   factor_over_xd     Float
-  time_onshore       Float
-  time_offshore      Float
-  time_travel        Float
+  time_onshore       String
+  time_offshore      String
+  time_travel        String
   isMonthly          Boolean
-  whatsCalendar      Int
+  whatsCalendar      String
   currency           String
   adictional         Float
   created_at         DateTime @default(now())
