@@ -9,8 +9,10 @@ interface CreatePurchaseOrderUseCaseRequest {
   factor_HE_offshore: number;
   factor_HN_onshore: number;
   factor_HN_offshore: number;
-  factor_holiday: number;
-  factor_night: number;
+  factor_holiday_onshore: number;
+  factor_holiday_offshore: number;
+  factor_night_onshore: number;
+  factor_night_offshore: number;
   factor_over_xd: number;
   time_onshore: string;
   time_offshore: string;
@@ -36,8 +38,10 @@ export class CreatePurchaseOrderUseCase {
     factor_HE_offshore,
     factor_HN_onshore,
     factor_HN_offshore,
-    factor_holiday,
-    factor_night,
+    factor_holiday_onshore,
+    factor_holiday_offshore,
+    factor_night_onshore,
+    factor_night_offshore,
     factor_over_xd,
     time_onshore,
     time_offshore,
@@ -63,8 +67,10 @@ export class CreatePurchaseOrderUseCase {
       factor_HE_offshore,
       factor_HN_onshore,
       factor_HN_offshore,
-      factor_holiday,
-      factor_night,
+      factor_holiday_onshore,
+      factor_holiday_offshore,
+      factor_night_onshore,
+      factor_night_offshore,
       factor_over_xd,
       time_onshore,
       time_offshore,

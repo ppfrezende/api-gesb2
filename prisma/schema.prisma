@@ -128,27 +128,29 @@ model TechSite {
 }
 
 model PurchaseOrder {
-  id                 String   @id @default(uuid())
-  name               String   @unique
-  description        String
-  factor_HE_onshore  Float
-  factor_HE_offshore Float
-  factor_HN_onshore  Float
-  factor_HN_offshore Float
-  factor_holiday     Float
-  factor_night       Float
-  factor_over_xd     Float
-  time_onshore       String
-  time_offshore      String
-  time_travel        String
-  isMonthly          Boolean
-  whatsCalendar      String
-  currency           String
-  adictional         Float
-  created_at         DateTime @default(now())
-  User               User?    @relation(fields: [userName], references: [name])
-  userName           String?
-  skills             Skill[]
+  id                      String   @id @default(uuid())
+  name                    String   @unique
+  description             String
+  factor_HE_onshore       Float
+  factor_HE_offshore      Float
+  factor_HN_onshore       Float
+  factor_HN_offshore      Float
+  factor_holiday_onshore  Float
+  factor_holiday_offshore Float
+  factor_night_onshore    Float
+  factor_night_offshore   Float
+  factor_over_xd          Float
+  time_onshore            String
+  time_offshore           String
+  time_travel             String
+  isMonthly               Boolean
+  whatsCalendar           String
+  currency                String
+  adictional              Float
+  created_at              DateTime @default(now())
+  User                    User?    @relation(fields: [userName], references: [name])
+  userName                String?
+  skills                  Skill[]
 
   @@map("purchase_orders")
 }
