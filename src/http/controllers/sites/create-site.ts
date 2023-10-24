@@ -24,7 +24,7 @@ export async function createSite(request: FastifyRequest, reply: FastifyReply) {
     const { site } = await createSite.execute({
       description,
       isOffshore,
-      userName: user.email,
+      userName: user.name,
     });
 
     return reply.status(201).send({
