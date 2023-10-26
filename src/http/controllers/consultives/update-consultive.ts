@@ -1,4 +1,6 @@
+import { makeGetConsultiveUseCase } from '@/use-cases/_factories/consultives_factories/make-get-consultive-use-case';
 import { makeUpdateConsultiveUseCase } from '@/use-cases/_factories/consultives_factories/make-update-consultive-use-case';
+import { makeUpdateTechnicianUseCase } from '@/use-cases/_factories/technicians_factories/make-update-technician-use-case';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
@@ -42,6 +44,34 @@ export async function updateConsultive(
 
   try {
     const updateConsultiveUseCase = makeUpdateConsultiveUseCase();
+    const updateTechnician = makeUpdateTechnicianUseCase();
+    const getConsultive = makeGetConsultiveUseCase();
+
+    const { consultive } = await getConsultive.execute({ consultiveId });
+    const oldTechnicianId = consultive.technicianId;
+
+    if (technicianId && technicianId !== oldTechnicianId) {
+      await updateTechnician.execute({
+        technicianId: oldTechnicianId!,
+        data: {
+          sites: {
+            disconnect: {
+              id: siteId,
+            },
+          },
+        },
+      });
+      await updateTechnician.execute({
+        technicianId: technicianId,
+        data: {
+          sites: {
+            connect: {
+              id: siteId,
+            },
+          },
+        },
+      });
+    }
 
     const { updatedConsultive } = await updateConsultiveUseCase.execute({
       consultiveId: consultiveId,
