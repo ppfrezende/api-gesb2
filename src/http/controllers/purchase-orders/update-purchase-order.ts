@@ -5,7 +5,6 @@ import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-err
 import { makeGetSkillsByPOUseCase } from '@/use-cases/_factories/skills_factories/make-get-skill-by-po-use-case';
 import { makeDeleteSkillUseCase } from '@/use-cases/_factories/skills_factories/make-delete-skill-use-case';
 import { makeCreateSkillUseCase } from '@/use-cases/_factories/skills_factories/make-create-skill-use-case';
-import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-get-user-profile';
 
 export async function updatePurchaseOrder(
   request: FastifyRequest,
@@ -18,8 +17,10 @@ export async function updatePurchaseOrder(
     factor_HE_offshore: z.number().optional(),
     factor_HN_onshore: z.number().optional(),
     factor_HN_offshore: z.number().optional(),
-    factor_holiday: z.number().optional(),
-    factor_night: z.number().optional(),
+    factor_holiday_onshore: z.number().optional(),
+    factor_holiday_offshore: z.number().optional(),
+    factor_night_onshore: z.number().optional(),
+    factor_night_offshore: z.number().optional(),
     factor_over_xd: z.number().optional(),
     time_onshore: z.string().optional(),
     time_offshore: z.string().optional(),
@@ -43,12 +44,6 @@ export async function updatePurchaseOrder(
     purchaseOrderId: z.string(),
   });
 
-  const getUserProfile = makeGetUserProfileUseCase();
-
-  const { user } = await getUserProfile.execute({
-    userId: request.user.sub,
-  });
-
   const {
     name,
     description,
@@ -56,8 +51,10 @@ export async function updatePurchaseOrder(
     factor_HE_offshore,
     factor_HN_onshore,
     factor_HN_offshore,
-    factor_holiday,
-    factor_night,
+    factor_holiday_onshore,
+    factor_holiday_offshore,
+    factor_night_onshore,
+    factor_night_offshore,
     factor_over_xd,
     time_onshore,
     time_offshore,
@@ -102,7 +99,6 @@ export async function updatePurchaseOrder(
           skill_description,
           travel_hour,
           normal_hour,
-          userName: user.name,
         });
       }
     }
@@ -116,8 +112,10 @@ export async function updatePurchaseOrder(
         factor_HE_offshore,
         factor_HN_onshore,
         factor_HN_offshore,
-        factor_holiday,
-        factor_night,
+        factor_holiday_onshore,
+        factor_holiday_offshore,
+        factor_night_onshore,
+        factor_night_offshore,
         factor_over_xd,
         time_onshore,
         time_offshore,

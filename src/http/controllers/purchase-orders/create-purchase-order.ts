@@ -99,7 +99,6 @@ export async function createPurchaseOrder(
         skill_description,
         travel_hour,
         normal_hour,
-        userName: user.name,
       });
     }
 

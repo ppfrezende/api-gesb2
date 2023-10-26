@@ -6,6 +6,7 @@ import { createCustomer } from './create-customer';
 import { getCustomersList } from './get-customers-list';
 import { deleteCustomer } from './delete-customer';
 import { updateCustomer } from './update-customer';
+import { getCustomer } from './get-customer';
 
 export async function customersRoutes(app: FastifyInstance) {
   app.post(
@@ -28,6 +29,17 @@ export async function customersRoutes(app: FastifyInstance) {
       ],
     },
     getCustomersList,
+  );
+
+  app.get(
+    '/customers/:customerId',
+    {
+      onRequest: [
+        verifyJWT,
+        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
+      ],
+    },
+    getCustomer,
   );
 
   app.delete(
