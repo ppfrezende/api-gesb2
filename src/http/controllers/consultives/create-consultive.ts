@@ -3,6 +3,7 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-get-user-profile';
 import { makeCreateConsultiveUseCase } from '@/use-cases/_factories/consultives_factories/make-create-consultive-use-case';
+import { makeUpdateTechnicianUseCase } from '@/use-cases/_factories/technicians_factories/make-update-technician-use-case';
 
 export async function createConsultive(
   request: FastifyRequest,
@@ -44,6 +45,18 @@ export async function createConsultive(
 
   try {
     const createConsultive = makeCreateConsultiveUseCase();
+    const updateTechnician = makeUpdateTechnicianUseCase();
+
+    await updateTechnician.execute({
+      technicianId: technicianId,
+      data: {
+        sites: {
+          connect: {
+            id: siteId,
+          },
+        },
+      },
+    });
 
     const { consultive } = await createConsultive.execute({
       progressive,
