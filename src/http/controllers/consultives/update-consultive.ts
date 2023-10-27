@@ -56,7 +56,7 @@ export async function updateConsultive(
         data: {
           sites: {
             disconnect: {
-              id: siteId,
+              id: consultive.siteId!,
             },
           },
         },
@@ -66,7 +66,7 @@ export async function updateConsultive(
         data: {
           sites: {
             connect: {
-              id: siteId,
+              id: consultive.siteId!,
             },
           },
         },
