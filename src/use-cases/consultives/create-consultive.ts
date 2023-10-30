@@ -14,6 +14,7 @@ interface CreateConsultiveUseCaseRequest {
   siteId: string;
   customerId: string;
   customerProjectManagerId: string;
+  purchaseOrderId: string;
   userName: string;
 }
 
@@ -36,6 +37,7 @@ export class CreateConsultiveUseCase {
     siteId,
     customerId,
     customerProjectManagerId,
+    purchaseOrderId,
     userName,
   }: CreateConsultiveUseCaseRequest): Promise<CreateConsultiveUseCaseResponse> {
     const consultiveWithSameProgressive =
@@ -57,6 +59,7 @@ export class CreateConsultiveUseCase {
       siteId,
       customerId,
       customerProjectManagerId,
+      purchaseOrderId,
       userName,
     });
 

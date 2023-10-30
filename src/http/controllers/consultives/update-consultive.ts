@@ -21,6 +21,7 @@ export async function updateConsultive(
     siteId: z.string().optional(),
     customerId: z.string().optional(),
     customerProjectManagerId: z.string().optional(),
+    purchaseOrderId: z.string().optional(),
   });
   const updateConsultiveQuerySchema = z.object({
     consultiveId: z.string(),
@@ -37,6 +38,7 @@ export async function updateConsultive(
     technicianId,
     customerId,
     customerProjectManagerId,
+    purchaseOrderId,
     siteId,
   } = updateConsultiveBodySchema.parse(request.body);
 
@@ -87,6 +89,7 @@ export async function updateConsultive(
         siteId,
         customerId,
         customerProjectManagerId,
+        purchaseOrderId,
       },
     });
 

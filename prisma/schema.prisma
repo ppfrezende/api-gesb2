@@ -128,8 +128,8 @@ model TechSite {
 }
 
 model PurchaseOrder {
-  id                      String   @id @default(uuid())
-  name                    String   @unique
+  id                      String       @id @default(uuid())
+  name                    String       @unique
   description             String
   factor_HE_onshore       Float
   factor_HE_offshore      Float
@@ -147,10 +147,11 @@ model PurchaseOrder {
   whatsCalendar           String
   currency                String
   adictional              Float
-  created_at              DateTime @default(now())
-  User                    User?    @relation(fields: [userName], references: [name])
+  created_at              DateTime     @default(now())
+  User                    User?        @relation(fields: [userName], references: [name])
   userName                String?
   skills                  Skill[]
+  consultives             Consultive[]
 
   @@map("purchase_orders")
 }
@@ -229,6 +230,8 @@ model Consultive {
   customerId               String?
   CustomerProjectManager   CustomerProjectManager? @relation(fields: [customerProjectManagerId], references: [id])
   customerProjectManagerId String?
+  PurchaseOrder            PurchaseOrder?          @relation(fields: [purchaseOrderId], references: [id])
+  purchaseOrderId          String?
 
   @@map("consultives")
 }
