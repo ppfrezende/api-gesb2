@@ -13,7 +13,11 @@ export class PrismaConsultivesRepository implements ConsultivesRepository {
         Technician: true,
         Customer: true,
         CustomerProjectManager: true,
-        PurchaseOrder: true,
+        PurchaseOrder: {
+          include: {
+            skills: true,
+          },
+        },
       },
     });
 
@@ -30,7 +34,11 @@ export class PrismaConsultivesRepository implements ConsultivesRepository {
         Technician: true,
         Customer: true,
         CustomerProjectManager: true,
-        PurchaseOrder: true,
+        PurchaseOrder: {
+          include: {
+            skills: true,
+          },
+        },
       },
     });
 
@@ -46,7 +54,11 @@ export class PrismaConsultivesRepository implements ConsultivesRepository {
         Technician: true,
         Customer: true,
         CustomerProjectManager: true,
-        PurchaseOrder: true,
+        PurchaseOrder: {
+          include: {
+            skills: true,
+          },
+        },
       },
       orderBy: {
         progressive: 'desc',
@@ -64,7 +76,11 @@ export class PrismaConsultivesRepository implements ConsultivesRepository {
         Technician: true,
         Customer: true,
         CustomerProjectManager: true,
-        PurchaseOrder: true,
+        PurchaseOrder: {
+          include: {
+            skills: true,
+          },
+        },
       },
     });
 
@@ -82,7 +98,11 @@ export class PrismaConsultivesRepository implements ConsultivesRepository {
         Technician: true,
         Customer: true,
         CustomerProjectManager: true,
-        PurchaseOrder: true,
+        PurchaseOrder: {
+          include: {
+            skills: true,
+          },
+        },
       },
     });
 
