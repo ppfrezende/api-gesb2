@@ -164,6 +164,7 @@ model Skill {
   created_at        DateTime       @default(now())
   PurchaseOrder     PurchaseOrder? @relation(fields: [id_PO], references: [id])
   id_PO             String?
+  consultives       Consultive[]
 
   @@map("skills")
 }
@@ -232,6 +233,8 @@ model Consultive {
   customerProjectManagerId String?
   PurchaseOrder            PurchaseOrder?          @relation(fields: [purchaseOrderId], references: [id])
   purchaseOrderId          String?
+  Skill                    Skill?                  @relation(fields: [skillId], references: [id])
+  skillId                  String?
 
   @@map("consultives")
 }

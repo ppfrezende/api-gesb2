@@ -18,6 +18,7 @@ export class PrismaConsultivesRepository implements ConsultivesRepository {
             skills: true,
           },
         },
+        Skill: true,
       },
     });
 
@@ -39,6 +40,7 @@ export class PrismaConsultivesRepository implements ConsultivesRepository {
             skills: true,
           },
         },
+        Skill: true,
       },
     });
 
@@ -59,6 +61,7 @@ export class PrismaConsultivesRepository implements ConsultivesRepository {
             skills: true,
           },
         },
+        Skill: true,
       },
       orderBy: {
         progressive: 'desc',
@@ -81,6 +84,7 @@ export class PrismaConsultivesRepository implements ConsultivesRepository {
             skills: true,
           },
         },
+        Skill: true,
       },
     });
 
@@ -103,6 +107,7 @@ export class PrismaConsultivesRepository implements ConsultivesRepository {
             skills: true,
           },
         },
+        Skill: true,
       },
     });
 

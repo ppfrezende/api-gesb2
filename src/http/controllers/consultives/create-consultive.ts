@@ -22,6 +22,7 @@ export async function createConsultive(
     customerId: z.string(),
     customerProjectManagerId: z.string(),
     purchaseOrderId: z.string(),
+    skillId: z.string(),
   });
 
   const getUserProfile = makeGetUserProfileUseCase();
@@ -43,6 +44,7 @@ export async function createConsultive(
     customerId,
     customerProjectManagerId,
     purchaseOrderId,
+    skillId,
   } = createConsultiveBodySchema.parse(request.body);
 
   try {
@@ -73,6 +75,7 @@ export async function createConsultive(
       customerId,
       customerProjectManagerId,
       purchaseOrderId,
+      skillId,
       userName: user.name,
     });
 
