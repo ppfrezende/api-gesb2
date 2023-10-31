@@ -14,7 +14,6 @@ type TimeSheetDayData = {
   rangeDto?: number;
   isOffshore?: boolean;
   technician_id: string;
-  userName: string;
   timeSheetDataId: string;
 };
 

@@ -42,7 +42,7 @@ export class PrismaTimeSheetDaysRepository implements TimeSheetDaysRepository {
     return timesheetdays;
   }
 
-  async createMany(data: Prisma.TimeSheetDayUncheckedCreateInput[]) {
+  async createMany(data: Prisma.TimeSheetDayCreateManyInput[]) {
     await prisma.timeSheetDay.createMany({
       data,
     });

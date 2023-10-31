@@ -69,7 +69,6 @@ export async function createTimeSheetData(
         rangeDto: convertHourToDecimal(rangeDto[index].__EMPTY_17),
         isOffshore: on_offshore[index].__EMPTY_25 === 'OffShore' ? true : false,
         technician_id: technicianId,
-        userName: user.name,
         timeSheetDataId: timesheetdata.id!,
       };
     });
