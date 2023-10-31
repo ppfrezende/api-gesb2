@@ -5,6 +5,21 @@ interface CreateTimeSheetDataUseCaseResponse {
   timesheetdata: TimeSheetData;
 }
 
+interface CreateTimeSheetDataUseCaseRequest {
+  departure_date?: Date;
+  arrival_date?: Date;
+  traveled_hours?: number;
+  normal_hours_range_A?: number;
+  normal_hours_range_B?: number;
+  extra_hours_range_C?: number;
+  extra_hours_range_D?: number;
+  technician_id?: string;
+  intervention_description?: string;
+  site?: string;
+  isInternational?: boolean;
+  userName: string;
+}
+
 export class CreateTimeSheetDataUseCase {
   constructor(private timesheetdataRepository: TimeSheetsDataRepository) {}
 
@@ -21,7 +36,7 @@ export class CreateTimeSheetDataUseCase {
     site,
     isInternational,
     userName,
-  }: TimeSheetData): Promise<CreateTimeSheetDataUseCaseResponse> {
+  }: CreateTimeSheetDataUseCaseRequest): Promise<CreateTimeSheetDataUseCaseResponse> {
     const timesheetdata = await this.timesheetdataRepository.create({
       departure_date,
       arrival_date,
