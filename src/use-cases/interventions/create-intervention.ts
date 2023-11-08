@@ -9,7 +9,7 @@ interface CreateInterventionUseCaseRequest {
   job_number: string;
   isOffshore: boolean;
   initial_at: Date;
-  finished_at: Date;
+  finished_at?: Date;
   technicianId: string;
   siteId: string;
   customerId: string;
