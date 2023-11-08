@@ -1,8 +1,8 @@
-import { ConsultivesRepository } from '@/repositories/consultives-repository';
-import { Consultive } from '@prisma/client';
+import { InterventionsRepository } from '@/repositories/interventions-repository';
+import { Intervention } from '@prisma/client';
 import { ResourceAlreadyExists } from '../errors/resource-already-exists';
 
-interface CreateConsultiveUseCaseRequest {
+interface CreateInterventionUseCaseRequest {
   progressive: string;
   intervention_number: string;
   po_number: string;
@@ -19,12 +19,12 @@ interface CreateConsultiveUseCaseRequest {
   userName: string;
 }
 
-interface CreateConsultiveUseCaseResponse {
-  consultive: Consultive;
+interface CreateInterventionUseCaseResponse {
+  intervention: Intervention;
 }
 
-export class CreateConsultiveUseCase {
-  constructor(private consultivesRepository: ConsultivesRepository) {}
+export class CreateInterventionUseCase {
+  constructor(private interventionsRepository: InterventionsRepository) {}
 
   async execute({
     progressive,
@@ -41,15 +41,15 @@ export class CreateConsultiveUseCase {
     purchaseOrderId,
     skillId,
     userName,
-  }: CreateConsultiveUseCaseRequest): Promise<CreateConsultiveUseCaseResponse> {
-    const consultiveWithSameProgressive =
-      await this.consultivesRepository.findByProgressive(progressive);
+  }: CreateInterventionUseCaseRequest): Promise<CreateInterventionUseCaseResponse> {
+    const interventionWithSameProgressive =
+      await this.interventionsRepository.findByProgressive(progressive);
 
-    if (consultiveWithSameProgressive) {
+    if (interventionWithSameProgressive) {
       throw new ResourceAlreadyExists();
     }
 
-    const consultive = await this.consultivesRepository.create({
+    const intervention = await this.interventionsRepository.create({
       progressive,
       intervention_number,
       po_number,
@@ -67,7 +67,7 @@ export class CreateConsultiveUseCase {
     });
 
     return {
-      consultive,
+      intervention,
     };
   }
 }

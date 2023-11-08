@@ -2,65 +2,65 @@ import { verifyJWT } from '../../middlewares/verify-jwt';
 import { verifyUserRole } from '../../middlewares/verify-user-role';
 import { FastifyInstance } from 'fastify';
 
-import { createConsultive } from './create-consultive';
-import { deleteConsultive } from './delete-consultive';
-import { updateConsultive } from './update-consultive';
-import { getConsultivesList } from './get-consultives-list';
-import { getConsultive } from './get-consultive';
+import { createIntervention } from './create-intervention';
+import { deleteIntervention } from './delete-intervention';
+import { updateInterventions } from './update-consultive';
+import { getInterventionsList } from './get-interventions-list';
+import { getIntervention } from './get-intervention';
 
-export async function consultivesRoutes(app: FastifyInstance) {
+export async function interventionsRoutes(app: FastifyInstance) {
   app.post(
-    '/consultives',
+    '/interventions',
     {
       onRequest: [
         verifyJWT,
         verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
       ],
     },
-    createConsultive,
+    createIntervention,
   );
 
   app.delete(
-    '/consultives/:consultiveId',
+    '/interventions/:interventionId',
     {
       onRequest: [
         verifyJWT,
         verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
       ],
     },
-    deleteConsultive,
+    deleteIntervention,
   );
 
   app.put(
-    '/consultives/:consultiveId',
+    '/interventions/:interventionId',
     {
       onRequest: [
         verifyJWT,
         verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
       ],
     },
-    updateConsultive,
+    updateInterventions,
   );
 
   app.get(
-    '/consultives',
+    '/interventions',
     {
       onRequest: [
         verifyJWT,
         verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
       ],
     },
-    getConsultivesList,
+    getInterventionsList,
   );
 
   app.get(
-    '/consultives/:consultiveId',
+    '/interventions/:interventionId',
     {
       onRequest: [
         verifyJWT,
         verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
       ],
     },
-    getConsultive,
+    getIntervention,
   );
 }

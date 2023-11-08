@@ -1,10 +1,10 @@
 import { prisma } from '@/lib/prisma';
-import { Consultive, Prisma } from '@prisma/client';
-import { ConsultivesRepository } from '../consultives-repository';
+import { Intervention, Prisma } from '@prisma/client';
+import { InterventionsRepository } from '../interventions-repository';
 
-export class PrismaConsultivesRepository implements ConsultivesRepository {
-  async findById(id: string): Promise<Consultive | null> {
-    const consultive = await prisma.consultive.findUnique({
+export class PrismaInterventionsRepository implements InterventionsRepository {
+  async findById(id: string): Promise<Intervention | null> {
+    const intervention = await prisma.intervention.findUnique({
       where: {
         id,
       },
@@ -22,11 +22,11 @@ export class PrismaConsultivesRepository implements ConsultivesRepository {
       },
     });
 
-    return consultive;
+    return intervention;
   }
 
-  async findByProgressive(progressive?: string): Promise<Consultive | null> {
-    const consultive = await prisma.consultive.findUnique({
+  async findByProgressive(progressive?: string): Promise<Intervention | null> {
+    const intervention = await prisma.intervention.findUnique({
       where: {
         progressive,
       },
@@ -44,11 +44,11 @@ export class PrismaConsultivesRepository implements ConsultivesRepository {
       },
     });
 
-    return consultive;
+    return intervention;
   }
 
   async listMany(page: number) {
-    const consultives = await prisma.consultive.findMany({
+    const interventions = await prisma.intervention.findMany({
       take: 100,
       skip: (page - 1) * 100,
       include: {
@@ -68,11 +68,11 @@ export class PrismaConsultivesRepository implements ConsultivesRepository {
       },
     });
 
-    return consultives;
+    return interventions;
   }
 
-  async create(data: Prisma.ConsultiveUncheckedCreateInput) {
-    const consultive = await prisma.consultive.create({
+  async create(data: Prisma.InterventionUncheckedCreateInput) {
+    const intervention = await prisma.intervention.create({
       data,
       include: {
         Site: true,
@@ -88,11 +88,11 @@ export class PrismaConsultivesRepository implements ConsultivesRepository {
       },
     });
 
-    return consultive;
+    return intervention;
   }
 
-  async update(id: string, data: Prisma.ConsultiveUncheckedUpdateInput) {
-    const consultive = await prisma.consultive.update({
+  async update(id: string, data: Prisma.InterventionUncheckedUpdateInput) {
+    const intervention = await prisma.intervention.update({
       where: {
         id,
       },
@@ -111,11 +111,11 @@ export class PrismaConsultivesRepository implements ConsultivesRepository {
       },
     });
 
-    return consultive;
+    return intervention;
   }
 
   async delete(id: string) {
-    await prisma.consultive.delete({
+    await prisma.intervention.delete({
       where: {
         id,
       },

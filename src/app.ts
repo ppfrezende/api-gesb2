@@ -13,7 +13,7 @@ import { sitesRoutes } from './http/controllers/sites/routes';
 import { timeSheetsRoutes } from './http/controllers/timesheets/routes';
 import { techniciansRoutes } from './http/controllers/technicians/routes';
 import { customersRoutes } from './http/controllers/customers/route';
-import { consultivesRoutes } from './http/controllers/consultives/routes';
+import { interventionsRoutes } from './http/controllers/consultives/routes';
 
 export const app = fastify();
 
@@ -47,7 +47,7 @@ app.register(purchaseOrdersRoutes);
 app.register(sitesRoutes);
 app.register(timeSheetsRoutes);
 app.register(customersRoutes);
-app.register(consultivesRoutes);
+app.register(interventionsRoutes);
 
 app.setErrorHandler((error, request, reply) => {
   if (error instanceof ZodError) {

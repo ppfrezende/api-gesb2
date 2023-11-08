@@ -1,23 +1,23 @@
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
-import { makeGetConsultivesListUseCase } from '@/use-cases/_factories/consultives_factories/make-get-consultives-list-use-case';
+import { makeGetInterventionsListUseCase } from '@/use-cases/_factories/interventions_factories/make-get-intervention-list-use-case';
 
-export async function getConsultivesList(
+export async function getInterventionsList(
   request: FastifyRequest,
   reply: FastifyReply,
 ) {
-  const getConsultivesQuerySchema = z.object({
+  const getInterventionsQuerySchema = z.object({
     page: z.coerce.number().min(1).default(1),
   });
 
-  const { page } = getConsultivesQuerySchema.parse(request.query);
+  const { page } = getInterventionsQuerySchema.parse(request.query);
 
   try {
-    const getConsultivesListUseCase = makeGetConsultivesListUseCase();
+    const getInterventionsListUseCase = makeGetInterventionsListUseCase();
 
-    const { consultives, numberOfRegisters } =
-      await getConsultivesListUseCase.execute({
+    const { interventions, numberOfRegisters } =
+      await getInterventionsListUseCase.execute({
         page,
       });
 
@@ -25,7 +25,7 @@ export async function getConsultivesList(
       .status(200)
       .headers({ 'x-total-count': numberOfRegisters })
 
-      .send({ consultives });
+      .send({ interventions });
   } catch (err) {
     if (err instanceof ResourceNotFoundError) {
       return reply.status(409).send({ message: err.message });

@@ -31,7 +31,7 @@ model User {
   technicians       Technician[]
   customers         Customer[]
   timesheetsdata    TimeSheetData[]
-  consultives       Consultive[]
+  interventions     Intervention[]
 
   @@map("users")
 }
@@ -89,16 +89,16 @@ model ServiceProvider {
 }
 
 model Technician {
-  id          String       @id
-  name        String
-  email       String       @unique
-  job_title   String
-  created_at  DateTime     @default(now())
-  sites       Site[]
-  consultives Consultive[]
-  TechSite    TechSite[]
-  User        User?        @relation(fields: [userName], references: [name])
-  userName    String?
+  id            String         @id
+  name          String
+  email         String         @unique
+  job_title     String
+  created_at    DateTime       @default(now())
+  sites         Site[]
+  interventions Intervention[]
+  TechSite      TechSite[]
+  User          User?          @relation(fields: [userName], references: [name])
+  userName      String?
 
   @@map("technicians")
 }
@@ -113,7 +113,7 @@ model Site {
   technicians Technician[]
   TechSite    TechSite[]
 
-  consultives Consultive[]
+  interventions Intervention[]
 
   @@map("sites")
 }
@@ -128,8 +128,8 @@ model TechSite {
 }
 
 model PurchaseOrder {
-  id                      String       @id @default(uuid())
-  name                    String       @unique
+  id                      String         @id @default(uuid())
+  name                    String         @unique
   description             String
   factor_HE_onshore       Float
   factor_HE_offshore      Float
@@ -147,11 +147,11 @@ model PurchaseOrder {
   whatsCalendar           String
   currency                String
   adictional              Float
-  created_at              DateTime     @default(now())
-  User                    User?        @relation(fields: [userName], references: [name])
+  created_at              DateTime       @default(now())
+  User                    User?          @relation(fields: [userName], references: [name])
   userName                String?
   skills                  Skill[]
-  consultives             Consultive[]
+  interventions           Intervention[]
 
   @@map("purchase_orders")
 }
@@ -164,7 +164,7 @@ model Skill {
   created_at        DateTime       @default(now())
   PurchaseOrder     PurchaseOrder? @relation(fields: [id_PO], references: [id])
   id_PO             String?
-  consultives       Consultive[]
+  interventions     Intervention[]
 
   @@map("skills")
 }
@@ -211,7 +211,7 @@ model TimeSheetData {
   @@map("timesheets_data")
 }
 
-model Consultive {
+model Intervention {
   id                       String                  @id @default(uuid())
   progressive              String                  @unique
   intervention_number      String
@@ -236,7 +236,7 @@ model Consultive {
   Skill                    Skill?                  @relation(fields: [skillId], references: [id])
   skillId                  String?
 
-  @@map("consultives")
+  @@map("interventions")
 }
 
 model Customer {
@@ -245,7 +245,7 @@ model Customer {
   created_at DateTime @default(now())
 
   project_managers CustomerProjectManager[]
-  consultives      Consultive[]
+  interventions    Intervention[]
   User             User?                    @relation(fields: [userName], references: [name])
   userName         String?
 
@@ -257,9 +257,9 @@ model CustomerProjectManager {
   name       String
   created_at DateTime @default(now())
 
-  consultives Consultive[]
-  Customer    Customer?    @relation(fields: [customerId], references: [id])
-  customerId  String?
+  interventions Intervention[]
+  Customer      Customer?      @relation(fields: [customerId], references: [id])
+  customerId    String?
 
   @@map("customer_project_managers")
 }

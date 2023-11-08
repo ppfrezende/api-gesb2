@@ -1,29 +1,31 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
-import { makeDeleteConsultiveUseCase } from '@/use-cases/_factories/consultives_factories/make-delete-consultive-use-case';
-import { makeGetConsultiveUseCase } from '@/use-cases/_factories/consultives_factories/make-get-consultive-use-case';
+import { makeDeleteInterventionUseCase } from '@/use-cases/_factories/interventions_factories/make-delete-intervention-use-case';
+import { makeGetInterventionUseCase } from '@/use-cases/_factories/interventions_factories/make-get-intervention-use-case';
 import { makeUpdateTechnicianUseCase } from '@/use-cases/_factories/technicians_factories/make-update-technician-use-case';
 
-export async function deleteConsultive(
+export async function deleteIntervention(
   request: FastifyRequest,
   reply: FastifyReply,
 ) {
-  const deleteConsultiveQuerySchema = z.object({
-    consultiveId: z.string(),
+  const deleteInterventionQuerySchema = z.object({
+    interventionId: z.string(),
   });
 
-  const { consultiveId } = deleteConsultiveQuerySchema.parse(request.params);
+  const { interventionId } = deleteInterventionQuerySchema.parse(
+    request.params,
+  );
 
   try {
-    const deleteConsultive = makeDeleteConsultiveUseCase();
-    const getConsultive = makeGetConsultiveUseCase();
+    const deleteIntervention = makeDeleteInterventionUseCase();
+    const getIntervention = makeGetInterventionUseCase();
     const updateTechnician = makeUpdateTechnicianUseCase();
 
-    const { consultive } = await getConsultive.execute({ consultiveId });
+    const { intervention } = await getIntervention.execute({ interventionId });
 
-    const technicianId = consultive.technicianId;
-    const siteId = consultive.siteId;
+    const technicianId = intervention.technicianId;
+    const siteId = intervention.siteId;
 
     if (technicianId && siteId) {
       await updateTechnician.execute({
@@ -37,8 +39,8 @@ export async function deleteConsultive(
         },
       });
     }
-    await deleteConsultive.execute({
-      consultiveId,
+    await deleteIntervention.execute({
+      interventionId,
     });
 
     return reply.status(204).send();

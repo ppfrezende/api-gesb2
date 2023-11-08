@@ -1,15 +1,15 @@
-import { makeGetConsultiveUseCase } from '@/use-cases/_factories/consultives_factories/make-get-consultive-use-case';
-import { makeUpdateConsultiveUseCase } from '@/use-cases/_factories/consultives_factories/make-update-consultive-use-case';
+import { makeGetInterventionUseCase } from '@/use-cases/_factories/interventions_factories/make-get-intervention-use-case';
+import { makeUpdateInterventionUseCase } from '@/use-cases/_factories/interventions_factories/make-update-intervention-use-case';
 import { makeUpdateTechnicianUseCase } from '@/use-cases/_factories/technicians_factories/make-update-technician-use-case';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 
-export async function updateConsultive(
+export async function updateInterventions(
   request: FastifyRequest,
   reply: FastifyReply,
 ) {
-  const updateConsultiveBodySchema = z.object({
+  const updateInterventionBodySchema = z.object({
     progressive: z.string().optional(),
     intervention_number: z.string().optional(),
     po_number: z.string().optional(),
@@ -23,8 +23,8 @@ export async function updateConsultive(
     customerProjectManagerId: z.string().optional(),
     purchaseOrderId: z.string().optional(),
   });
-  const updateConsultiveQuerySchema = z.object({
-    consultiveId: z.string(),
+  const updateInterventionQuerySchema = z.object({
+    interventionId: z.string(),
   });
 
   const {
@@ -40,17 +40,19 @@ export async function updateConsultive(
     customerProjectManagerId,
     purchaseOrderId,
     siteId,
-  } = updateConsultiveBodySchema.parse(request.body);
+  } = updateInterventionBodySchema.parse(request.body);
 
-  const { consultiveId } = updateConsultiveQuerySchema.parse(request.params);
+  const { interventionId } = updateInterventionQuerySchema.parse(
+    request.params,
+  );
 
   try {
-    const updateConsultiveUseCase = makeUpdateConsultiveUseCase();
+    const updateInterventionUseCase = makeUpdateInterventionUseCase();
     const updateTechnician = makeUpdateTechnicianUseCase();
-    const getConsultive = makeGetConsultiveUseCase();
+    const getIntervention = makeGetInterventionUseCase();
 
-    const { consultive } = await getConsultive.execute({ consultiveId });
-    const oldTechnicianId = consultive.technicianId;
+    const { intervention } = await getIntervention.execute({ interventionId });
+    const oldTechnicianId = intervention.technicianId;
 
     if (technicianId && technicianId !== oldTechnicianId) {
       await updateTechnician.execute({
@@ -58,7 +60,7 @@ export async function updateConsultive(
         data: {
           sites: {
             disconnect: {
-              id: consultive.siteId!,
+              id: intervention.siteId!,
             },
           },
         },
@@ -68,15 +70,15 @@ export async function updateConsultive(
         data: {
           sites: {
             connect: {
-              id: consultive.siteId!,
+              id: intervention.siteId!,
             },
           },
         },
       });
     }
 
-    const { updatedConsultive } = await updateConsultiveUseCase.execute({
-      consultiveId: consultiveId,
+    const { updatedIntervention } = await updateInterventionUseCase.execute({
+      interventionId: interventionId,
       data: {
         progressive,
         intervention_number,
@@ -93,7 +95,7 @@ export async function updateConsultive(
       },
     });
 
-    return reply.status(200).send(updatedConsultive);
+    return reply.status(200).send(updatedIntervention);
   } catch (err) {
     if (err instanceof ResourceNotFoundError) {
       return reply.status(409).send({ message: err.message });

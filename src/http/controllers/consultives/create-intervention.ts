@@ -2,14 +2,14 @@ import { ResourceAlreadyExists } from '@/use-cases/errors/resource-already-exist
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-get-user-profile';
-import { makeCreateConsultiveUseCase } from '@/use-cases/_factories/consultives_factories/make-create-consultive-use-case';
+import { makeCreateInterventionUseCase } from '@/use-cases/_factories/interventions_factories/make-create-intervention-use-case';
 import { makeUpdateTechnicianUseCase } from '@/use-cases/_factories/technicians_factories/make-update-technician-use-case';
 
-export async function createConsultive(
+export async function createIntervention(
   request: FastifyRequest,
   reply: FastifyReply,
 ) {
-  const createConsultiveBodySchema = z.object({
+  const createInterventionBodySchema = z.object({
     progressive: z.string(),
     intervention_number: z.string(),
     po_number: z.string(),
@@ -45,10 +45,10 @@ export async function createConsultive(
     customerProjectManagerId,
     purchaseOrderId,
     skillId,
-  } = createConsultiveBodySchema.parse(request.body);
+  } = createInterventionBodySchema.parse(request.body);
 
   try {
-    const createConsultive = makeCreateConsultiveUseCase();
+    const createIntervention = makeCreateInterventionUseCase();
     const updateTechnician = makeUpdateTechnicianUseCase();
 
     await updateTechnician.execute({
@@ -62,7 +62,7 @@ export async function createConsultive(
       },
     });
 
-    const { consultive } = await createConsultive.execute({
+    const { intervention } = await createIntervention.execute({
       progressive,
       intervention_number,
       po_number,
@@ -80,7 +80,7 @@ export async function createConsultive(
     });
 
     return reply.status(201).send({
-      consultive,
+      intervention,
     });
   } catch (err) {
     console.log(err);
