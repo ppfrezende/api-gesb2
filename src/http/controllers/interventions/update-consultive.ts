@@ -16,7 +16,7 @@ export async function updateInterventions(
     job_number: z.string().optional(),
     isOffshore: z.boolean().optional(),
     initial_at: z.coerce.date().optional(),
-    finished_at: z.coerce.date().optional(),
+    finished_at: z.string().optional(),
     technicianId: z.string().optional(),
     siteId: z.string().optional(),
     customerId: z.string().optional(),
