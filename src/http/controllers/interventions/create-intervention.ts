@@ -16,7 +16,7 @@ export async function createIntervention(
     job_number: z.string(),
     isOffshore: z.boolean(),
     initial_at: z.coerce.date(),
-    finished_at: z.string().optional(),
+    finished_at: z.coerce.date().or(z.string().max(0)),
     technicianId: z.string(),
     siteId: z.string(),
     customerId: z.string(),
