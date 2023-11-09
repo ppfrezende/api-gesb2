@@ -192,6 +192,8 @@ model TimeSheetDay {
 
 model TimeSheetData {
   id                       String         @id @default(uuid())
+  first_date               DateTime?
+  second_date              DateTime?
   departure_date           DateTime?
   arrival_date             DateTime?
   traveled_hours           Float?

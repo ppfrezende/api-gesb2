@@ -6,6 +6,8 @@ interface CreateTimeSheetDataUseCaseResponse {
 }
 
 interface CreateTimeSheetDataUseCaseRequest {
+  first_date?: Date;
+  second_date?: Date;
   departure_date?: Date;
   arrival_date?: Date;
   traveled_hours?: number;
@@ -24,6 +26,8 @@ export class CreateTimeSheetDataUseCase {
   constructor(private timesheetdataRepository: TimeSheetsDataRepository) {}
 
   async execute({
+    first_date,
+    second_date,
     departure_date,
     arrival_date,
     traveled_hours,
@@ -38,6 +42,8 @@ export class CreateTimeSheetDataUseCase {
     userName,
   }: CreateTimeSheetDataUseCaseRequest): Promise<CreateTimeSheetDataUseCaseResponse> {
     const timesheetdata = await this.timesheetdataRepository.create({
+      first_date,
+      second_date,
       departure_date,
       arrival_date,
       traveled_hours,

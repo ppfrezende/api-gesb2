@@ -10,6 +10,7 @@ import { convertDate } from '@/utils/convertDate';
 import { makeCreateTimeSheetDataUseCase } from '@/use-cases/_factories/timesheets_factories/timesheetdata_factories/make-create-timesheedata-use-case';
 import { makeUpdateTimeSheetDataUseCase } from '@/use-cases/_factories/timesheets_factories/timesheetdata_factories/make-update-timesheetdata-use-case';
 import { sumHourValues } from '@/utils/sumHourValues';
+import { serialNumberToDate } from '@/utils/serialNumberToDate';
 
 export async function createTimeSheetData(
   request: FastifyRequest,
@@ -27,7 +28,13 @@ export async function createTimeSheetData(
   });
 
   const {
-    basicInformation: { interventionDescription, isInternationalJob, site },
+    basicInformation: {
+      interventionDescription,
+      isInternationalJob,
+      site,
+      firstDate,
+      secondDate,
+    },
     dayHoursDataArray: {
       day,
       departure,
@@ -94,6 +101,8 @@ export async function createTimeSheetData(
     const updatedTimeSheetData = await updateTimeSheetData.execute({
       timesheetdataId: timesheetdata.id!,
       data: {
+        first_date: serialNumberToDate(firstDate),
+        second_date: serialNumberToDate(secondDate),
         departure_date: departureDay,
         arrival_date: arrivalDay,
         technician_id: technicianId,
