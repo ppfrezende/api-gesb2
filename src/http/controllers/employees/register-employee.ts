@@ -4,7 +4,6 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-get-user-profile';
 import { makeCreateTechnicianUseCase } from '@/use-cases/_factories/technicians_factories/make-create-technician-use-case';
-import { zonedTimeToUtc } from 'date-fns-tz';
 
 export async function registerEmployee(
   request: FastifyRequest,
@@ -54,14 +53,12 @@ export async function registerEmployee(
     const registerEmployee = makeRegisterEmployeeUseCase();
     const createTechnician = makeCreateTechnicianUseCase();
 
-    const admissionDate = zonedTimeToUtc(admission_at, 'America/Sao_Paulo');
-
     const { employee } = await registerEmployee.execute({
       name,
       cpf,
       rg,
       email,
-      admission_at: admissionDate,
+      admission_at,
       phone,
       cep,
       street,
