@@ -1,6 +1,7 @@
 import { makeUpdateEmployeeProfileUseCase } from '@/use-cases/_factories/employee_factories/make-update-employee-profile-use-case';
 import { makeUpdateTechnicianUseCase } from '@/use-cases/_factories/technicians_factories/make-update-technician-use-case';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
+import { zonedTimeToUtc } from 'date-fns-tz';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 
@@ -51,6 +52,8 @@ export async function updateEmployeeProfile(
     const updateEmployeeProfile = makeUpdateEmployeeProfileUseCase();
     const updateTechnician = makeUpdateTechnicianUseCase();
 
+    const admissionDate = zonedTimeToUtc(admission_at!, 'America/Sao_Paulo');
+
     const { updatedEmployee } = await updateEmployeeProfile.execute({
       employeeId: employeeId,
       data: {
@@ -58,7 +61,7 @@ export async function updateEmployeeProfile(
         cpf,
         rg,
         email,
-        admission_at,
+        admission_at: admissionDate,
         phone,
         cep,
         street,
