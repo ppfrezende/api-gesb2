@@ -12,10 +12,7 @@ export async function interventionsRoutes(app: FastifyInstance) {
   app.post(
     '/interventions',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     createIntervention,
   );
@@ -23,10 +20,7 @@ export async function interventionsRoutes(app: FastifyInstance) {
   app.delete(
     '/interventions/:interventionId',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     deleteIntervention,
   );
@@ -34,10 +28,7 @@ export async function interventionsRoutes(app: FastifyInstance) {
   app.put(
     '/interventions/:interventionId',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     updateInterventions,
   );
@@ -45,10 +36,7 @@ export async function interventionsRoutes(app: FastifyInstance) {
   app.get(
     '/interventions',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     getInterventionsList,
   );
@@ -56,10 +44,7 @@ export async function interventionsRoutes(app: FastifyInstance) {
   app.get(
     '/interventions/:interventionId',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     getIntervention,
   );

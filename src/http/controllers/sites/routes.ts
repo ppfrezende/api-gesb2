@@ -13,10 +13,7 @@ export async function sitesRoutes(app: FastifyInstance) {
   app.post(
     '/sites',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     createSite,
   );
@@ -24,10 +21,7 @@ export async function sitesRoutes(app: FastifyInstance) {
   app.put(
     '/sites/:siteId',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     updateSite,
   );
@@ -35,10 +29,7 @@ export async function sitesRoutes(app: FastifyInstance) {
   app.get(
     '/sites/:siteId',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     getSite,
   );
@@ -46,10 +37,7 @@ export async function sitesRoutes(app: FastifyInstance) {
   app.get(
     '/sites',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     getSitesList,
   );
@@ -57,10 +45,7 @@ export async function sitesRoutes(app: FastifyInstance) {
   app.delete(
     '/sites/:siteId',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     deleteSite,
   );
@@ -68,10 +53,7 @@ export async function sitesRoutes(app: FastifyInstance) {
   app.get(
     '/sites/search',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     searchSites,
   );

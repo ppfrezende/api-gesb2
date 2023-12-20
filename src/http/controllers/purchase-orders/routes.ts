@@ -13,10 +13,7 @@ export async function purchaseOrdersRoutes(app: FastifyInstance) {
   app.post(
     '/purchase-orders',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     createPurchaseOrder,
   );
@@ -24,10 +21,7 @@ export async function purchaseOrdersRoutes(app: FastifyInstance) {
   app.get(
     '/purchase-orders/search',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     searchPurchaseOrders,
   );
@@ -35,10 +29,7 @@ export async function purchaseOrdersRoutes(app: FastifyInstance) {
   app.put(
     '/purchase-orders/:purchaseOrderId',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     updatePurchaseOrder,
   );
@@ -46,10 +37,7 @@ export async function purchaseOrdersRoutes(app: FastifyInstance) {
   app.get(
     '/purchase-orders/:purchaseOrderId',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     getPurchaseOrder,
   );
@@ -57,10 +45,7 @@ export async function purchaseOrdersRoutes(app: FastifyInstance) {
   app.get(
     '/purchase-orders',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     getPurchaseOrdersList,
   );
@@ -68,10 +53,7 @@ export async function purchaseOrdersRoutes(app: FastifyInstance) {
   app.delete(
     '/purchase-orders/:purchaseOrderId',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     deletePurchaseOrder,
   );

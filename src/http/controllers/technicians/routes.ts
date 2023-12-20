@@ -9,10 +9,7 @@ export async function techniciansRoutes(app: FastifyInstance) {
   app.get(
     '/technicians',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     getTechniciansList,
   );
@@ -20,10 +17,7 @@ export async function techniciansRoutes(app: FastifyInstance) {
   app.get(
     '/technicians/search',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     searchEmployees,
   );

@@ -17,44 +17,44 @@ const uploadAvatar = multer(uploadConfig.upload('tmp/avatar'));
 export async function serviceProvidersRoutes(app: FastifyInstance) {
   app.post(
     '/service-providers',
-    { onRequest: [verifyJWT, verifyUserRole('RH') && verifyUserRole('ADMIN')] },
+    { onRequest: [verifyJWT, verifyUserRole(['RH', 'ADMIN'])] },
     registerServiceProvider,
   );
 
   app.get(
     '/service-providers/search',
-    { onRequest: [verifyJWT, verifyUserRole('RH') && verifyUserRole('ADMIN')] },
+    { onRequest: [verifyJWT, verifyUserRole(['RH', 'ADMIN'])] },
     searchServiceProviders,
   );
 
   app.put(
     '/service-providers/:serviceProviderId',
-    { onRequest: [verifyJWT, verifyUserRole('RH') && verifyUserRole('ADMIN')] },
+    { onRequest: [verifyJWT, verifyUserRole(['RH', 'ADMIN'])] },
     updateServiceProviderProfile,
   );
 
   app.get(
     '/service-providers/:serviceProviderId',
-    { onRequest: [verifyJWT, verifyUserRole('RH') && verifyUserRole('ADMIN')] },
+    { onRequest: [verifyJWT, verifyUserRole(['RH', 'ADMIN'])] },
     getServiceProviderProfile,
   );
 
   app.delete(
     '/service-providers/:serviceProviderId',
-    { onRequest: [verifyJWT, verifyUserRole('RH') && verifyUserRole('ADMIN')] },
+    { onRequest: [verifyJWT, verifyUserRole(['RH', 'ADMIN'])] },
     deleteServiceProviderProfile,
   );
 
   app.get(
     '/service-providers',
-    { onRequest: [verifyJWT, verifyUserRole('RH') && verifyUserRole('ADMIN')] },
+    { onRequest: [verifyJWT, verifyUserRole(['RH', 'ADMIN'])] },
     getServiceProvidersList,
   );
 
   app.patch(
     '/service-providers/avatar/:id',
     {
-      onRequest: [verifyJWT, verifyUserRole('RH') && verifyUserRole('ADMIN')],
+      onRequest: [verifyJWT, verifyUserRole(['RH', 'ADMIN'])],
       preHandler: uploadAvatar.single('avatar'),
     },
     updateServiceProviderAvatar,

@@ -12,10 +12,7 @@ export async function timeSheetsRoutes(app: FastifyInstance) {
   app.post(
     '/technicians/:technicianId/timesheet',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     createTimeSheetData,
   );
@@ -23,10 +20,7 @@ export async function timeSheetsRoutes(app: FastifyInstance) {
   app.get(
     '/timesheet',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     getTimeSheetDataList,
   );
@@ -34,10 +28,7 @@ export async function timeSheetsRoutes(app: FastifyInstance) {
   app.get(
     '/timesheet/data/:timesheetdataId',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     getTimeSheet,
   );
@@ -45,10 +36,7 @@ export async function timeSheetsRoutes(app: FastifyInstance) {
   app.get(
     '/timesheet/:technicianId',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     getTimeSheetDataListByTechId,
   );
@@ -56,10 +44,7 @@ export async function timeSheetsRoutes(app: FastifyInstance) {
   app.delete(
     '/timesheet/:timesheetdataId',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     deleteTimeSheet,
   );

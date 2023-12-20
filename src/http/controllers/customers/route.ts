@@ -12,10 +12,7 @@ export async function customersRoutes(app: FastifyInstance) {
   app.post(
     '/customers',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     createCustomer,
   );
@@ -23,10 +20,7 @@ export async function customersRoutes(app: FastifyInstance) {
   app.get(
     '/customers',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     getCustomersList,
   );
@@ -34,10 +28,7 @@ export async function customersRoutes(app: FastifyInstance) {
   app.get(
     '/customers/:customerId',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     getCustomer,
   );
@@ -45,10 +36,7 @@ export async function customersRoutes(app: FastifyInstance) {
   app.delete(
     '/customers/:customerId',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     deleteCustomer,
   );
@@ -56,10 +44,7 @@ export async function customersRoutes(app: FastifyInstance) {
   app.put(
     '/customers/:customerId',
     {
-      onRequest: [
-        verifyJWT,
-        verifyUserRole('SERVICE') && verifyUserRole('ADMIN'),
-      ],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     updateCustomer,
   );
