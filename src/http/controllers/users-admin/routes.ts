@@ -63,7 +63,12 @@ export async function usersRoutes(app: FastifyInstance) {
   );
   app.get(
     '/me',
-    { onRequest: [verifyJWT, verifyUserRole(['ADMIN'])] },
+    {
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['ADMIN', 'FINANCE', 'GUEST', 'RH', 'SERVICE']),
+      ],
+    },
     userSelfProfile,
   );
 }
