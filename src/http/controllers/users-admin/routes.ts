@@ -18,6 +18,7 @@ import { updateUserAvatar } from './update-avatar-user';
 const uploadAvatar = multer(uploadConfig.upload('tmp/avatar'));
 
 export async function usersRoutes(app: FastifyInstance) {
+  app.get('/connection', authenticate);
   app.post('/sessions', authenticate);
   app.patch('/token/refresh', refreshToken);
 
