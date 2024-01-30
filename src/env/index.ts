@@ -7,6 +7,7 @@ const envSchema = z.object({
   PORT: z.coerce.number().default(3333),
   SUPABASE_URL: z.string(),
   SUPABASE_SECRET: z.string(),
+  AZURE_STORAGE_CONNECTION_STRING: z.string(),
 });
 
 export const _env = envSchema.safeParse(process.env);

@@ -45,6 +45,7 @@
     "vitest": "0.32.2"
   },
   "dependencies": {
+    "@azure/storage-blob": "12.17.0",
     "@fastify/cookie": "8.3.0",
     "@fastify/cors": "8.3.0",
     "@fastify/jwt": "7.0.0",

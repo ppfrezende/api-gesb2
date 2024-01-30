@@ -1,10 +1,13 @@
-import { supabase } from '@/lib/supabase';
+import { BlobServiceClient } from '@azure/storage-blob';
 import { makeUpdateUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-update-user-use-case';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import fs from 'fs/promises';
 
 import { z } from 'zod';
+import { env } from '@/env';
+
+const AZURE_STORAGE_CONNECTION_STRING = env.AZURE_STORAGE_CONNECTION_STRING;
 
 export async function updateUserAvatar(
   request: FastifyRequest,
@@ -29,9 +32,16 @@ export async function updateUserAvatar(
       },
     });
 
-    await supabase.storage
-      .from('gesb2/avatar')
-      .upload(avatar_file.filename, fileData);
+    const blobServiceClient = BlobServiceClient.fromConnectionString(
+      AZURE_STORAGE_CONNECTION_STRING,
+    );
+    const containerClient =
+      blobServiceClient.getContainerClient('gesb2/avatar');
+    const blockBlobClient = containerClient.getBlockBlobClient(
+      avatar_file.filename,
+    );
+
+    await blockBlobClient.uploadData(fileData);
 
     return reply.status(200).send({ upload: 'completed' });
   } catch (err) {
