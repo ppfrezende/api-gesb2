@@ -1,10 +1,12 @@
-import { supabase } from '@/lib/supabase';
+import { BlobServiceClient } from '@azure/storage-blob';
 import { makeUpdateEmployeeProfileUseCase } from '@/use-cases/_factories/employee_factories/make-update-employee-profile-use-case';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import fs from 'fs/promises';
 
 import { z } from 'zod';
+import { env } from '@/env';
+import { makeGetEmployeeProfileUseCase } from '@/use-cases/_factories/employee_factories/make-get-employee-profile-use-case';
 
 export async function updateEmployeeAvatar(
   request: FastifyRequest,
@@ -20,18 +22,38 @@ export async function updateEmployeeAvatar(
   const { id } = updateEmployeeAvatarQuerySchema.parse(request.params);
 
   try {
-    const updateEmployeAvatar = makeUpdateEmployeeProfileUseCase();
+    const getEmployeeProfile = makeGetEmployeeProfileUseCase();
+    const updateEmployeeAvatar = makeUpdateEmployeeProfileUseCase();
 
-    await updateEmployeAvatar.execute({
+    const { employee } = await getEmployeeProfile.execute({
+      employeeId: id,
+    });
+
+    const blobServiceClient = BlobServiceClient.fromConnectionString(
+      env.AZURE_STORAGE_CONNECTION_STRING,
+    );
+
+    const containerClient = blobServiceClient.getContainerClient(
+      'gesbstoragecontainer',
+    );
+
+    if (employee.avatar) {
+      const blobToDelete = containerClient.getBlockBlobClient(employee.avatar);
+      await blobToDelete.deleteIfExists();
+    }
+
+    const blockBlobClient = containerClient.getBlockBlobClient(
+      avatar_file.filename,
+    );
+
+    await blockBlobClient.upload(fileData, fileData.length);
+
+    await updateEmployeeAvatar.execute({
       employeeId: id,
       data: {
         avatar: avatar_file.filename,
       },
     });
-
-    await supabase.storage
-      .from('gesb2/avatar')
-      .upload(avatar_file.filename, fileData);
 
     return reply.status(200).send({ upload: 'completed' });
   } catch (err) {

@@ -1,6 +1,9 @@
-import { FastifyReply } from 'fastify';
+import { FastifyReply, FastifyRequest } from 'fastify';
 
-export async function connection(reply: FastifyReply) {
+export async function testConnection(
+  request: FastifyRequest,
+  reply: FastifyReply,
+) {
   try {
     return reply.status(200).send({ message: 'Successfully Connection' });
   } catch (err) {

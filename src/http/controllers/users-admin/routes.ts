@@ -14,11 +14,12 @@ import { getUserProfile } from './get-user-profile';
 import { deleteUserProfile } from './delete-user';
 import { updateUserProfile } from './update-user';
 import { updateUserAvatar } from './update-avatar-user';
+import { testConnection } from './connection';
 
 const uploadAvatar = multer(uploadConfig.upload('tmp/avatar'));
 
 export async function usersRoutes(app: FastifyInstance) {
-  app.get('/connection', authenticate);
+  app.get('/connection', testConnection);
   app.post('/sessions', authenticate);
   app.patch('/token/refresh', refreshToken);
 

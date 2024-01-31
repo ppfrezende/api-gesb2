@@ -6,8 +6,7 @@ import fs from 'fs/promises';
 
 import { z } from 'zod';
 import { env } from '@/env';
-
-const AZURE_STORAGE_CONNECTION_STRING = env.AZURE_STORAGE_CONNECTION_STRING;
+import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-get-user-profile';
 
 export async function updateUserAvatar(
   request: FastifyRequest,
@@ -23,7 +22,30 @@ export async function updateUserAvatar(
   const { id } = updateUserAvatarQuerySchema.parse(request.params);
 
   try {
+    const getUserProfile = makeGetUserProfileUseCase();
     const updateUserAvatar = makeUpdateUserProfileUseCase();
+
+    const { user } = await getUserProfile.execute({
+      userId: id,
+    });
+
+    const blobServiceClient = BlobServiceClient.fromConnectionString(
+      env.AZURE_STORAGE_CONNECTION_STRING,
+    );
+
+    const containerClient = blobServiceClient.getContainerClient(
+      'gesbstoragecontainer',
+    );
+    const blockBlobClient = containerClient.getBlockBlobClient(
+      avatar_file.filename,
+    );
+
+    if (user.avatar) {
+      const blobToDelete = containerClient.getBlockBlobClient(user.avatar);
+      await blobToDelete.deleteIfExists();
+    }
+
+    await blockBlobClient.upload(fileData, fileData.length);
 
     await updateUserAvatar.execute({
       userId: id,
@@ -31,18 +53,6 @@ export async function updateUserAvatar(
         avatar: avatar_file.filename,
       },
     });
-
-    const blobServiceClient = BlobServiceClient.fromConnectionString(
-      AZURE_STORAGE_CONNECTION_STRING,
-    );
-    const containerClient =
-      blobServiceClient.getContainerClient('gesb2/avatar');
-    const blockBlobClient = containerClient.getBlockBlobClient(
-      avatar_file.filename,
-    );
-
-    await blockBlobClient.uploadData(fileData);
-
     return reply.status(200).send({ upload: 'completed' });
   } catch (err) {
     if (err instanceof ResourceNotFoundError) {
