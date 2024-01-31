@@ -36,14 +36,15 @@ export async function updateUserAvatar(
     const containerClient = blobServiceClient.getContainerClient(
       'gesbstoragecontainer',
     );
-    const blockBlobClient = containerClient.getBlockBlobClient(
-      avatar_file.filename,
-    );
 
     if (user.avatar) {
       const blobToDelete = containerClient.getBlockBlobClient(user.avatar);
       await blobToDelete.deleteIfExists();
     }
+
+    const blockBlobClient = containerClient.getBlockBlobClient(
+      avatar_file.filename,
+    );
 
     await blockBlobClient.upload(fileData, fileData.length);
 
