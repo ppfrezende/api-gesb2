@@ -1,4 +1,3 @@
-import { BlobServiceClient } from '@azure/storage-blob';
 import { makeGetServiceProviderProfileUseCase } from '@/use-cases/_factories/service-providers_factories/make-get-service-provider-use-case';
 import { makeUpdateServiceProviderProfileUseCase } from '@/use-cases/_factories/service-providers_factories/make-update-service-provider-use-case';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
@@ -7,6 +6,9 @@ import fs from 'fs/promises';
 
 import { z } from 'zod';
 import { env } from '@/env';
+import { Upload } from '@aws-sdk/lib-storage';
+import { storageS3Client } from '@/lib/S3';
+import { DeleteObjectCommand } from '@aws-sdk/client-s3';
 
 export async function updateServiceProviderAvatar(
   request: FastifyRequest,
@@ -30,26 +32,24 @@ export async function updateServiceProviderAvatar(
       serviceProviderId: id,
     });
 
-    const blobServiceClient = BlobServiceClient.fromConnectionString(
-      env.AZURE_STORAGE_CONNECTION_STRING,
-    );
-
-    const containerClient = blobServiceClient.getContainerClient(
-      'gesbstoragecontainer',
-    );
-
     if (service_provider.avatar) {
-      const blobToDelete = containerClient.getBlockBlobClient(
-        service_provider.avatar,
-      );
-      await blobToDelete.deleteIfExists();
+      const deleteCommand = new DeleteObjectCommand({
+        Bucket: env.AWS_BUCKET_NAME,
+        Key: service_provider.avatar,
+      });
+      await storageS3Client.send(deleteCommand);
     }
 
-    const blockBlobClient = containerClient.getBlockBlobClient(
-      avatar_file.filename,
-    );
+    const upload = new Upload({
+      client: storageS3Client,
+      params: {
+        Bucket: env.AWS_BUCKET_NAME,
+        Key: avatar_file.filename,
+        Body: fileData,
+      },
+    });
 
-    await blockBlobClient.upload(fileData, fileData.length);
+    await upload.done();
 
     await updateServiceProviderAvatar.execute({
       serviceProviderId: id,

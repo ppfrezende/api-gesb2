@@ -5,9 +5,11 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['dev', 'test', 'production']).default('dev'),
   JWT_SECRET: z.string(),
   PORT: z.coerce.number().default(3333),
-  SUPABASE_URL: z.string(),
-  SUPABASE_SECRET: z.string(),
-  AZURE_STORAGE_CONNECTION_STRING: z.string(),
+  DATABASE_URL: z.string(),
+  AWS_ACCESS_KEY_ID: z.string(),
+  AWS_SECRET_ACCESS_KEY: z.string(),
+  AWS_DEFAULT_REGION: z.string(),
+  AWS_BUCKET_NAME: z.string(),
 });
 
 export const _env = envSchema.safeParse(process.env);
