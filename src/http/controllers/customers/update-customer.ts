@@ -3,8 +3,8 @@ import { z } from 'zod';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
 import { makeUpdateCustomerUseCase } from '@/use-cases/_factories/customers_factories/make-update-customer-use-case';
 import { makeGetProjectManagersListByCustomerIdUseCase } from '@/use-cases/_factories/customers_factories/project-managers_factories/make-get-project-manager-by-customer-id-use-case';
-import { makeDeleteProjectManagerUseCase } from '@/use-cases/_factories/customers_factories/project-managers_factories/make-delete-project-manager-use-case';
 import { makeCreateProjectManagerUseCase } from '@/use-cases/_factories/customers_factories/project-managers_factories/make-create-project-manager-use-case';
+import { makeUpdateProjectManagerUseCase } from '@/use-cases/_factories/customers_factories/project-managers_factories/make-update-project-manager-use-case';
 
 export async function updateCustomer(
   request: FastifyRequest,
@@ -15,6 +15,7 @@ export async function updateCustomer(
     project_managers: z
       .array(
         z.object({
+          id: z.string().optional(),
           name: z.string().optional(),
         }),
       )
@@ -35,32 +36,37 @@ export async function updateCustomer(
     const updateCustomer = makeUpdateCustomerUseCase();
     const getProjectManagerByCustomerId =
       makeGetProjectManagersListByCustomerIdUseCase();
-    const deleteProjectManager = makeDeleteProjectManagerUseCase();
-    const createProjectManager = makeCreateProjectManagerUseCase();
+    const updateProjectManagerUseCase = makeUpdateProjectManagerUseCase();
+    const createProjectManagerUseCase = makeCreateProjectManagerUseCase();
 
     const { customer_project_managers } =
       await getProjectManagerByCustomerId.execute({
         customerId: customerId,
       });
 
-    if (customer_project_managers) {
-      for (const project_manager of customer_project_managers) {
-        const { id } = project_manager;
+    const projectManagersFromBody = project_managers;
 
-        await deleteProjectManager.execute({
-          projectManagerId: id,
-        });
-      }
-    }
+    if (projectManagersFromBody) {
+      for (const projectManager of projectManagersFromBody) {
+        const existingProjectManager = customer_project_managers?.find(
+          (customerProjectManager) =>
+            customerProjectManager.id === projectManager.id,
+        );
 
-    if (project_managers) {
-      for (const project_manager of project_managers) {
-        const { name } = project_manager;
-
-        await createProjectManager.execute({
-          customerId: customerId,
-          name,
-        });
+        if (existingProjectManager) {
+          await updateProjectManagerUseCase.execute({
+            projectManagerId: existingProjectManager.id,
+            data: {
+              name: projectManager.name,
+            },
+          });
+        } else {
+          const { name } = projectManager;
+          await createProjectManagerUseCase.execute({
+            customerId,
+            name,
+          });
+        }
       }
     }
 

@@ -32,6 +32,7 @@ model User {
   customers         Customer[]
   timesheetsdata    TimeSheetData[]
   interventions     Intervention[]
+  expenses          Expense[]
 
   @@map("users")
 }
@@ -97,6 +98,7 @@ model Technician {
   sites         Site[]
   interventions Intervention[]
   TechSite      TechSite[]
+  expenses      Expense[]
   User          User?          @relation(fields: [userName], references: [name])
   userName      String?
 
@@ -237,6 +239,7 @@ model Intervention {
   purchaseOrderId          String?
   Skill                    Skill?                  @relation(fields: [skillId], references: [id])
   skillId                  String?
+  expenses                 Expense[]
 
   @@map("interventions")
 }
@@ -264,4 +267,24 @@ model CustomerProjectManager {
   customerId    String?
 
   @@map("customer_project_managers")
+}
+
+model Expense {
+  id              String        @id @default(uuid())
+  expense_date    DateTime      @default(now())
+  type            String
+  description     String
+  currency        String
+  currency_quote  Int
+  expense_value   Int
+  total_converted Int
+  created_at      DateTime      @default(now())
+  Intervention    Intervention? @relation(fields: [interventionId], references: [id])
+  interventionId  String?
+  Technician      Technician?   @relation(fields: [technicianId], references: [id])
+  technicianId    String?
+  User            User?         @relation(fields: [userName], references: [name])
+  userName        String?
+
+  @@map("expenses")
 }

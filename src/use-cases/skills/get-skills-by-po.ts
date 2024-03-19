@@ -8,7 +8,7 @@ interface GetSkillsByPOUseCaseRequest {
 
 interface GetSkillsByPOUseCaseResponse {
   numberOfRegisters: string;
-  purchaseOrderSkills: Skill[] | null;
+  purchaseOrderSkills: Skill[];
 }
 
 export class GetSkillsByPOUseCase {

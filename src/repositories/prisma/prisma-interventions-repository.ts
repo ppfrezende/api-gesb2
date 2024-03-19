@@ -47,6 +47,16 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
     return intervention;
   }
 
+  async findByPO(purchaseOrderId?: string): Promise<Intervention | null> {
+    const intervention = await prisma.intervention.findFirst({
+      where: {
+        purchaseOrderId,
+      },
+    });
+
+    return intervention;
+  }
+
   async listMany(page: number) {
     const interventions = await prisma.intervention.findMany({
       take: 100,
@@ -115,6 +125,12 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
   }
 
   async delete(id: string) {
+    await prisma.expense.deleteMany({
+      where: {
+        interventionId: id,
+      },
+    });
+
     await prisma.intervention.delete({
       where: {
         id,

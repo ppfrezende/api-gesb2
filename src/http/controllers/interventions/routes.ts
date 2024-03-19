@@ -4,7 +4,7 @@ import { FastifyInstance } from 'fastify';
 
 import { createIntervention } from './create-intervention';
 import { deleteIntervention } from './delete-intervention';
-import { updateInterventions } from './update-consultive';
+import { updateInterventions } from './update-intervention';
 import { getInterventionsList } from './get-interventions-list';
 import { getIntervention } from './get-intervention';
 

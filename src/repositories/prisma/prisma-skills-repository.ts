@@ -8,12 +8,15 @@ export class PrismaSkillsRepository implements SkillsRepository {
       where: {
         id,
       },
+      include: {
+        interventions: true,
+      },
     });
 
     return skill;
   }
 
-  async findByPO(id: string): Promise<Skill[] | null> {
+  async findByPO(id: string): Promise<Skill[]> {
     const skills = await prisma.skill.findMany({
       where: {
         id_PO: id,

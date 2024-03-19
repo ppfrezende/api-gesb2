@@ -1,5 +1,6 @@
 import { makeGetInterventionUseCase } from '@/use-cases/_factories/interventions_factories/make-get-intervention-use-case';
 import { makeUpdateInterventionUseCase } from '@/use-cases/_factories/interventions_factories/make-update-intervention-use-case';
+import { makeUpdateSiteUseCase } from '@/use-cases/_factories/sites_factories/make-update-site-use-case';
 import { makeUpdateTechnicianUseCase } from '@/use-cases/_factories/technicians_factories/make-update-technician-use-case';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
 import { FastifyRequest, FastifyReply } from 'fastify';
@@ -16,7 +17,7 @@ export async function updateInterventions(
     job_number: z.string().optional(),
     isOffshore: z.boolean().optional(),
     initial_at: z.coerce.date().optional(),
-    finished_at: z.coerce.date().or(z.string().max(0)),
+    finished_at: z.coerce.date().or(z.string().max(0)).optional(),
     technicianId: z.string().optional(),
     siteId: z.string().optional(),
     customerId: z.string().optional(),
@@ -49,18 +50,20 @@ export async function updateInterventions(
   try {
     const updateInterventionUseCase = makeUpdateInterventionUseCase();
     const updateTechnician = makeUpdateTechnicianUseCase();
+    const updateSite = makeUpdateSiteUseCase();
     const getIntervention = makeGetInterventionUseCase();
 
     const { intervention } = await getIntervention.execute({ interventionId });
     const oldTechnicianId = intervention.technicianId;
+    const oldSiteId = intervention.siteId;
 
     if (technicianId && technicianId !== oldTechnicianId) {
-      await updateTechnician.execute({
-        technicianId: oldTechnicianId!,
+      await updateSite.execute({
+        siteId: intervention.siteId!,
         data: {
-          sites: {
+          technicians: {
             disconnect: {
-              id: intervention.siteId!,
+              id: oldTechnicianId!,
             },
           },
         },
@@ -75,6 +78,22 @@ export async function updateInterventions(
           },
         },
       });
+
+      if (siteId && siteId !== oldSiteId) {
+        await updateTechnician.execute({
+          technicianId: technicianId,
+          data: {
+            sites: {
+              disconnect: {
+                id: intervention.siteId!,
+              },
+              connect: {
+                id: siteId,
+              },
+            },
+          },
+        });
+      }
     }
 
     const { updatedIntervention } = await updateInterventionUseCase.execute({
