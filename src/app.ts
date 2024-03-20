@@ -12,9 +12,9 @@ import { purchaseOrdersRoutes } from './http/controllers/purchase-orders/routes'
 import { sitesRoutes } from './http/controllers/sites/routes';
 import { timeSheetsRoutes } from './http/controllers/timesheets/routes';
 import { techniciansRoutes } from './http/controllers/technicians/routes';
-import { customersRoutes } from './http/controllers/customers/route';
 import { interventionsRoutes } from './http/controllers/interventions/routes';
 import { expensesRoutes } from './http/controllers/expenses/routes';
+import { customersRoutes } from './http/controllers/customers/route';
 
 export const app = fastify();
 

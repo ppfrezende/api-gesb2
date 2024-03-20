@@ -1,34 +1,33 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
-import { makeDeleteCustomerUseCase } from '@/use-cases/_factories/customers_factories/make-delete-customer-use-case';
-import { makeGetInterventionByCustomerUseCase } from '@/use-cases/_factories/interventions_factories/make-get-intervention-by-customer-use-case';
 import { ResourceCannotBeDeletedError } from '@/use-cases/errors/resource-cannot-be-deleted';
+import { makeDeleteSkillUseCase } from '@/use-cases/_factories/skills_factories/make-delete-skill-use-case';
+import { makeGetInterventionBySkillUseCase } from '@/use-cases/_factories/interventions_factories/make-get-intervention-by-skill-use-case';
 
-export async function deleteCustomer(
+export async function deleteSkill(
   request: FastifyRequest,
   reply: FastifyReply,
 ) {
-  const deleteCustomerQuerySchema = z.object({
-    customerId: z.string(),
+  const deleteSkillQuerySchema = z.object({
+    skillId: z.string(),
   });
 
-  const { customerId } = deleteCustomerQuerySchema.parse(request.params);
+  const { skillId } = deleteSkillQuerySchema.parse(request.params);
 
   try {
-    const deleteCustomer = makeDeleteCustomerUseCase();
-    const getInterventionByCustomerUseCase =
-      makeGetInterventionByCustomerUseCase();
+    const deleteSkillUseCase = makeDeleteSkillUseCase();
+    const getInterventionBySkillUseCase = makeGetInterventionBySkillUseCase();
 
-    const isLinked = await getInterventionByCustomerUseCase.execute({
-      customerId,
+    const isLinked = await getInterventionBySkillUseCase.execute({
+      skillId,
     });
 
     if (isLinked.intervention !== null) {
       throw new ResourceCannotBeDeletedError();
     } else {
-      await deleteCustomer.execute({
-        customerId,
+      await deleteSkillUseCase.execute({
+        skillId,
       });
     }
 

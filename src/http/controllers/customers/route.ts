@@ -7,6 +7,7 @@ import { getCustomersList } from './get-customers-list';
 import { deleteCustomer } from './delete-customer';
 import { updateCustomer } from './update-customer';
 import { getCustomer } from './get-customer';
+import { deleteCustomerProjectManager } from './delete-customer-project-manager';
 
 export async function customersRoutes(app: FastifyInstance) {
   app.post(
@@ -33,6 +34,14 @@ export async function customersRoutes(app: FastifyInstance) {
     getCustomer,
   );
 
+  app.put(
+    '/customers/:customerId',
+    {
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+    },
+    updateCustomer,
+  );
+
   app.delete(
     '/customers/:customerId',
     {
@@ -41,11 +50,11 @@ export async function customersRoutes(app: FastifyInstance) {
     deleteCustomer,
   );
 
-  app.put(
-    '/customers/:customerId',
+  app.delete(
+    '/customer-project-manager/:customerProjectManagerId',
     {
       onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
-    updateCustomer,
+    deleteCustomerProjectManager,
   );
 }

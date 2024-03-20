@@ -2,7 +2,7 @@ import { CustomerProjectManagersRepository } from '@/repositories/customers-proj
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
 
 interface DeleteProjectManagerUseCaseRequest {
-  projectManagerId: string;
+  customerProjectManagerId: string;
 }
 
 export class DeleteProjectManagerUseCase {
@@ -11,16 +11,16 @@ export class DeleteProjectManagerUseCase {
   ) {}
 
   async execute({
-    projectManagerId,
+    customerProjectManagerId,
   }: DeleteProjectManagerUseCaseRequest): Promise<void> {
     const project_manager = await this.projectManagersRepository.findById(
-      projectManagerId,
+      customerProjectManagerId,
     );
 
     if (!project_manager) {
       throw new ResourceNotFoundError();
     } else {
-      await this.projectManagersRepository.delete(projectManagerId);
+      await this.projectManagersRepository.delete(customerProjectManagerId);
 
       return;
     }

@@ -57,6 +57,58 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
     return intervention;
   }
 
+  async findBySkill(skillId?: string): Promise<Intervention | null> {
+    const intervention = await prisma.intervention.findFirst({
+      where: {
+        skillId,
+      },
+    });
+
+    return intervention;
+  }
+
+  async findByCustomer(customerId?: string): Promise<Intervention | null> {
+    const intervention = await prisma.intervention.findFirst({
+      where: {
+        customerId,
+      },
+    });
+
+    return intervention;
+  }
+
+  async findByCustomerProjectManager(
+    customerProjectManagerId?: string,
+  ): Promise<Intervention | null> {
+    const intervention = await prisma.intervention.findFirst({
+      where: {
+        customerProjectManagerId,
+      },
+    });
+
+    return intervention;
+  }
+
+  async findBySite(siteId?: string): Promise<Intervention | null> {
+    const intervention = await prisma.intervention.findFirst({
+      where: {
+        siteId,
+      },
+    });
+
+    return intervention;
+  }
+
+  async findByTech(technicianId?: string): Promise<Intervention | null> {
+    const intervention = await prisma.intervention.findFirst({
+      where: {
+        technicianId,
+      },
+    });
+
+    return intervention;
+  }
+
   async listMany(page: number) {
     const interventions = await prisma.intervention.findMany({
       take: 100,
