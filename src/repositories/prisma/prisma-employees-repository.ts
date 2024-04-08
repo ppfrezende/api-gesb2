@@ -32,10 +32,12 @@ export class PrismaEmployeesRepository implements EmployeesRepository {
     return employee;
   }
 
-  async findByRg(rg: string): Promise<Employee | null> {
+  async findByRegistrationNumber(
+    registration_number: string,
+  ): Promise<Employee | null> {
     const employee = await prisma.employee.findUnique({
       where: {
-        rg,
+        registration_number,
       },
     });
 

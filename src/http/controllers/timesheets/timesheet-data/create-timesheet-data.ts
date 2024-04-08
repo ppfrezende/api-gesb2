@@ -57,7 +57,7 @@ export async function createTimeSheetData(
     const updateTimeSheetData = makeUpdateTimeSheetDataUseCase();
 
     const { timesheetdata } = await createTimeSheetData.execute({
-      technician_id: technicianId,
+      technicianId: technicianId,
       userName: user.name,
     });
 
@@ -80,7 +80,7 @@ export async function createTimeSheetData(
             : on_offshore[index].__EMPTY_25 === 'OnShore'
             ? false
             : undefined,
-        technician_id: technicianId,
+        technicianId: technicianId,
         timeSheetDataId: timesheetdata.id!,
       };
     });
@@ -110,7 +110,6 @@ export async function createTimeSheetData(
         second_date: serialNumberToDate(secondDate),
         departure_date: departureDay,
         arrival_date: arrivalDay,
-        technician_id: technicianId,
         traveled_hours: result.sumDepartureArrival,
         normal_hours_range_A: result.sumA,
         normal_hours_range_B: result.sumB,

@@ -2,10 +2,10 @@ import { SkillsRepository } from '@/repositories/skills-repository';
 import { Skill } from '@prisma/client';
 
 interface CreateSkillUseCaseRequest {
-  skill_description?: string;
-  travel_hour?: number;
-  normal_hour?: number;
-  id_PO?: string;
+  skill_description: string;
+  travel_hour: number;
+  normal_hour: number;
+  id_PO: string;
 }
 
 interface CreateSkillUseCaseResponse {

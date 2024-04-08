@@ -38,69 +38,72 @@ model User {
 }
 
 model Employee {
-  id           String   @id @default(uuid())
-  cpf          String   @unique
-  rg           String   @unique
-  name         String
-  email        String   @unique
-  admission_at DateTime @default(now())
-  phone        String
-  cep          String
-  street       String
-  number       String
-  complement   String
-  city         String
-  uf           String
-  job_title    String
-  avatar       String?
-  salary       Int
-  created_at   DateTime @default(now())
-  User         User?    @relation(fields: [userName], references: [name])
-  userName     String?
+  id                  String   @id @default(uuid())
+  registration_number String   @unique
+  cpf                 String   @unique
+  name                String
+  email               String   @unique
+  admission_at        DateTime @default(now())
+  phone               String
+  cep                 String
+  street              String
+  number              String
+  complement          String
+  city                String
+  uf                  String
+  job_title           String
+  avatar              String?
+  salary              Int
+  created_at          DateTime @default(now())
+  User                User?    @relation(fields: [userName], references: [name])
+  userName            String?
 
   @@map("employees")
 }
 
 model ServiceProvider {
-  id                String   @id @default(uuid())
-  cpf               String   @unique
-  rg                String   @unique
-  cnpj              String   @unique
-  name              String
-  email             String   @unique
-  contract_validity DateTime @default(now())
-  phone             String
-  cep               String
-  street            String
-  number            String
-  complement        String
-  city              String
-  uf                String
-  job_title         String
-  avatar            String?
-  contract_value    Int
-  normal_hour       Int
-  extra_hour        Int
-  day_hour          Int
-  created_at        DateTime @default(now())
-  User              User?    @relation(fields: [userName], references: [name])
-  userName          String?
+  id                  String   @id @default(uuid())
+  registration_number String   @unique
+  cpf                 String   @unique
+  cnpj                String   @unique
+  name                String
+  email               String   @unique
+  contract_validity   DateTime @default(now())
+  phone               String
+  cep                 String
+  street              String
+  number              String
+  complement          String
+  city                String
+  uf                  String
+  job_title           String
+  avatar              String?
+  contract_value      Int
+  normal_hour         Int
+  extra_hour          Int
+  day_hour            Int
+  created_at          DateTime @default(now())
+  User                User?    @relation(fields: [userName], references: [name])
+  userName            String?
 
   @@map("service_providers")
 }
 
 model Technician {
-  id            String         @id
-  name          String
-  email         String         @unique
-  job_title     String
-  created_at    DateTime       @default(now())
-  sites         Site[]
-  interventions Intervention[]
-  TechSite      TechSite[]
-  expenses      Expense[]
-  User          User?          @relation(fields: [userName], references: [name])
-  userName      String?
+  id                  String          @id
+  name                String
+  email               String          @unique
+  job_title           String
+  registration_number String?         @unique
+  created_at          DateTime        @default(now())
+  timesheetdata       TimeSheetData[]
+  timesheetday        TimeSheetDay[]
+  sites               Site[]
+  interventions       Intervention[]
+  TechSite            TechSite[]
+  expenses            Expense[]
+  User                User?           @relation(fields: [userName], references: [name])
+  userName            String?
 
   @@map("technicians")
 }
@@ -185,9 +188,10 @@ model TimeSheetDay {
   rangeDfrom      Float?
   rangeDto        Float?
   isOffshore      Boolean?       @default(false)
-  technician_id   String?
   TimeSheetData   TimeSheetData? @relation(fields: [timeSheetDataId], references: [id])
   timeSheetDataId String?
+  Technician      Technician?    @relation(fields: [technicianId], references: [id])
+  technicianId    String?
 
   @@map("timesheet_days")
 }
@@ -203,7 +207,6 @@ model TimeSheetData {
   normal_hours_range_B     Float?
   extra_hours_range_C      Float?
   extra_hours_range_D      Float?
-  technician_id            String?
   intervention_description String?
   site                     String?
   isInternational          Boolean?       @default(false)
@@ -211,6 +214,8 @@ model TimeSheetData {
   created_at               DateTime       @default(now())
   User                     User?          @relation(fields: [userName], references: [name])
   userName                 String?
+  Technician               Technician?    @relation(fields: [technicianId], references: [id])
+  technicianId             String?
 
   @@map("timesheets_data")
 }
@@ -272,7 +277,7 @@ model CustomerProjectManager {
 model Expense {
   id              String        @id @default(uuid())
   expense_date    DateTime      @default(now())
-  type            String
+  expense_type    String
   description     String
   currency        String
   currency_quote  Int

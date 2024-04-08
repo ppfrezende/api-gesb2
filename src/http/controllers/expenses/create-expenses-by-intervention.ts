@@ -17,7 +17,7 @@ export async function createExpensesByIntervention(
     expenseArray: z.array(
       z.object({
         expense_date: z.date().or(z.string()),
-        type: z.string(),
+        expense_type: z.string(),
         description: z.string(),
         currency: z.string(),
         currency_quote: z.number(),
@@ -40,6 +40,7 @@ export async function createExpensesByIntervention(
 
     const expensesData = expenseArray.map((expense) => ({
       ...expense,
+      expense_date: new Date(expense.expense_date),
       total_converted: expense.expense_value * expense.currency_quote,
       interventionId,
       userName: user.name,
@@ -49,7 +50,6 @@ export async function createExpensesByIntervention(
 
     return reply.status(201).send(createdExpenses);
   } catch (err) {
-    console.log(err);
     if (err instanceof ResourceAlreadyExists) {
       return reply.status(409).send({ message: err.message });
     }

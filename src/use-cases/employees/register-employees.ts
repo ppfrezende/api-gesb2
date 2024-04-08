@@ -4,8 +4,8 @@ import { ResourceAlreadyExists } from '../errors/resource-already-exists';
 
 interface RegisterEmployeeUseCaseRequest {
   name: string;
+  registration_number: string;
   cpf: string;
-  rg: string;
   email: string;
   admission_at: Date;
   phone: string;
@@ -29,8 +29,8 @@ export class RegisterEmployeeUseCase {
 
   async execute({
     name,
+    registration_number,
     cpf,
-    rg,
     email,
     admission_at,
     phone,
@@ -48,16 +48,24 @@ export class RegisterEmployeeUseCase {
       email,
     );
     const employeesWithSameCpf = await this.employeeRepository.findByCpf(cpf);
-    const employeesWithSameRg = await this.employeeRepository.findByRg(rg);
 
-    if (employeesWithSameEmail || employeesWithSameCpf || employeesWithSameRg) {
+    const employessWithSameRegistrationNumber =
+      await this.employeeRepository.findByRegistrationNumber(
+        registration_number,
+      );
+
+    if (
+      employeesWithSameEmail ||
+      employeesWithSameCpf ||
+      employessWithSameRegistrationNumber
+    ) {
       throw new ResourceAlreadyExists();
     }
 
     const employee = await this.employeeRepository.create({
       name,
+      registration_number,
       cpf,
-      rg,
       email,
       admission_at,
       phone,

@@ -18,10 +18,13 @@ export class PrismaTimeSheetsDataRepository
     return timesheetdata;
   }
 
-  async listManyByTechnicianId(technician_id: string, page: number) {
+  async listManyByTechnicianId(
+    technicianId: string,
+    page: number,
+  ): Promise<TimeSheetData[] | null> {
     const timesheetsdata = await prisma.timeSheetData.findMany({
       where: {
-        technician_id,
+        technicianId,
       },
       take: 100,
       skip: (page - 1) * 100,
@@ -29,14 +32,14 @@ export class PrismaTimeSheetsDataRepository
         timesheetdays: true,
       },
       orderBy: {
-        created_at: 'desc',
+        first_date: 'asc',
       },
     });
 
     return timesheetsdata;
   }
 
-  async listMany(page: number) {
+  async listMany(page: number): Promise<TimeSheetData[] | null> {
     const timesheetsdata = await prisma.timeSheetData.findMany({
       take: 100,
       skip: (page - 1) * 100,

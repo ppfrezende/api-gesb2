@@ -11,7 +11,11 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
       include: {
         Site: true,
         Technician: true,
-        Customer: true,
+        Customer: {
+          include: {
+            project_managers: true,
+          },
+        },
         CustomerProjectManager: true,
         PurchaseOrder: {
           include: {
@@ -33,7 +37,11 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
       include: {
         Site: true,
         Technician: true,
-        Customer: true,
+        Customer: {
+          include: {
+            project_managers: true,
+          },
+        },
         CustomerProjectManager: true,
         PurchaseOrder: {
           include: {
@@ -116,7 +124,11 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
       include: {
         Site: true,
         Technician: true,
-        Customer: true,
+        Customer: {
+          include: {
+            project_managers: true,
+          },
+        },
         CustomerProjectManager: true,
         PurchaseOrder: {
           include: {

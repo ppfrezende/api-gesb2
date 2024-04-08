@@ -35,20 +35,22 @@ export class PrismaServiceProvidersRepository
     return service_provider;
   }
 
-  async findByRg(rg: string): Promise<ServiceProvider | null> {
+  async findByCnpj(cnpj: string): Promise<ServiceProvider | null> {
     const service_provider = await prisma.serviceProvider.findUnique({
       where: {
-        rg,
+        cnpj,
       },
     });
 
     return service_provider;
   }
 
-  async findByCnpj(cnpj: string): Promise<ServiceProvider | null> {
+  async findByRegistrationNumber(
+    registration_number: string,
+  ): Promise<ServiceProvider | null> {
     const service_provider = await prisma.serviceProvider.findUnique({
       where: {
-        cnpj,
+        registration_number,
       },
     });
 

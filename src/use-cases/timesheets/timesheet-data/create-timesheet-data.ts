@@ -15,7 +15,7 @@ interface CreateTimeSheetDataUseCaseRequest {
   normal_hours_range_B?: number;
   extra_hours_range_C?: number;
   extra_hours_range_D?: number;
-  technician_id?: string;
+  technicianId?: string;
   intervention_description?: string;
   site?: string;
   isInternational?: boolean;
@@ -35,7 +35,7 @@ export class CreateTimeSheetDataUseCase {
     normal_hours_range_B,
     extra_hours_range_C,
     extra_hours_range_D,
-    technician_id,
+    technicianId,
     intervention_description,
     site,
     isInternational,
@@ -51,7 +51,7 @@ export class CreateTimeSheetDataUseCase {
       normal_hours_range_B,
       extra_hours_range_C,
       extra_hours_range_D,
-      technician_id,
+      technicianId,
       intervention_description,
       site,
       isInternational,

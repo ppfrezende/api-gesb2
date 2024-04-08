@@ -11,8 +11,8 @@ export async function registerEmployee(
 ) {
   const registerEmployeeBodySchema = z.object({
     name: z.string(),
+    registration_number: z.string(),
     cpf: z.string(),
-    rg: z.string(),
     email: z.string().email(),
     admission_at: z.coerce.date(),
     phone: z.string(),
@@ -34,8 +34,8 @@ export async function registerEmployee(
 
   const {
     name,
+    registration_number,
     cpf,
-    rg,
     email,
     admission_at,
     phone,
@@ -55,8 +55,8 @@ export async function registerEmployee(
 
     const { employee } = await registerEmployee.execute({
       name,
+      registration_number,
       cpf,
-      rg,
       email,
       admission_at,
       phone,
@@ -76,6 +76,7 @@ export async function registerEmployee(
       name,
       email,
       job_title,
+      registration_number,
       userName: user.name,
     });
 

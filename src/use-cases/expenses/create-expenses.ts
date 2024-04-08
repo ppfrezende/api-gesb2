@@ -2,7 +2,7 @@ import { ExpensesRepository } from '@/repositories/expenses-repository';
 
 type ExpenseData = {
   expense_date: Date | string;
-  type: string;
+  expense_type: string;
   description: string;
   currency: string;
   currency_quote: number;

@@ -1,4 +1,5 @@
 import { makeUpdateServiceProviderProfileUseCase } from '@/use-cases/_factories/service-providers_factories/make-update-service-provider-use-case';
+import { makeUpdateTechnicianUseCase } from '@/use-cases/_factories/technicians_factories/make-update-technician-use-case';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
@@ -9,8 +10,9 @@ export async function updateServiceProviderProfile(
 ) {
   const updateServiceProviderBodySchema = z.object({
     name: z.string().optional(),
+    registration_number: z.string().optional(),
+    job_title: z.string().optional(),
     cpf: z.string().optional(),
-    rg: z.string().optional(),
     cnpj: z.string().optional(),
     email: z.string().email().optional(),
     contract_validity: z.coerce.date().optional(),
@@ -32,8 +34,9 @@ export async function updateServiceProviderProfile(
 
   const {
     name,
+    registration_number,
+    job_title,
     cpf,
-    rg,
     cnpj,
     email,
     contract_validity,
@@ -57,13 +60,15 @@ export async function updateServiceProviderProfile(
   try {
     const updateServiceProviderProfile =
       makeUpdateServiceProviderProfileUseCase();
+    const updateTechnician = makeUpdateTechnicianUseCase();
 
     const updatedServiceProvider = await updateServiceProviderProfile.execute({
       serviceProviderId: serviceProviderId,
       data: {
         name,
+        registration_number,
+        job_title,
         cpf,
-        rg,
         cnpj,
         email,
         contract_validity,
@@ -81,7 +86,19 @@ export async function updateServiceProviderProfile(
       },
     });
 
-    return reply.status(200).send(updatedServiceProvider);
+    const { updatedTechnician } = await updateTechnician.execute({
+      technicianId: serviceProviderId,
+      data: {
+        name,
+        email,
+        registration_number,
+        job_title,
+      },
+    });
+
+    return reply
+      .status(200)
+      .send({ updatedServiceProvider, updatedTechnician });
   } catch (err) {
     if (err instanceof ResourceNotFoundError) {
       return reply.status(409).send({ message: err.message });

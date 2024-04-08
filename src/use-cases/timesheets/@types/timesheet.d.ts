@@ -11,7 +11,7 @@ export type TimeSheetDay = {
   rangeDfrom?: number;
   rangeDto?: number;
   isOffshore?: boolean;
-  technician_id?: string;
+  technicianId?: string;
   TimeSheetData?: TimeSheetData;
   timeSheetDataId?: string;
   userName: string;
@@ -25,7 +25,7 @@ export type TimeSheetData = {
   normal_hours_range_B?: number;
   extra_hours_range_C?: number;
   extra_hours_range_D?: number;
-  technician_id?: string;
+  technicianId?: string;
   intervention_description?: string;
   site?: string;
   isInternational?: boolean;

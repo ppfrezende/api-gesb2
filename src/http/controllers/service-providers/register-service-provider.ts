@@ -11,8 +11,8 @@ export async function registerServiceProvider(
 ) {
   const registerServiceProviderBodySchema = z.object({
     name: z.string(),
+    registration_number: z.string(),
     cpf: z.string(),
-    rg: z.string(),
     cnpj: z.string(),
     email: z.string().email(),
     contract_validity: z.coerce.date(),
@@ -38,8 +38,8 @@ export async function registerServiceProvider(
 
   const {
     name,
+    registration_number,
     cpf,
-    rg,
     cnpj,
     email,
     contract_validity,
@@ -63,8 +63,8 @@ export async function registerServiceProvider(
 
     const { service_provider } = await registerServiceProvider.execute({
       name,
+      registration_number,
       cpf,
-      rg,
       cnpj,
       email,
       contract_validity,
@@ -88,6 +88,7 @@ export async function registerServiceProvider(
       name,
       email,
       job_title,
+      registration_number,
       userName: user.name,
     });
 

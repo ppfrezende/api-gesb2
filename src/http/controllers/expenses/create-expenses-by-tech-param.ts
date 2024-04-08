@@ -17,7 +17,7 @@ export async function createExpensesByTechParam(
     expenseArray: z.array(
       z.object({
         expense_date: z.date().or(z.string()),
-        type: z.string(),
+        expense_type: z.string(),
         description: z.string(),
         currency: z.string(),
         currency_quote: z.number(),

@@ -3,10 +3,10 @@ import { TimeSheetData, Prisma } from '@prisma/client';
 export interface TimeSheetsDataRepository {
   findById(id?: string): Promise<TimeSheetData | null>;
   listManyByTechnicianId(
-    technician_id: string,
+    technicianId: string,
     page: number,
-  ): Promise<TimeSheetData[]>;
-  listMany(page: number): Promise<TimeSheetData[]>;
+  ): Promise<TimeSheetData[] | null>;
+  listMany(page: number): Promise<TimeSheetData[] | null>;
   create(
     data: Prisma.TimeSheetDataUncheckedCreateInput,
   ): Promise<TimeSheetData>;

@@ -4,11 +4,11 @@ import { TimeSheetDaysRepository } from '../timesheets-day-repository';
 
 export class PrismaTimeSheetDaysRepository implements TimeSheetDaysRepository {
   async findByTechnicianId(
-    technician_id: string,
+    technicianId: string,
   ): Promise<TimeSheetDay[] | null> {
     const timesheetdays = await prisma.timeSheetDay.findMany({
       where: {
-        technician_id,
+        technicianId,
       },
       include: {
         TimeSheetData: true,
@@ -30,7 +30,7 @@ export class PrismaTimeSheetDaysRepository implements TimeSheetDaysRepository {
     return timesheetdays;
   }
 
-  async listMany(page: number) {
+  async listMany(page: number): Promise<TimeSheetDay[] | null> {
     const timesheetdays = await prisma.timeSheetDay.findMany({
       take: 16,
       skip: (page - 1) * 16,

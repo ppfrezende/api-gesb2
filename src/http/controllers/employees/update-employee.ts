@@ -10,8 +10,8 @@ export async function updateEmployeeProfile(
 ) {
   const updateEmployeeBodySchema = z.object({
     name: z.string().optional(),
+    registration_number: z.string().optional(),
     cpf: z.string().optional(),
-    rg: z.string().optional(),
     email: z.string().email().optional(),
     admission_at: z.coerce.date().optional(),
     phone: z.string().optional(),
@@ -30,8 +30,8 @@ export async function updateEmployeeProfile(
 
   const {
     name,
+    registration_number,
     cpf,
-    rg,
     email,
     admission_at,
     phone,
@@ -55,8 +55,8 @@ export async function updateEmployeeProfile(
       employeeId: employeeId,
       data: {
         name,
+        registration_number,
         cpf,
-        rg,
         email,
         admission_at,
         phone,
@@ -76,6 +76,7 @@ export async function updateEmployeeProfile(
       data: {
         name,
         email,
+        registration_number,
         job_title,
       },
     });
