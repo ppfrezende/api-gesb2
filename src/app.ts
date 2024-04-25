@@ -15,6 +15,8 @@ import { techniciansRoutes } from './http/controllers/technicians/routes';
 import { interventionsRoutes } from './http/controllers/interventions/routes';
 import { expensesRoutes } from './http/controllers/expenses/routes';
 import { customersRoutes } from './http/controllers/customers/route';
+import { skillsRoutes } from './http/controllers/skills/routes';
+import { customerProjectManegerRoutes } from './http/controllers/customer-project-mangers/routes';
 
 export const app = fastify();
 
@@ -50,6 +52,8 @@ app.register(timeSheetsRoutes);
 app.register(customersRoutes);
 app.register(interventionsRoutes);
 app.register(expensesRoutes);
+app.register(skillsRoutes);
+app.register(customerProjectManegerRoutes);
 
 app.setErrorHandler((error, request, reply) => {
   if (error instanceof ZodError) {

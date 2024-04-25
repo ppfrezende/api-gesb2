@@ -2,9 +2,6 @@ import { makeUpdatePurchaseOrdersUseCase } from '@/use-cases/_factories/purchase
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
-import { makeGetSkillsByPOUseCase } from '@/use-cases/_factories/skills_factories/make-get-skill-by-po-use-case';
-import { makeCreateSkillUseCase } from '@/use-cases/_factories/skills_factories/make-create-skill-use-case';
-import { makeUpdateSkillUseCase } from '@/use-cases/_factories/skills_factories/make-update-skill-use-case';
 
 export async function updatePurchaseOrder(
   request: FastifyRequest,
@@ -29,16 +26,6 @@ export async function updatePurchaseOrder(
     whatsCalendar: z.string().optional(),
     currency: z.string().optional(),
     adictional: z.number().optional(),
-    skills: z
-      .array(
-        z.object({
-          id: z.string().optional(),
-          skill_description: z.string().optional(),
-          travel_hour: z.number().optional(),
-          normal_hour: z.number().optional(),
-        }),
-      )
-      .optional(),
   });
 
   const updatePurchaseOrderQuerySchema = z.object({
@@ -64,7 +51,6 @@ export async function updatePurchaseOrder(
     whatsCalendar,
     currency,
     adictional,
-    skills,
   } = updatePurchaseOrderBodySchema.parse(request.body);
 
   const { purchaseOrderId } = updatePurchaseOrderQuerySchema.parse(
@@ -73,42 +59,6 @@ export async function updatePurchaseOrder(
 
   try {
     const updatePurchaseOrder = makeUpdatePurchaseOrdersUseCase();
-    const getSkillByPO = makeGetSkillsByPOUseCase();
-    const updateSkill = makeUpdateSkillUseCase();
-    const createSkill = makeCreateSkillUseCase();
-
-    const { purchaseOrderSkills } = await getSkillByPO.execute({
-      id_PO: purchaseOrderId,
-    });
-
-    const skillsFromBody = skills;
-
-    if (skillsFromBody) {
-      for (const skill of skillsFromBody) {
-        const existingSkill = purchaseOrderSkills.find(
-          (purchaseOrderSkill) => purchaseOrderSkill.id === skill.id,
-        );
-
-        if (existingSkill) {
-          await updateSkill.execute({
-            skillId: existingSkill.id,
-            data: {
-              skill_description: skill.skill_description,
-              normal_hour: skill.normal_hour,
-              travel_hour: skill.travel_hour,
-            },
-          });
-        } else {
-          const { skill_description, travel_hour, normal_hour } = skill;
-          await createSkill.execute({
-            id_PO: purchaseOrderId,
-            skill_description,
-            travel_hour,
-            normal_hour,
-          });
-        }
-      }
-    }
 
     const updatedPurchaseOrder = await updatePurchaseOrder.execute({
       purchaseOrderId: purchaseOrderId,

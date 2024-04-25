@@ -2,7 +2,7 @@ import { CustomerProjectManagersRepository } from '@/repositories/customers-proj
 import { CustomerProjectManager } from '@prisma/client';
 
 interface CreateProjectManagerUseCaseRequest {
-  name?: string;
+  name: string;
   customerId: string;
 }
 

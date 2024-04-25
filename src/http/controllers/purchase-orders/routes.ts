@@ -8,7 +8,6 @@ import { getPurchaseOrder } from './get-purchase-order';
 import { getPurchaseOrdersList } from './get-purchase-orders-list';
 import { searchPurchaseOrders } from './search-purchase-orders';
 import { updatePurchaseOrder } from './update-purchase-order';
-import { deleteSkill } from './delete-skill';
 
 export async function purchaseOrdersRoutes(app: FastifyInstance) {
   app.post(
@@ -57,13 +56,5 @@ export async function purchaseOrdersRoutes(app: FastifyInstance) {
       onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     deletePurchaseOrder,
-  );
-
-  app.delete(
-    '/skills/:skillId',
-    {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
-    },
-    deleteSkill,
   );
 }

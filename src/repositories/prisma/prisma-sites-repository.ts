@@ -8,6 +8,10 @@ export class PrismaSitesRepository implements SitesRepository {
       where: {
         id,
       },
+      include: {
+        interventions: true,
+        technicians: true,
+      },
     });
 
     return site;

@@ -3,7 +3,7 @@ import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-err
 import { CustomerProjectManager, Prisma } from '@prisma/client';
 
 interface UpdateProjectManagerUseCaseRequest {
-  projectManagerId: string;
+  customerProjectManagerId: string;
   data: Prisma.CustomerProjectManagerUpdateInput;
 }
 
@@ -17,11 +17,11 @@ export class UpdateProjectManagerUseCase {
   ) {}
 
   async execute({
-    projectManagerId,
+    customerProjectManagerId,
     data,
   }: UpdateProjectManagerUseCaseRequest): Promise<UpdateProjectManagerUseCaseResponse> {
     const projectManager = await this.projectManagersRepository.findById(
-      projectManagerId,
+      customerProjectManagerId,
     );
 
     if (!projectManager) {
@@ -29,7 +29,7 @@ export class UpdateProjectManagerUseCase {
     }
 
     const updatedProjectManager = await this.projectManagersRepository.update(
-      projectManagerId,
+      customerProjectManagerId,
       data,
     );
 

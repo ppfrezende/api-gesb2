@@ -10,6 +10,7 @@ export class PrismaCustomersRepository implements CustomersRepository {
       },
       include: {
         project_managers: true,
+        interventions: true,
       },
     });
 

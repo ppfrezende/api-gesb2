@@ -11,7 +11,12 @@ export class PrismaPurchaseOrdersRepository
         id,
       },
       include: {
-        skills: true,
+        skills: {
+          include: {
+            interventions: true,
+          },
+        },
+        interventions: true,
       },
     });
 
@@ -23,6 +28,14 @@ export class PrismaPurchaseOrdersRepository
       where: {
         name,
       },
+      include: {
+        skills: {
+          include: {
+            interventions: true,
+          },
+        },
+        interventions: true,
+      },
     });
 
     return purchase_order;
@@ -33,7 +46,12 @@ export class PrismaPurchaseOrdersRepository
       take: 100,
       skip: (page - 1) * 100,
       include: {
-        skills: true,
+        skills: {
+          include: {
+            interventions: true,
+          },
+        },
+        interventions: true,
       },
       orderBy: {
         created_at: 'desc',

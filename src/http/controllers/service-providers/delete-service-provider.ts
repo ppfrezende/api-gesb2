@@ -47,7 +47,7 @@ export async function deleteServiceProviderProfile(
     }
 
     if (err instanceof ResourceCannotBeDeletedError) {
-      return reply.status(409).send({ message: err.message });
+      return reply.status(403).send({ message: err.message });
     }
 
     throw err;

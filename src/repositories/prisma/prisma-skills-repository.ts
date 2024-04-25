@@ -30,6 +30,9 @@ export class PrismaSkillsRepository implements SkillsRepository {
     const skills = await prisma.skill.findMany({
       take: 100,
       skip: (page - 1) * 100,
+      include: {
+        interventions: true,
+      },
     });
 
     return skills;
