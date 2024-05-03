@@ -15,4 +15,9 @@ export interface TimeSheetsDataRepository {
     data: Prisma.TimeSheetDataUpdateInput,
   ): Promise<TimeSheetData | null>;
   delete(id: string): Promise<unknown>;
+  connectToIntervention(
+    timesheetId: string,
+    interventionId: string,
+  ): Promise<void>;
+  disconnectToIntervention(timesheetId: string): Promise<void>;
 }

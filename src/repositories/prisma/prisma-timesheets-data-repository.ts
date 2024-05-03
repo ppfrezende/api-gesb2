@@ -12,10 +12,43 @@ export class PrismaTimeSheetsDataRepository
       },
       include: {
         timesheetdays: true,
+        Intervention: true,
+        Technician: true,
       },
     });
 
     return timesheetdata;
+  }
+
+  async connectToIntervention(
+    timesheetId: string,
+    interventionId: string,
+  ): Promise<void> {
+    await prisma.timeSheetData.update({
+      where: {
+        id: timesheetId,
+      },
+      data: {
+        Intervention: {
+          connect: {
+            id: interventionId,
+          },
+        },
+      },
+    });
+  }
+
+  async disconnectToIntervention(timesheetId: string): Promise<void> {
+    await prisma.timeSheetData.update({
+      where: {
+        id: timesheetId,
+      },
+      data: {
+        Intervention: {
+          disconnect: true,
+        },
+      },
+    });
   }
 
   async listManyByTechnicianId(
@@ -30,6 +63,7 @@ export class PrismaTimeSheetsDataRepository
       skip: (page - 1) * 100,
       include: {
         timesheetdays: true,
+        Technician: true,
       },
       orderBy: {
         first_date: 'asc',
@@ -45,6 +79,8 @@ export class PrismaTimeSheetsDataRepository
       skip: (page - 1) * 100,
       include: {
         timesheetdays: true,
+        Intervention: true,
+        Technician: true,
       },
       orderBy: {
         created_at: 'desc',

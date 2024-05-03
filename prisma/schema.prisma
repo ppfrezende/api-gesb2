@@ -216,6 +216,8 @@ model TimeSheetData {
   userName                 String?
   Technician               Technician?    @relation(fields: [technicianId], references: [id])
   technicianId             String?
+  Intervention             Intervention?  @relation(fields: [interventionId], references: [id])
+  interventionId           String?
 
   @@map("timesheets_data")
 }
@@ -245,6 +247,7 @@ model Intervention {
   Skill                    Skill?                  @relation(fields: [skillId], references: [id])
   skillId                  String?
   expenses                 Expense[]
+  timesheets               TimeSheetData[]
 
   @@map("interventions")
 }

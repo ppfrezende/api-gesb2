@@ -23,6 +23,11 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
           },
         },
         Skill: true,
+        timesheets: {
+          orderBy: {
+            created_at: 'asc',
+          },
+        },
       },
     });
 
@@ -49,6 +54,7 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
           },
         },
         Skill: true,
+        timesheets: true,
       },
     });
 
@@ -136,6 +142,7 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
           },
         },
         Skill: true,
+        timesheets: true,
       },
       orderBy: {
         progressive: 'desc',
