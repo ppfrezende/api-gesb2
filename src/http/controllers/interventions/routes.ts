@@ -7,6 +7,7 @@ import { deleteIntervention } from './delete-intervention';
 import { updateInterventions } from './update-intervention';
 import { getInterventionsList } from './get-interventions-list';
 import { getIntervention } from './get-intervention';
+import { generateInterventionInvoiceSummary } from './generate-intervention-invoice-summary';
 
 export async function interventionsRoutes(app: FastifyInstance) {
   app.post(
@@ -47,5 +48,12 @@ export async function interventionsRoutes(app: FastifyInstance) {
       onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     getIntervention,
+  );
+  app.get(
+    '/interventions/invoice-summary/:interventionId',
+    {
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+    },
+    generateInterventionInvoiceSummary,
   );
 }

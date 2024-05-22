@@ -24,8 +24,20 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
         },
         Skill: true,
         timesheets: {
+          include: {
+            timesheetdays: {
+              orderBy: {
+                day: 'asc',
+              },
+            },
+          },
           orderBy: {
             created_at: 'asc',
+          },
+        },
+        expenses: {
+          orderBy: {
+            expense_date: 'asc',
           },
         },
       },
@@ -54,7 +66,20 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
           },
         },
         Skill: true,
-        timesheets: true,
+        timesheets: {
+          include: {
+            timesheetdays: {
+              orderBy: {
+                day: 'asc',
+              },
+            },
+          },
+        },
+        expenses: {
+          orderBy: {
+            expense_date: 'asc',
+          },
+        },
       },
     });
 
@@ -143,6 +168,11 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
         },
         Skill: true,
         timesheets: true,
+        expenses: {
+          orderBy: {
+            expense_date: 'asc',
+          },
+        },
       },
       orderBy: {
         progressive: 'desc',

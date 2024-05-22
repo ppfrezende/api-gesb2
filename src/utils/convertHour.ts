@@ -4,7 +4,9 @@ export function convertDecimalToHour(decimal: number) {
   const hourFloor = Math.floor(hours);
   const minutes = (hours - hourFloor) * 60;
 
-  const formattedHour = `${hourFloor}:${minutes.toFixed(0).padStart(2, '0')}h`;
+  const formattedHour = `${hourFloor.toString().padStart(2, '0')}:${minutes
+    .toFixed(0)
+    .padStart(2, '0')}h`;
 
   return formattedHour;
 }

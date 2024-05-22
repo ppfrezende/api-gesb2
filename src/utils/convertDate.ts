@@ -11,3 +11,12 @@ export function convertDate(date: string) {
 
   return `${formattedYear}-${formattedMonth}-${formattedDay}`;
 }
+
+export function formatDateToDDMMYYYY(date: string) {
+  const dateToFormat = new Date(date);
+
+  const day = String(dateToFormat.getUTCDate()).padStart(2, '0');
+  const month = String(dateToFormat.getUTCMonth() + 1).padStart(2, '0');
+  const year = dateToFormat.getUTCFullYear().toString();
+  return `${day}/${month}/${year}`;
+}
