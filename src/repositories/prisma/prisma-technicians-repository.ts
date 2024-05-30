@@ -8,6 +8,19 @@ export class PrismaTechniciansRepository implements TechniciansRepository {
       where: {
         id,
       },
+      include: {
+        interventions: true,
+        timesheetdata: {
+          orderBy: {
+            first_date: 'asc',
+          },
+        },
+        expenses: {
+          orderBy: {
+            expense_date: 'desc',
+          },
+        },
+      },
     });
 
     return technician;

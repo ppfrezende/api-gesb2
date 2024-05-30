@@ -64,6 +64,7 @@ export class PrismaTimeSheetsDataRepository
       include: {
         timesheetdays: true,
         Technician: true,
+        Intervention: true,
       },
       orderBy: {
         first_date: 'asc',
@@ -83,7 +84,7 @@ export class PrismaTimeSheetsDataRepository
         Technician: true,
       },
       orderBy: {
-        created_at: 'desc',
+        first_date: 'asc',
       },
     });
 

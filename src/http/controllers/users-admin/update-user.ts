@@ -1,5 +1,6 @@
 import { makeUpdateUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-update-user-use-case';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
+import { hash } from 'bcryptjs';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 
@@ -29,21 +30,23 @@ export async function updateUserProfile(
   try {
     const updateUserProfile = makeUpdateUserProfileUseCase();
 
-    const updatedUser = await updateUserProfile.execute({
+    let newPasswordHashed;
+    if (password) {
+      newPasswordHashed = await hash(password, 6);
+    }
+
+    await updateUserProfile.execute({
       userId: id,
       data: {
         name,
         email,
         sector,
-        password_hash: password,
+        password_hash: newPasswordHashed,
         role,
       },
     });
 
-    return reply.status(200).send({
-      ...updatedUser,
-      password_hash: undefined,
-    });
+    return reply.status(200).send({ message: 'successfully updated' });
   } catch (err) {
     if (err instanceof ResourceNotFoundError) {
       return reply.status(409).send({ message: err.message });

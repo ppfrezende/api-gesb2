@@ -49,7 +49,7 @@ export class PrismaExpensesRepository implements ExpensesRepository {
         Technician: true,
       },
       orderBy: {
-        created_at: 'desc',
+        expense_date: 'desc',
       },
     });
 
@@ -68,7 +68,7 @@ export class PrismaExpensesRepository implements ExpensesRepository {
         Technician: true,
       },
       orderBy: {
-        created_at: 'desc',
+        expense_date: 'desc',
       },
     });
 

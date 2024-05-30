@@ -4,6 +4,7 @@ import { FastifyInstance } from 'fastify';
 
 import { searchEmployees } from '../employees/search-employee';
 import { getTechniciansList } from './get-technicians-list';
+import { getTechnician } from './get-technician';
 
 export async function techniciansRoutes(app: FastifyInstance) {
   app.get(
@@ -12,6 +13,14 @@ export async function techniciansRoutes(app: FastifyInstance) {
       onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     getTechniciansList,
+  );
+
+  app.get(
+    '/technicians/:technicianId',
+    {
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+    },
+    getTechnician,
   );
 
   app.get(
