@@ -11,8 +11,20 @@ export function convertDecimalToHour(decimal: number) {
   return formattedHour;
 }
 
-export function convertHourToDecimal(formattedHour: string): number {
+export function convertHourToDecimal(formattedHour: string): number | null {
   const hoursInDay = 24;
+
+  if (formattedHour === '-:--') {
+    return null;
+  }
+
+  if (formattedHour === '00:00h') {
+    return 1;
+  }
+
+  if (formattedHour === '00:01h') {
+    return 0;
+  }
 
   const [hourStr, minuteStr] = formattedHour.replace('h', '').split(':');
   const hour = parseInt(hourStr, 10);

@@ -10,11 +10,13 @@ export async function updateServiceProviderProfile(
 ) {
   const updateServiceProviderBodySchema = z.object({
     name: z.string().optional(),
+    company: z.string().optional(),
     registration_number: z.string().optional(),
     job_title: z.string().optional(),
     cpf: z.string().optional(),
     cnpj: z.string().optional(),
     email: z.string().email().optional(),
+    start_of_contract: z.coerce.date().optional(),
     contract_validity: z.coerce.date().optional(),
     phone: z.string().optional(),
     cep: z.string().optional(),
@@ -34,11 +36,13 @@ export async function updateServiceProviderProfile(
 
   const {
     name,
+    company,
     registration_number,
     job_title,
     cpf,
     cnpj,
     email,
+    start_of_contract,
     contract_validity,
     phone,
     cep,
@@ -47,10 +51,6 @@ export async function updateServiceProviderProfile(
     complement,
     city,
     uf,
-    normal_hour,
-    extra_hour,
-    day_hour,
-    contract_value,
   } = updateServiceProviderBodySchema.parse(request.body);
 
   const { serviceProviderId } = updateServiceProviderProfileQuerySchema.parse(
@@ -66,11 +66,13 @@ export async function updateServiceProviderProfile(
       serviceProviderId: serviceProviderId,
       data: {
         name,
+        company,
         registration_number,
         job_title,
         cpf,
         cnpj,
         email,
+        start_of_contract,
         contract_validity,
         phone,
         cep,
@@ -79,10 +81,6 @@ export async function updateServiceProviderProfile(
         complement,
         city,
         uf,
-        normal_hour,
-        extra_hour,
-        day_hour,
-        contract_value,
       },
     });
 

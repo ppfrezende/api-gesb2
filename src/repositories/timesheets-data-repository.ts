@@ -5,8 +5,8 @@ export interface TimeSheetsDataRepository {
   listManyByTechnicianId(
     technicianId: string,
     page: number,
-  ): Promise<TimeSheetData[] | null>;
-  listMany(page: number): Promise<TimeSheetData[] | null>;
+  ): Promise<TimeSheetData[] | []>;
+  listMany(page: number): Promise<TimeSheetData[] | []>;
   create(
     data: Prisma.TimeSheetDataUncheckedCreateInput,
   ): Promise<TimeSheetData>;

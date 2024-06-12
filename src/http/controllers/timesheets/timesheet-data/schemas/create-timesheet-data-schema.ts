@@ -2,11 +2,10 @@ import { z } from 'zod';
 
 export const createTimeSheetDataBodySchema = z.object({
   basicInformation: z.object({
-    interventionDescription: z.string(),
+    interventionNumber: z.string(),
     firstDate: z.number(),
     secondDate: z.number(),
-    isInternationalJob: z.boolean(),
-    site: z.string(),
+    isInternational: z.boolean(),
   }),
   dayHoursDataArray: z.object({
     day: z.array(

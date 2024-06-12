@@ -9,8 +9,9 @@ import { convertHourToDecimal } from '@/utils/convertHour';
 import { convertDate } from '@/utils/convertDate';
 import { makeCreateTimeSheetDataUseCase } from '@/use-cases/_factories/timesheets_factories/timesheetdata_factories/make-create-timesheedata-use-case';
 import { makeUpdateTimeSheetDataUseCase } from '@/use-cases/_factories/timesheets_factories/timesheetdata_factories/make-update-timesheetdata-use-case';
-import { sumHourValues } from '@/utils/sumHourValues';
 import { serialNumberToDate } from '@/utils/serialNumberToDate';
+import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
+import { makeGetTechnicianUseCase } from '@/use-cases/_factories/technicians_factories/make-get-technician-use-case';
 
 export async function createTimeSheetData(
   request: FastifyRequest,
@@ -29,9 +30,8 @@ export async function createTimeSheetData(
 
   const {
     basicInformation: {
-      interventionDescription,
-      isInternationalJob,
-      site,
+      interventionNumber,
+      isInternational,
       firstDate,
       secondDate,
     },
@@ -55,9 +55,14 @@ export async function createTimeSheetData(
     const createTimeSheetDays = makeCreateTimeSheetDaysUseCase();
     const createTimeSheetData = makeCreateTimeSheetDataUseCase();
     const updateTimeSheetData = makeUpdateTimeSheetDataUseCase();
+    const getTechnicianUseCase = makeGetTechnicianUseCase();
+
+    await getTechnicianUseCase.execute({
+      technicianId,
+    });
 
     const { timesheetdata } = await createTimeSheetData.execute({
-      technicianId: technicianId,
+      technicianId,
       userName: user.name,
     });
 
@@ -66,7 +71,10 @@ export async function createTimeSheetData(
         day: new Date(convertDate(item.__EMPTY_1)),
         departure: convertHourToDecimal(departure[index].__EMPTY_3),
         arrival: convertHourToDecimal(arrival[index].__EMPTY_5),
-        rangeAfrom: convertHourToDecimal(rangeAfrom[index].__EMPTY_7),
+        rangeAfrom:
+          rangeAfrom[index].__EMPTY_7 === '00:00h'
+            ? convertHourToDecimal('00:01h')
+            : convertHourToDecimal(rangeAfrom[index].__EMPTY_7),
         rangeAto: convertHourToDecimal(rangeAto[index].__EMPTY_8),
         rangeBfrom: convertHourToDecimal(rangeBfrom[index].__EMPTY_10),
         rangeBto: convertHourToDecimal(rangeBto[index].__EMPTY_12),
@@ -85,48 +93,41 @@ export async function createTimeSheetData(
       };
     });
 
-    let departureDay = null;
-    for (const item of dayHoursArray) {
-      if (item.departure !== 0) {
-        departureDay = item.day;
-        break;
-      }
-    }
+    // let departureDay = null;
+    // for (const item of dayHoursArray) {
+    //   if (item.departure !== null) {
+    //     departureDay = item.day;
+    //     break;
+    //   }
+    // }
 
-    let arrivalDay = null;
-    for (const item of dayHoursArray) {
-      if (item.arrival !== 0) {
-        arrivalDay = item.day;
-        break;
-      }
-    }
-
-    const result = sumHourValues(dayHoursArray);
+    // let arrivalDay = null;
+    // for (const item of dayHoursArray) {
+    //   if (item.arrival !== null) {
+    //     arrivalDay = item.day;
+    //     break;
+    //   }
+    // }
 
     const updatedTimeSheetData = await updateTimeSheetData.execute({
       timesheetdataId: timesheetdata.id!,
       data: {
         first_date: serialNumberToDate(firstDate),
         second_date: serialNumberToDate(secondDate),
-        departure_date: departureDay,
-        arrival_date: arrivalDay,
-        traveled_hours: result.sumDepartureArrival,
-        normal_hours_range_A: result.sumA,
-        normal_hours_range_B: result.sumB,
-        extra_hours_range_C: result.sumC,
-        extra_hours_range_D: result.sumD,
-        isInternational: isInternationalJob,
-        intervention_description: interventionDescription,
-        site: site,
+        isInternational: isInternational,
+        intervention_number: interventionNumber,
       },
     });
 
     await createTimeSheetDays.execute(dayHoursArray);
 
-    return reply.status(201).send({ updatedTimeSheetData });
+    return reply.status(201).send(updatedTimeSheetData);
   } catch (err) {
-    console.log(err);
     if (err instanceof ResourceAlreadyExists) {
+      return reply.status(409).send({ message: err.message });
+    }
+
+    if (err instanceof ResourceNotFoundError) {
       return reply.status(409).send({ message: err.message });
     }
 

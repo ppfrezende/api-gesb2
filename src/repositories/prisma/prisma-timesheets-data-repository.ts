@@ -54,7 +54,7 @@ export class PrismaTimeSheetsDataRepository
   async listManyByTechnicianId(
     technicianId: string,
     page: number,
-  ): Promise<TimeSheetData[] | null> {
+  ): Promise<TimeSheetData[] | []> {
     const timesheetsdata = await prisma.timeSheetData.findMany({
       where: {
         technicianId,
@@ -74,7 +74,7 @@ export class PrismaTimeSheetsDataRepository
     return timesheetsdata;
   }
 
-  async listMany(page: number): Promise<TimeSheetData[] | null> {
+  async listMany(page: number): Promise<TimeSheetData[] | []> {
     const timesheetsdata = await prisma.timeSheetData.findMany({
       take: 100,
       skip: (page - 1) * 100,

@@ -11,10 +11,12 @@ export async function registerServiceProvider(
 ) {
   const registerServiceProviderBodySchema = z.object({
     name: z.string(),
+    company: z.string(),
     registration_number: z.string(),
     cpf: z.string(),
     cnpj: z.string(),
     email: z.string().email(),
+    start_of_contract: z.coerce.date(),
     contract_validity: z.coerce.date(),
     phone: z.string(),
     cep: z.string(),
@@ -24,10 +26,6 @@ export async function registerServiceProvider(
     city: z.string(),
     job_title: z.string(),
     uf: z.string(),
-    normal_hour: z.number(),
-    extra_hour: z.number(),
-    day_hour: z.number(),
-    contract_value: z.number(),
   });
 
   const getUserProfile = makeGetUserProfileUseCase();
@@ -38,10 +36,12 @@ export async function registerServiceProvider(
 
   const {
     name,
+    company,
     registration_number,
     cpf,
     cnpj,
     email,
+    start_of_contract,
     contract_validity,
     phone,
     cep,
@@ -51,10 +51,6 @@ export async function registerServiceProvider(
     city,
     uf,
     job_title,
-    normal_hour,
-    extra_hour,
-    day_hour,
-    contract_value,
   } = registerServiceProviderBodySchema.parse(request.body);
 
   try {
@@ -63,10 +59,12 @@ export async function registerServiceProvider(
 
     const { service_provider } = await registerServiceProvider.execute({
       name,
+      company,
       registration_number,
       cpf,
       cnpj,
       email,
+      start_of_contract,
       contract_validity,
       phone,
       cep,
@@ -76,10 +74,6 @@ export async function registerServiceProvider(
       city,
       uf,
       job_title,
-      normal_hour,
-      extra_hour,
-      day_hour,
-      contract_value,
       userName: user.name,
     });
 

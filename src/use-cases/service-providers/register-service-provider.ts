@@ -4,10 +4,12 @@ import { ResourceAlreadyExists } from '../errors/resource-already-exists';
 
 interface RegisterServiceProviderUseCaseRequest {
   name: string;
+  company: string;
   registration_number: string;
   cpf: string;
   cnpj: string;
   email: string;
+  start_of_contract: Date;
   contract_validity: Date;
   phone: string;
   cep: string;
@@ -16,10 +18,6 @@ interface RegisterServiceProviderUseCaseRequest {
   complement: string;
   city: string;
   uf: string;
-  normal_hour: number;
-  extra_hour: number;
-  day_hour: number;
-  contract_value: number;
   job_title: string;
   userName: string;
 }
@@ -33,10 +31,12 @@ export class RegisterServiceProviderUseCase {
 
   async execute({
     name,
+    company,
     registration_number,
     cpf,
     cnpj,
     email,
+    start_of_contract,
     contract_validity,
     phone,
     cep,
@@ -44,11 +44,7 @@ export class RegisterServiceProviderUseCase {
     number,
     complement,
     city,
-    normal_hour,
-    extra_hour,
-    day_hour,
     uf,
-    contract_value,
     job_title,
     userName,
   }: RegisterServiceProviderUseCaseRequest): Promise<RegisterServiceProviderUseCaseResponse> {
@@ -74,10 +70,12 @@ export class RegisterServiceProviderUseCase {
 
     const service_provider = await this.serviceProviderRepository.create({
       name,
+      company,
       registration_number,
       cpf,
       cnpj,
       email,
+      start_of_contract,
       contract_validity,
       phone,
       cep,
@@ -86,10 +84,6 @@ export class RegisterServiceProviderUseCase {
       complement,
       city,
       uf,
-      normal_hour,
-      extra_hour,
-      day_hour,
-      contract_value,
       job_title,
       userName,
     });
