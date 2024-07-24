@@ -22,7 +22,6 @@ export async function createExpensesByIntervention(
         currency: z.string(),
         currency_quote: z.number(),
         expense_value: z.number(),
-        technicianId: z.string(),
       }),
     ),
   });
@@ -41,7 +40,7 @@ export async function createExpensesByIntervention(
     const expensesData = expenseArray.map((expense) => ({
       ...expense,
       expense_date: new Date(expense.expense_date),
-      total_converted: expense.expense_value * expense.currency_quote,
+      total_converted: (expense.expense_value * expense.currency_quote) / 100,
       interventionId,
       userName: user.name,
     }));

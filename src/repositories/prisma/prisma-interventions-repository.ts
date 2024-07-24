@@ -11,6 +11,7 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
       include: {
         Site: true,
         Technician: true,
+        InvoiceToCustomer: true,
         Customer: {
           include: {
             project_managers: true,

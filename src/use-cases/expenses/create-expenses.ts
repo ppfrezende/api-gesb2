@@ -8,7 +8,7 @@ type ExpenseData = {
   currency_quote: number;
   expense_value: number;
   total_converted: number;
-  technicianId: string;
+  technicianId?: string;
   interventionId?: string;
   userName: string;
 };

@@ -91,6 +91,27 @@ export class PrismaExpensesRepository implements ExpensesRepository {
     return expenses;
   }
 
+  async listManyTechExpenses(page: number) {
+    const expenses = await prisma.expense.findMany({
+      where: {
+        NOT: {
+          Technician: null,
+        },
+      },
+      take: 100,
+      skip: (page - 1) * 100,
+      include: {
+        Intervention: true,
+        Technician: true,
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+
+    return expenses;
+  }
+
   async createMany(data: Prisma.ExpenseCreateManyInput[]) {
     await prisma.expense.createMany({
       data,

@@ -1,9 +1,9 @@
 import { PrismaTimeSheetsDataRepository } from '@/repositories/prisma/prisma-timesheets-data-repository';
-import { DisconnectTimeSheetToIntertventionUseCase } from '../../../timesheets/timesheet-data/disconnect-timesheet-to-intervention';
+import { DisconnectTimeSheetToInterventionUseCase } from '../../../timesheets/timesheet-data/disconnect-timesheet-to-intervention';
 
-export function makeDisconnectTimeSheetToIntertventionUseCase() {
+export function makeDisconnectTimeSheetToInterventionUseCase() {
   const prismaTimeSheetDataRepository = new PrismaTimeSheetsDataRepository();
-  const useCase = new DisconnectTimeSheetToIntertventionUseCase(
+  const useCase = new DisconnectTimeSheetToInterventionUseCase(
     prismaTimeSheetDataRepository,
   );
 

@@ -66,48 +66,99 @@ export async function createTimeSheetData(
       userName: user.name,
     });
 
-    const dayHoursArray = day.map((item, index) => {
-      return {
-        day: new Date(convertDate(item.__EMPTY_1)),
-        departure: convertHourToDecimal(departure[index].__EMPTY_3),
-        arrival: convertHourToDecimal(arrival[index].__EMPTY_5),
-        rangeAfrom:
+    // const dayHoursArray = day.map((item, index) => {
+    //   return {
+    //     day: new Date(convertDate(item.__EMPTY_1)),
+    //     departure: convertHourToDecimal(departure[index].__EMPTY_3),
+    //     arrival: convertHourToDecimal(arrival[index].__EMPTY_5),
+    //     rangeAfrom:
+    //       rangeAfrom[index].__EMPTY_7 === '00:00h'
+    //         ? convertHourToDecimal('00:01h')
+    //         : convertHourToDecimal(rangeAfrom[index].__EMPTY_7),
+    //     rangeAto: convertHourToDecimal(rangeAto[index].__EMPTY_8),
+    //     rangeBfrom: convertHourToDecimal(rangeBfrom[index].__EMPTY_10),
+    //     rangeBto: convertHourToDecimal(rangeBto[index].__EMPTY_12),
+    //     rangeCfrom: convertHourToDecimal(rangeCfrom[index].__EMPTY_13),
+    //     rangeCto: convertHourToDecimal(rangeCto[index].__EMPTY_14),
+    //     rangeDfrom: convertHourToDecimal(rangeDfrom[index].__EMPTY_15),
+    //     rangeDto: convertHourToDecimal(rangeDto[index].__EMPTY_17),
+    //     isOffshore:
+    //       on_offshore[index].__EMPTY_25 === 'OffShore'
+    //         ? true
+    //         : on_offshore[index].__EMPTY_25 === 'OnShore'
+    //         ? false
+    //         : undefined,
+    //     technicianId: technicianId,
+    //     timeSheetDataId: timesheetdata.id!,
+    //   };
+    // });
+
+    const dayHoursArray = day
+      .map((item, index) => {
+        const departureDecimal = convertHourToDecimal(
+          departure[index].__EMPTY_3,
+        );
+        const arrivalDecimal = convertHourToDecimal(arrival[index].__EMPTY_5);
+        const rangeAfromDecimal =
           rangeAfrom[index].__EMPTY_7 === '00:00h'
             ? convertHourToDecimal('00:01h')
-            : convertHourToDecimal(rangeAfrom[index].__EMPTY_7),
-        rangeAto: convertHourToDecimal(rangeAto[index].__EMPTY_8),
-        rangeBfrom: convertHourToDecimal(rangeBfrom[index].__EMPTY_10),
-        rangeBto: convertHourToDecimal(rangeBto[index].__EMPTY_12),
-        rangeCfrom: convertHourToDecimal(rangeCfrom[index].__EMPTY_13),
-        rangeCto: convertHourToDecimal(rangeCto[index].__EMPTY_14),
-        rangeDfrom: convertHourToDecimal(rangeDfrom[index].__EMPTY_15),
-        rangeDto: convertHourToDecimal(rangeDto[index].__EMPTY_17),
-        isOffshore:
-          on_offshore[index].__EMPTY_25 === 'OffShore'
-            ? true
-            : on_offshore[index].__EMPTY_25 === 'OnShore'
-            ? false
-            : undefined,
-        technicianId: technicianId,
-        timeSheetDataId: timesheetdata.id!,
-      };
-    });
+            : convertHourToDecimal(rangeAfrom[index].__EMPTY_7);
+        const rangeAtoDecimal = convertHourToDecimal(rangeAto[index].__EMPTY_8);
+        const rangeBfromDecimal = convertHourToDecimal(
+          rangeBfrom[index].__EMPTY_10,
+        );
+        const rangeBtoDecimal = convertHourToDecimal(
+          rangeBto[index].__EMPTY_12,
+        );
+        const rangeCfromDecimal = convertHourToDecimal(
+          rangeCfrom[index].__EMPTY_13,
+        );
+        const rangeCtoDecimal = convertHourToDecimal(
+          rangeCto[index].__EMPTY_14,
+        );
+        const rangeDfromDecimal = convertHourToDecimal(
+          rangeDfrom[index].__EMPTY_15,
+        );
+        const rangeDtoDecimal = convertHourToDecimal(
+          rangeDto[index].__EMPTY_17,
+        );
 
-    // let departureDay = null;
-    // for (const item of dayHoursArray) {
-    //   if (item.departure !== null) {
-    //     departureDay = item.day;
-    //     break;
-    //   }
-    // }
-
-    // let arrivalDay = null;
-    // for (const item of dayHoursArray) {
-    //   if (item.arrival !== null) {
-    //     arrivalDay = item.day;
-    //     break;
-    //   }
-    // }
+        return {
+          day: new Date(convertDate(item.__EMPTY_1)),
+          departure: departureDecimal,
+          arrival: arrivalDecimal,
+          rangeAfrom: rangeAfromDecimal,
+          rangeAto: rangeAtoDecimal,
+          rangeBfrom: rangeBfromDecimal,
+          rangeBto: rangeBtoDecimal,
+          rangeCfrom: rangeCfromDecimal,
+          rangeCto: rangeCtoDecimal,
+          rangeDfrom: rangeDfromDecimal,
+          rangeDto: rangeDtoDecimal,
+          isOffshore:
+            on_offshore[index].__EMPTY_25 === 'OffShore'
+              ? true
+              : on_offshore[index].__EMPTY_25 === 'OnShore'
+              ? false
+              : undefined,
+          technicianId: technicianId,
+          timeSheetDataId: timesheetdata.id!,
+        };
+      })
+      .filter((item) => {
+        return !(
+          item.departure === null &&
+          item.arrival === null &&
+          item.rangeAfrom === null &&
+          item.rangeAto === null &&
+          item.rangeBfrom === null &&
+          item.rangeBto === null &&
+          item.rangeCfrom === null &&
+          item.rangeCto === null &&
+          item.rangeDfrom === null &&
+          item.rangeDto === null
+        );
+      });
 
     const updatedTimeSheetData = await updateTimeSheetData.execute({
       timesheetdataId: timesheetdata.id!,

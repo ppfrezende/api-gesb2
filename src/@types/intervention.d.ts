@@ -43,14 +43,14 @@ interface PurchaseOrder {
   factor_holiday_offshore: number;
   factor_night_onshore: number;
   factor_night_offshore: number;
-  factor_over_xd: number;
+  over_days: number;
   time_onshore: string;
   time_offshore: string;
   time_travel: string;
   isMonthly: boolean;
   whatsCalendar: string;
   currency: string;
-  adictional: number;
+  expense_administration_tax: number;
   created_at: string;
   userName: string;
   skills: Skill[];

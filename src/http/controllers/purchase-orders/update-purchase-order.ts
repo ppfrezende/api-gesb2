@@ -18,14 +18,14 @@ export async function updatePurchaseOrder(
     factor_holiday_offshore: z.number().optional(),
     factor_night_onshore: z.number().optional(),
     factor_night_offshore: z.number().optional(),
-    factor_over_xd: z.number().optional(),
+    over_days: z.number().optional(),
     time_onshore: z.string().optional(),
     time_offshore: z.string().optional(),
     time_travel: z.string().optional(),
     isMonthly: z.boolean().optional(),
     whatsCalendar: z.string().optional(),
     currency: z.string().optional(),
-    adictional: z.number().optional(),
+    expense_administration_tax: z.number().optional(),
   });
 
   const updatePurchaseOrderQuerySchema = z.object({
@@ -43,14 +43,14 @@ export async function updatePurchaseOrder(
     factor_holiday_offshore,
     factor_night_onshore,
     factor_night_offshore,
-    factor_over_xd,
+    over_days,
     time_onshore,
     time_offshore,
     time_travel,
     isMonthly,
     whatsCalendar,
     currency,
-    adictional,
+    expense_administration_tax,
   } = updatePurchaseOrderBodySchema.parse(request.body);
 
   const { purchaseOrderId } = updatePurchaseOrderQuerySchema.parse(
@@ -73,14 +73,14 @@ export async function updatePurchaseOrder(
         factor_holiday_offshore,
         factor_night_onshore,
         factor_night_offshore,
-        factor_over_xd,
+        over_days,
         time_onshore,
         time_offshore,
         time_travel,
         isMonthly,
         whatsCalendar,
         currency,
-        adictional,
+        expense_administration_tax,
       },
     });
     return reply.status(201).send(updatedPurchaseOrder);

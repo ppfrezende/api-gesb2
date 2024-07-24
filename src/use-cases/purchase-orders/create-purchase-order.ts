@@ -13,14 +13,14 @@ interface CreatePurchaseOrderUseCaseRequest {
   factor_holiday_offshore: number;
   factor_night_onshore: number;
   factor_night_offshore: number;
-  factor_over_xd: number;
+  over_days: number;
   time_onshore: string;
   time_offshore: string;
   time_travel: string;
   isMonthly: boolean;
   whatsCalendar: string;
   currency: string;
-  adictional: number;
+  expense_administration_tax: number;
   userName: string;
 }
 
@@ -42,14 +42,14 @@ export class CreatePurchaseOrderUseCase {
     factor_holiday_offshore,
     factor_night_onshore,
     factor_night_offshore,
-    factor_over_xd,
+    over_days,
     time_onshore,
     time_offshore,
     time_travel,
     isMonthly,
     whatsCalendar,
     currency,
-    adictional,
+    expense_administration_tax,
     userName,
   }: CreatePurchaseOrderUseCaseRequest): Promise<CreatePurchaseOrderUseCaseResponse> {
     const purchaseWithSameName = await this.purchaseOrderRepository.findByName(
@@ -71,14 +71,14 @@ export class CreatePurchaseOrderUseCase {
       factor_holiday_offshore,
       factor_night_onshore,
       factor_night_offshore,
-      factor_over_xd,
+      over_days,
       time_onshore,
       time_offshore,
       time_travel,
       isMonthly,
       whatsCalendar,
       currency,
-      adictional,
+      expense_administration_tax,
       userName,
     });
 

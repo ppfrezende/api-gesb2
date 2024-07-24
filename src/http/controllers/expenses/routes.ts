@@ -8,6 +8,7 @@ import { deleteExpense } from './delete-expense';
 import { getExpensesByTechId } from './get-expenses-by-tech-id';
 import { getExpensesByInterventionId } from './get-expenses-by-intervention-id';
 import { getAllExpenses } from './get-expenses';
+import { getAllTechExpenses } from './get-all-tech-expenses';
 
 export async function expensesRoutes(app: FastifyInstance) {
   app.post(
@@ -40,6 +41,17 @@ export async function expensesRoutes(app: FastifyInstance) {
       onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     getExpensesByTechId,
+  );
+
+  app.get(
+    '/technician/expenses',
+    {
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE', 'RH']),
+      ],
+    },
+    getAllTechExpenses,
   );
 
   app.get(

@@ -20,4 +20,9 @@ export interface TimeSheetsDataRepository {
     interventionId: string,
   ): Promise<void>;
   disconnectToIntervention(timesheetId: string): Promise<void>;
+  connectToInvoiceToCustomer(
+    timesheetId: string,
+    invoiceToCustomerId: string,
+  ): Promise<void>;
+  disconnectToInvoiceToCustomer(timesheetId: string): Promise<void>;
 }

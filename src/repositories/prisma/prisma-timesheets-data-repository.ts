@@ -51,6 +51,37 @@ export class PrismaTimeSheetsDataRepository
     });
   }
 
+  async connectToInvoiceToCustomer(
+    timesheetId: string,
+    invoiceToCustomerId: string,
+  ): Promise<void> {
+    await prisma.timeSheetData.update({
+      where: {
+        id: timesheetId,
+      },
+      data: {
+        InvoiceToCustomer: {
+          connect: {
+            id: invoiceToCustomerId,
+          },
+        },
+      },
+    });
+  }
+
+  async disconnectToInvoiceToCustomer(timesheetId: string): Promise<void> {
+    await prisma.timeSheetData.update({
+      where: {
+        id: timesheetId,
+      },
+      data: {
+        InvoiceToCustomer: {
+          disconnect: true,
+        },
+      },
+    });
+  }
+
   async listManyByTechnicianId(
     technicianId: string,
     page: number,

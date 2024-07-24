@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
-import { makeDisconnectTimeSheetToIntertventionUseCase } from '@/use-cases/_factories/timesheets_factories/timesheetdata_factories/make-disconnect-timesheet-to-intervention-use-case';
+import { makeDisconnectTimeSheetToInterventionUseCase } from '@/use-cases/_factories/timesheets_factories/timesheetdata_factories/make-disconnect-timesheet-to-intervention-use-case';
 
 export async function disconnectTimesheetToIntervention(
   request: FastifyRequest,
@@ -16,7 +16,7 @@ export async function disconnectTimesheetToIntervention(
 
   try {
     const disconnectTimesheetToInterventionUseCase =
-      makeDisconnectTimeSheetToIntertventionUseCase();
+      makeDisconnectTimeSheetToInterventionUseCase();
 
     await disconnectTimesheetToInterventionUseCase.execute({
       timesheetdataId,

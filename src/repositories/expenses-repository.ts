@@ -13,6 +13,7 @@ export interface ExpensesRepository {
     page: number,
   ): Promise<Expense[]>;
   listMany(page: number): Promise<Expense[]>;
+  listManyTechExpenses(page: number): Promise<Expense[]>;
   createMany(data: Prisma.ExpenseCreateManyInput[]): Promise<void>;
   delete(id: string): Promise<unknown>;
   deleteMany(interventionId: string): Promise<unknown>;
