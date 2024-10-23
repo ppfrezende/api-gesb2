@@ -16,14 +16,15 @@ export async function getEmployeesList(
   try {
     const getEmployeesListUseCase = makeGetEmployeesListUserCase();
 
-    const { employees, numberOfRegisters } =
+    const { employees, numberOfRegisters, totalCount } =
       await getEmployeesListUseCase.execute({
         page,
       });
 
     return reply
       .status(200)
-      .headers({ 'x-total-count': numberOfRegisters })
+      .headers({ 'x-total-count': totalCount })
+      .headers({ 'x-page-count': numberOfRegisters })
 
       .send({ employees });
   } catch (err) {

@@ -8,23 +8,24 @@ export async function searchSites(
   reply: FastifyReply,
 ) {
   const searchSitesQuerySchema = z.object({
-    q: z.string(),
+    q: z.string().nonempty(),
     page: z.coerce.number().min(1).default(1),
   });
 
-  const { q, page } = searchSitesQuerySchema.parse(request.params);
+  const { q, page } = searchSitesQuerySchema.parse(request.query);
 
   try {
     const searchSites = makeSearchSitesUseCase();
 
-    const sites = await searchSites.execute({
+    const { numberOfRegisters, sites } = await searchSites.execute({
       query: q,
       page,
     });
 
-    return reply.status(201).send({
-      sites,
-    });
+    return reply
+      .status(201)
+      .headers({ 'x-total-count': numberOfRegisters })
+      .send({ sites });
   } catch (err) {
     if (err instanceof ResourceNotFoundError) {
       return reply.status(409).send({ message: err.message });

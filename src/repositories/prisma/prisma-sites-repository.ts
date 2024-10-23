@@ -19,8 +19,18 @@ export class PrismaSitesRepository implements SitesRepository {
 
   async listMany(page: number) {
     const sites = await prisma.site.findMany({
-      take: 100,
-      skip: (page - 1) * 100,
+      take: 10,
+      skip: (page - 1) * 10,
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+
+    return sites;
+  }
+
+  async listAll() {
+    const sites = await prisma.site.findMany({
       orderBy: {
         created_at: 'desc',
       },
@@ -32,12 +42,35 @@ export class PrismaSitesRepository implements SitesRepository {
   async searchMany(query: string, page: number) {
     const sites = await prisma.site.findMany({
       where: {
-        description: {
-          contains: query,
-        },
+        OR: [
+          {
+            name: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+          {
+            description: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+          {
+            administrator_name: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+          {
+            operation_zone: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+        ],
       },
-      take: 100,
-      skip: (page - 1) * 100,
+      take: 10,
+      skip: (page - 1) * 10,
       orderBy: {
         created_at: 'desc',
       },

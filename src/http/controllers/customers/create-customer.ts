@@ -10,12 +10,25 @@ export async function createCustomer(
   reply: FastifyReply,
 ) {
   const createCustomerBodySchema = z.object({
-    name: z.string(),
-    project_managers: z.array(
-      z.object({
-        name: z.string(),
-      }),
-    ),
+    company_name: z.string(),
+    cnpj: z.string(),
+    cep: z.string(),
+    street: z.string(),
+    complement: z.string(),
+    city: z.string(),
+    uf: z.string(),
+    establishment_number: z.string(),
+    phone: z.string(),
+    project_managers: z
+      .array(
+        z.object({
+          name: z.string(),
+          email: z.string(),
+          job_title: z.string(),
+          phone: z.string(),
+        }),
+      )
+      .optional(),
   });
 
   const getUserProfile = makeGetUserProfileUseCase();
@@ -24,26 +37,48 @@ export async function createCustomer(
     userId: request.user.sub,
   });
 
-  const { name, project_managers } = createCustomerBodySchema.parse(
-    request.body,
-  );
+  const {
+    company_name,
+    cnpj,
+    cep,
+    city,
+    complement,
+    establishment_number,
+    phone,
+    street,
+    uf,
+    project_managers,
+  } = createCustomerBodySchema.parse(request.body);
 
   try {
     const createCustomer = makeCreateCustomerUseCase();
     const createProjectManager = makeCreateProjectManagerUseCase();
 
     const { customer } = await createCustomer.execute({
-      name,
+      company_name,
+      cnpj,
+      cep,
+      city,
+      complement,
+      establishment_number,
+      phone,
+      street,
+      uf,
       userName: user.name,
     });
 
-    for (const project_manager of project_managers) {
-      const { name } = project_manager;
+    if (project_managers) {
+      for (const project_manager of project_managers) {
+        const { name, email, job_title, phone } = project_manager;
 
-      await createProjectManager.execute({
-        customerId: customer.id,
-        name,
-      });
+        await createProjectManager.execute({
+          customerId: customer.id,
+          name,
+          email,
+          job_title,
+          phone,
+        });
+      }
     }
 
     return reply.status(201).send({

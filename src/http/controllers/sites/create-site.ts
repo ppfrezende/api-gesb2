@@ -6,7 +6,14 @@ import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories
 
 export async function createSite(request: FastifyRequest, reply: FastifyReply) {
   const createSiteBodySchema = z.object({
+    name: z.string(),
     description: z.string(),
+    operation_zone: z.string(),
+    emergency_phone: z.string(),
+    emergency_email: z.string(),
+    administrator_name: z.string(),
+    administrator_phone: z.string(),
+    administrator_email: z.string(),
     isOffshore: z.boolean(),
   });
 
@@ -16,13 +23,30 @@ export async function createSite(request: FastifyRequest, reply: FastifyReply) {
     userId: request.user.sub,
   });
 
-  const { description, isOffshore } = createSiteBodySchema.parse(request.body);
+  const {
+    name,
+    description,
+    operation_zone,
+    emergency_email,
+    emergency_phone,
+    administrator_email,
+    administrator_name,
+    administrator_phone,
+    isOffshore,
+  } = createSiteBodySchema.parse(request.body);
 
   try {
     const createSite = makeCreateSiteUseCase();
 
     const { site } = await createSite.execute({
+      name,
       description,
+      operation_zone,
+      emergency_email,
+      emergency_phone,
+      administrator_email,
+      administrator_name,
+      administrator_phone,
       isOffshore,
       userName: user.name,
     });

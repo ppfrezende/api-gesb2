@@ -20,6 +20,7 @@ interface RegisterServiceProviderUseCaseRequest {
   uf: string;
   job_title: string;
   userName: string;
+  skills: string;
 }
 
 interface RegisterServiceProviderUseCaseResponse {
@@ -47,6 +48,7 @@ export class RegisterServiceProviderUseCase {
     uf,
     job_title,
     userName,
+    skills,
   }: RegisterServiceProviderUseCaseRequest): Promise<RegisterServiceProviderUseCaseResponse> {
     const serviceProviderWithSameEmail =
       await this.serviceProviderRepository.findByEmail(email);
@@ -86,6 +88,7 @@ export class RegisterServiceProviderUseCase {
       uf,
       job_title,
       userName,
+      skills,
     });
 
     return {

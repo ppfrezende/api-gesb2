@@ -8,14 +8,32 @@ export async function updateCustomer(
   reply: FastifyReply,
 ) {
   const updateCustomerBodySchema = z.object({
-    name: z.string().optional(),
+    company_name: z.string().optional(),
+    cnpj: z.string().optional(),
+    cep: z.string().optional(),
+    street: z.string().optional(),
+    complement: z.string().optional(),
+    city: z.string().optional(),
+    uf: z.string().optional(),
+    establishment_number: z.string().optional(),
+    phone: z.string().optional(),
   });
 
   const updateCustomerQuerySchema = z.object({
     customerId: z.string(),
   });
 
-  const { name } = updateCustomerBodySchema.parse(request.body);
+  const {
+    company_name,
+    cnpj,
+    cep,
+    city,
+    complement,
+    establishment_number,
+    phone,
+    street,
+    uf,
+  } = updateCustomerBodySchema.parse(request.body);
 
   const { customerId } = updateCustomerQuerySchema.parse(request.params);
 
@@ -25,7 +43,15 @@ export async function updateCustomer(
     const updatedCustomer = await updateCustomer.execute({
       customerId: customerId,
       data: {
-        name,
+        company_name,
+        cnpj,
+        cep,
+        city,
+        complement,
+        establishment_number,
+        phone,
+        street,
+        uf,
       },
     });
 

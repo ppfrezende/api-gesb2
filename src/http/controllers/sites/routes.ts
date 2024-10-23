@@ -8,6 +8,7 @@ import { getSite } from './get-site';
 import { getSitesList } from './get-sites-list';
 import { deleteSite } from './delete-site';
 import { searchSites } from './search-site';
+import { getAllSitesList } from './get-all-sites';
 
 export async function sitesRoutes(app: FastifyInstance) {
   app.post(
@@ -32,6 +33,14 @@ export async function sitesRoutes(app: FastifyInstance) {
       onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     getSite,
+  );
+
+  app.get(
+    '/all-sites',
+    {
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+    },
+    getAllSitesList,
   );
 
   app.get(

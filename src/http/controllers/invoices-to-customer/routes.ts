@@ -8,14 +8,23 @@ import { updateIsApprovedInvoiceToCustomer } from './update-is-approved-invoice-
 import { getInvoiceToCustomer } from './get-invoice-to-customer';
 import { getApprovedInvoiceToCustomersList } from './get-approved-invoices-to-customer';
 import { getNotApprovedInvoiceToCustomersList } from './get-not-approved-invoices-to-customer';
+import { generateInvoiceToCustomerPDF } from './generate-invoice-to-customer-pdf';
 
 export async function invoicesToCustomerRoutes(app: FastifyInstance) {
   app.post(
     '/invoices-to-customer/:interventionId',
     {
       onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
-    },
+    },  
     createInvoiceToCustomer,
+  );
+
+  app.get(
+    '/invoices-to-customer/:interventionId/:invoiceToCustomerId',
+    {
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+    },
+    generateInvoiceToCustomerPDF,
   );
 
   app.get(

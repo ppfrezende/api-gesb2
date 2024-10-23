@@ -7,6 +7,7 @@ interface GetEmployeesUseCaseRequest {
 
 interface GetEmployeesUseCaseResponse {
   numberOfRegisters: string;
+  totalCount: string;
   employees: Employee[];
 }
 
@@ -17,16 +18,15 @@ export class GetEmployeesUseCase {
     page,
   }: GetEmployeesUseCaseRequest): Promise<GetEmployeesUseCaseResponse> {
     const employees = await this.employeesRepository.listMany(page);
-
-    employees.map((employee) => {
-      return employee;
-    });
+    const allEmployees = await this.employeesRepository.listAll();
 
     const numberOfRegisters = employees.length.toString();
+    const totalCount = allEmployees.length.toString();
 
     return {
       employees,
       numberOfRegisters,
+      totalCount,
     };
   }
 }

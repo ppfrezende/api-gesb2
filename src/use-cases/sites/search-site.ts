@@ -7,6 +7,7 @@ interface SearchSitesUseCaseRequest {
 }
 
 interface SearchSitesUseCaseResponse {
+  numberOfRegisters: string;
   sites: Site[] | null;
 }
 
@@ -19,7 +20,10 @@ export class SearchSitesUseCase {
   }: SearchSitesUseCaseRequest): Promise<SearchSitesUseCaseResponse> {
     const sites = await this.sitesRepository.searchMany(query, page);
 
+    const numberOfRegisters = sites.length.toString();
+
     return {
+      numberOfRegisters,
       sites,
     };
   }

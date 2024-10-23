@@ -5,6 +5,7 @@ export interface UsersRepository {
   findByEmail(email: string): Promise<User | null>;
   searchMany(query: string, page: number): Promise<User[]>;
   listMany(page: number): Promise<User[]>;
+  listAll(): Promise<User[]>;
   create(data: Prisma.UserCreateInput): Promise<User>;
   delete(id: string): Promise<void | null>;
   update(id: string, data: Prisma.UserUpdateInput): Promise<User | null>;

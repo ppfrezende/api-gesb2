@@ -2,9 +2,6 @@ import { CustomerProjectManager, Prisma } from '@prisma/client';
 
 export interface CustomerProjectManagersRepository {
   findById(id: string): Promise<CustomerProjectManager | null>;
-  findByCustomerId(
-    customerId: string,
-  ): Promise<CustomerProjectManager[] | null>;
   create(
     data: Prisma.CustomerProjectManagerUncheckedCreateInput,
   ): Promise<CustomerProjectManager>;

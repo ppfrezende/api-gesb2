@@ -16,14 +16,15 @@ export async function getInterventionsList(
   try {
     const getInterventionsListUseCase = makeGetInterventionsListUseCase();
 
-    const { interventions, numberOfRegisters } =
+    const { interventions, numberOfRegisters, totalCount } =
       await getInterventionsListUseCase.execute({
         page,
       });
 
     return reply
       .status(200)
-      .headers({ 'x-total-count': numberOfRegisters })
+      .headers({ 'x-page-count': numberOfRegisters })
+      .headers({ 'x-total-count': totalCount })
 
       .send({ interventions });
   } catch (err) {

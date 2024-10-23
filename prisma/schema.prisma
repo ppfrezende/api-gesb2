@@ -16,24 +16,25 @@ enum Role {
 }
 
 model User {
-  id                String              @id @default(uuid())
-  name              String              @unique
-  sector            String
-  email             String              @unique
-  password_hash     String
-  role              Role                @default(GUEST)
-  avatar            String?
-  created_at        DateTime            @default(now())
-  employees         Employee[]
-  service_providers ServiceProvider[]
-  purchase_orders   PurchaseOrder[]
-  sites             Site[]
-  technicians       Technician[]
-  customers         Customer[]
-  timesheetsdata    TimeSheetData[]
-  interventions     Intervention[]
-  expenses          Expense[]
-  InvoiceToCustomer InvoiceToCustomer[]
+  id                   String                @id @default(uuid())
+  name                 String                @unique
+  sector               String
+  email                String                @unique
+  password_hash        String
+  role                 Role                  @default(GUEST)
+  avatar               String?
+  created_at           DateTime              @default(now())
+  employees            Employee[]
+  service_providers    ServiceProvider[]
+  billing_orders       BillingOrder[]
+  sites                Site[]
+  technicians          Technician[]
+  customers            Customer[]
+  timesheetsdata       TimeSheetData[]
+  interventions        Intervention[]
+  interventionExpenses InterventionExpense[]
+  technicianExpenses   TechnicianExpense[]
+  invoicesToCustomer   InvoiceToCustomer[]
 
   @@map("users")
 }
@@ -54,6 +55,7 @@ model Employee {
   uf                  String
   job_title           String
   avatar              String?
+  skills              String?
   salary              Int
   created_at          DateTime @default(now())
   User                User?    @relation(fields: [userName], references: [name])
@@ -81,6 +83,7 @@ model ServiceProvider {
   uf                  String
   job_title           String
   avatar              String?
+  skills              String?
 
   created_at DateTime @default(now())
   User       User?    @relation(fields: [userName], references: [name])
@@ -95,13 +98,14 @@ model Technician {
   email               String              @unique
   job_title           String
   registration_number String?             @unique
+  skills              String?
   created_at          DateTime            @default(now())
   timesheetdata       TimeSheetData[]
   timesheetday        TimeSheetDay[]
   sites               Site[]
   interventions       Intervention[]
   TechSite            TechSite[]
-  expenses            Expense[]
+  technicianExpenses  TechnicianExpense[]
   invoicesToCustomer  InvoiceToCustomer[]
   User                User?               @relation(fields: [userName], references: [name])
   userName            String?
@@ -110,18 +114,24 @@ model Technician {
 }
 
 model Site {
-  id                 String              @id @default(uuid())
-  description        String
-  isOffshore         Boolean?            @default(false)
-  created_at         DateTime            @default(now())
-  User               User?               @relation(fields: [userName], references: [name])
-  userName           String?
-  technicians        Technician[]
-  timesheetsdata     TimeSheetData[]
-  TechSite           TechSite[]
-  invoicesToCustomer InvoiceToCustomer[]
-
-  interventions Intervention[]
+  id                  String              @id @default(uuid())
+  name                String
+  description         String?
+  operation_zone      String?
+  emergency_phone     String?
+  emergency_email     String?
+  administrator_name  String?
+  administrator_phone String?
+  administrator_email String?
+  isOffshore          Boolean?            @default(false)
+  created_at          DateTime            @default(now())
+  User                User?               @relation(fields: [userName], references: [name])
+  userName            String?
+  technicians         Technician[]
+  timesheetsdata      TimeSheetData[]
+  TechSite            TechSite[]
+  invoicesToCustomer  InvoiceToCustomer[]
+  interventions       Intervention[]
 
   @@map("sites")
 }
@@ -135,46 +145,37 @@ model TechSite {
   @@id([siteId, technicianId])
 }
 
-model PurchaseOrder {
+model BillingOrder {
   id                         String         @id @default(uuid())
-  name                       String         @unique
   description                String
-  factor_HE_onshore          Float?
-  factor_HE_offshore         Float?
-  factor_HN_onshore          Float?
-  factor_HN_offshore         Float?
-  factor_holiday_onshore     Float?
-  factor_holiday_offshore    Float?
-  factor_night_onshore       Float?
-  factor_night_offshore      Float?
+  isDoubled                  Boolean        @default(false)
   over_days                  Int?
-  time_onshore               String
-  time_offshore              String
-  time_travel                String
-  isMonthly                  Boolean
+  onshore_travel_hour_value  Int?           @default(0)
+  onshore_normal_hour_value  Int?           @default(0)
+  onshore_extra_hour_value   Int?           @default(0)
+  onshore_double_hour_value  Int?           @default(0)
+  onshore_night_hour_value   Int?           @default(0)
+  onshore_over_hour_value    Int?           @default(0)
+  offshore_travel_hour_value Int?           @default(0)
+  offshore_normal_hour_value Int?           @default(0)
+  offshore_extra_hour_value  Int?           @default(0)
+  offshore_double_hour_value Int?           @default(0)
+  offshore_night_hour_value  Int?           @default(0)
+  offshore_over_hour_value   Int?           @default(0)
+  max_hours_day_onshore      Int?
+  max_hours_day_offshore     Int?
+  max_hours_day_travel       Int?
   whatsCalendar              String
   currency                   String
   expense_administration_tax Int
   created_at                 DateTime       @default(now())
   User                       User?          @relation(fields: [userName], references: [name])
   userName                   String?
-  skills                     Skill[]
   interventions              Intervention[]
+  Customer                   Customer?      @relation(fields: [customerId], references: [id])
+  customerId                 String?
 
-  @@map("purchase_orders")
-}
-
-model Skill {
-  id                String         @id @default(uuid())
-  skill_description String
-  travel_hour       Int
-  normal_hour       Int
-  created_at        DateTime       @default(now())
-  PurchaseOrder     PurchaseOrder? @relation(fields: [id_PO], references: [id])
-  id_PO             String?
-  interventions     Intervention[]
-
-  @@map("skills")
+  @@map("billing_orders")
 }
 
 model TimeSheetDay {
@@ -227,11 +228,12 @@ model Intervention {
   id                            String                          @id @default(uuid())
   progressive                   String                          @unique
   intervention_number           String
-  po_number                     String
+  customer_po_number            String
   job_number                    String
-  isOffshore                    Boolean?                        @default(false)
+  isMonthly                     Boolean                         @default(false)
   initial_at                    DateTime?
   finished_at                   DateTime?
+  total_value                   Int?
   created_at                    DateTime                        @default(now())
   Technician                    Technician?                     @relation(fields: [technicianId], references: [id])
   technicianId                  String?
@@ -243,24 +245,68 @@ model Intervention {
   customerId                    String?
   CustomerProjectManager        CustomerProjectManager?         @relation(fields: [customerProjectManagerId], references: [id])
   customerProjectManagerId      String?
-  PurchaseOrder                 PurchaseOrder?                  @relation(fields: [purchaseOrderId], references: [id])
-  purchaseOrderId               String?
-  Skill                         Skill?                          @relation(fields: [skillId], references: [id])
-  skillId                       String?
-  expenses                      Expense[]
+  BillingOrder                  BillingOrder?                   @relation(fields: [billingOrderId], references: [id])
+  billingOrderId                String?
   timesheets                    TimeSheetData[]
-  InvoiceToCustomer             InvoiceToCustomer[]
+  invoicesToCustomer            InvoiceToCustomer[]
   InvoiceToCustomerIntervention InvoiceToCustomerIntervention[]
+  interventionExpenses          InterventionExpense[]
 
   @@map("interventions")
 }
 
+model InterventionExpense {
+  id              String        @id @default(uuid())
+  expense_date    DateTime      @default(now())
+  expense_type    String
+  description     String
+  currency        String
+  currency_quote  Int
+  expense_value   Int
+  total_converted Int
+  created_at      DateTime      @default(now())
+  Intervention    Intervention? @relation(fields: [interventionId], references: [id])
+  interventionId  String?
+  User            User?         @relation(fields: [userName], references: [name])
+  userName        String?
+
+  @@map("intervention_expenses")
+}
+
+model TechnicianExpense {
+  id              String   @id @default(uuid())
+  expense_date    DateTime @default(now())
+  expense_type    String
+  description     String
+  currency        String
+  currency_quote  Int
+  expense_value   Int
+  total_converted Int
+  created_at      DateTime @default(now())
+
+  User         User?       @relation(fields: [userName], references: [name])
+  userName     String?
+  Technician   Technician? @relation(fields: [technicianId], references: [id])
+  technicianId String?
+
+  @@map("technician_expenses")
+}
+
 model Customer {
-  id         String   @id @default(uuid())
-  name       String
-  created_at DateTime @default(now())
+  id                   String   @id @default(uuid())
+  company_name         String
+  cnpj                 String   @unique
+  phone                String?
+  cep                  String?
+  street               String?
+  establishment_number String?
+  complement           String?
+  city                 String?
+  uf                   String?
+  created_at           DateTime @default(now())
 
   project_managers   CustomerProjectManager[]
+  billing_orders     BillingOrder[]
   interventions      Intervention[]
   timesheetsdata     TimeSheetData[]
   invoicesToCustomer InvoiceToCustomer[]
@@ -273,6 +319,9 @@ model Customer {
 model CustomerProjectManager {
   id         String   @id @default(uuid())
   name       String
+  job_title  String?
+  phone      String?
+  email      String?
   created_at DateTime @default(now())
 
   interventions Intervention[]
@@ -282,31 +331,12 @@ model CustomerProjectManager {
   @@map("customer_project_managers")
 }
 
-model Expense {
-  id              String        @id @default(uuid())
-  expense_date    DateTime      @default(now())
-  expense_type    String
-  description     String
-  currency        String
-  currency_quote  Int
-  expense_value   Int
-  total_converted Int
-  created_at      DateTime      @default(now())
-  Intervention    Intervention? @relation(fields: [interventionId], references: [id])
-  interventionId  String?
-  Technician      Technician?   @relation(fields: [technicianId], references: [id])
-  technicianId    String?
-  User            User?         @relation(fields: [userName], references: [name])
-  userName        String?
-
-  @@map("expenses")
-}
-
 model InvoiceToCustomer {
   id                            String                          @id @default(uuid())
   isDolarInvoice                Boolean                         @default(false)
-  invoice_currency_quote        Int?
-  final_total                   Int?
+  invoice_currency_quote        Int                             @default(1)
+  total_value                   Int?
+  total_value_in_dollar         Int?
   isApproved                    Boolean                         @default(false)
   timesheetsdata                TimeSheetData[]
   Intervention                  Intervention?                   @relation(fields: [interventionId], references: [id])

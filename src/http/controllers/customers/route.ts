@@ -7,6 +7,8 @@ import { getCustomersList } from './get-customers-list';
 import { deleteCustomer } from './delete-customer';
 import { updateCustomer } from './update-customer';
 import { getCustomer } from './get-customer';
+import { searchCustomers } from './search-customers';
+import { getAllCustomersList } from './get-all-customers';
 
 export async function customersRoutes(app: FastifyInstance) {
   app.post(
@@ -26,11 +28,25 @@ export async function customersRoutes(app: FastifyInstance) {
   );
 
   app.get(
+    '/all-customers',
+    {
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+    },
+    getAllCustomersList,
+  );
+
+  app.get(
     '/customers/:customerId',
     {
       onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },
     getCustomer,
+  );
+
+  app.get(
+    '/customers/search',
+    { onRequest: [verifyJWT, verifyUserRole(['ADMIN'])] },
+    searchCustomers,
   );
 
   app.put(

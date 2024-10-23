@@ -15,7 +15,7 @@ export class PrismaTechniciansRepository implements TechniciansRepository {
             first_date: 'asc',
           },
         },
-        expenses: {
+        technicianExpenses: {
           orderBy: {
             expense_date: 'desc',
           },
@@ -35,10 +35,22 @@ export class PrismaTechniciansRepository implements TechniciansRepository {
     return technician;
   }
 
+  async findByRegistrationNumber(
+    registration_number: string,
+  ): Promise<Technician | null> {
+    const technician = await prisma.technician.findUnique({
+      where: {
+        registration_number,
+      },
+    });
+
+    return technician;
+  }
+
   async listMany(page: number) {
     const technicians = await prisma.technician.findMany({
-      take: 100,
-      skip: (page - 1) * 100,
+      take: 10,
+      skip: (page - 1) * 10,
       orderBy: {
         created_at: 'desc',
       },
@@ -47,15 +59,47 @@ export class PrismaTechniciansRepository implements TechniciansRepository {
     return technicians;
   }
 
+  async listAll() {
+    const technicians = await prisma.technician.findMany();
+
+    return technicians;
+  }
+
   async searchMany(query: string, page: number) {
     const technicians = await prisma.technician.findMany({
       where: {
-        name: {
-          contains: query,
-        },
+        OR: [
+          {
+            name: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+          {
+            email: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+          {
+            job_title: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+          {
+            skills: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+        ],
       },
-      take: 100,
-      skip: (page - 1) * 100,
+      take: 10,
+      skip: (page - 1) * 10,
+      orderBy: {
+        created_at: 'desc',
+      },
     });
 
     return technicians;

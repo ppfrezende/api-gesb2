@@ -7,6 +7,7 @@ interface GetServiceProvidersUseCaseRequest {
 
 interface GetServiceProvidersUseCaseResponse {
   numberOfRegisters: string;
+  totalCount: string;
   service_providers: ServiceProvider[];
 }
 
@@ -19,16 +20,15 @@ export class GetServiceProvidersUseCase {
     const service_providers = await this.serviceProvidersRepository.listMany(
       page,
     );
-
-    service_providers.map((employee) => {
-      return employee;
-    });
+    const allServiceProviders = await this.serviceProvidersRepository.listAll();
 
     const numberOfRegisters = service_providers.length.toString();
+    const totalCount = allServiceProviders.length.toString();
 
     return {
       service_providers,
       numberOfRegisters,
+      totalCount,
     };
   }
 }

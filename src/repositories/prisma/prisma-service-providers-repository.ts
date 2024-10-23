@@ -59,8 +59,18 @@ export class PrismaServiceProvidersRepository
 
   async listMany(page: number) {
     const service_providers = await prisma.serviceProvider.findMany({
-      take: 100,
-      skip: (page - 1) * 100,
+      take: 10,
+      skip: (page - 1) * 10,
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+
+    return service_providers;
+  }
+
+  async listAll() {
+    const service_providers = await prisma.serviceProvider.findMany({
       orderBy: {
         created_at: 'desc',
       },
@@ -75,9 +85,21 @@ export class PrismaServiceProvidersRepository
         name: {
           contains: query,
         },
+        email: {
+          contains: query,
+        },
+        job_title: {
+          contains: query,
+        },
+        cpf: {
+          contains: query,
+        },
+        skills: {
+          contains: query,
+        },
       },
-      take: 100,
-      skip: (page - 1) * 100,
+      take: 10,
+      skip: (page - 1) * 10,
       orderBy: {
         created_at: 'desc',
       },

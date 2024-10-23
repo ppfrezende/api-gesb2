@@ -12,17 +12,17 @@ export async function createIntervention(
   const createInterventionBodySchema = z.object({
     progressive: z.string(),
     intervention_number: z.string(),
-    po_number: z.string(),
+    customer_po_number: z.string(),
     job_number: z.string(),
-    isOffshore: z.boolean(),
+    isMonthly: z.boolean(),
     initial_at: z.coerce.date(),
     finished_at: z.coerce.date().or(z.string().max(0)),
     technicianId: z.string(),
     siteId: z.string(),
     customerId: z.string(),
     customerProjectManagerId: z.string(),
-    purchaseOrderId: z.string(),
-    skillId: z.string(),
+    billingOrderId: z.string().nullable(),
+    total_value: z.number().nullable(),
   });
 
   const getUserProfile = makeGetUserProfileUseCase();
@@ -34,17 +34,17 @@ export async function createIntervention(
   const {
     progressive,
     intervention_number,
-    po_number,
+    customer_po_number,
     job_number,
-    isOffshore,
+    isMonthly,
     initial_at,
     finished_at,
     technicianId,
     siteId,
     customerId,
     customerProjectManagerId,
-    purchaseOrderId,
-    skillId,
+    billingOrderId,
+    total_value,
   } = createInterventionBodySchema.parse(request.body);
 
   try {
@@ -65,17 +65,17 @@ export async function createIntervention(
     const { intervention } = await createIntervention.execute({
       progressive,
       intervention_number,
-      po_number,
+      customer_po_number,
       job_number,
-      isOffshore,
+      isMonthly,
       initial_at,
       finished_at,
       technicianId,
       siteId,
       customerId,
       customerProjectManagerId,
-      purchaseOrderId,
-      skillId,
+      billingOrderId,
+      total_value,
       userName: user.name,
     });
 
@@ -83,7 +83,6 @@ export async function createIntervention(
       intervention,
     });
   } catch (err) {
-    console.log(err);
     if (err instanceof ResourceAlreadyExists) {
       return reply.status(409).send({ message: err.message });
     }

@@ -16,14 +16,17 @@ export async function getTechniciansList(
   try {
     const getTechniciansListUseCase = makeGetTechniciansListUseCase();
 
-    const { technicians, numberOfRegisters } =
+    const { technicians, numberOfRegisters, totalCount } =
       await getTechniciansListUseCase.execute({
         page,
       });
 
     return reply
       .status(200)
-      .headers({ 'x-total-count': numberOfRegisters })
+      .headers({
+        'x-total-count': totalCount,
+        'x-page-count': numberOfRegisters,
+      })
 
       .send({ technicians });
   } catch (err) {

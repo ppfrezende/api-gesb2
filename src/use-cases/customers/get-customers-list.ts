@@ -7,6 +7,7 @@ interface GetCustomersListUseCaseRequest {
 
 interface GetCustomersListUseCaseResponse {
   numberOfRegisters: string;
+  totalCount: string;
   customers: Customer[] | null;
 }
 
@@ -17,16 +18,15 @@ export class GetCustomersListUseCase {
     page,
   }: GetCustomersListUseCaseRequest): Promise<GetCustomersListUseCaseResponse> {
     const customers = await this.customersRepository.listMany(page);
-
-    customers.map((customer) => {
-      return customer;
-    });
+    const allCustomers = await this.customersRepository.listAll();
 
     const numberOfRegisters = customers.length.toString();
+    const totalCount = allCustomers.length.toString();
 
     return {
       numberOfRegisters,
       customers,
+      totalCount,
     };
   }
 }

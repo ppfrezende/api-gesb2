@@ -174,7 +174,7 @@ export async function calculateInvoiceToCustomerData(
   const totalTraveledHoursValue =
     intervention.Skill.travel_hour * traveledHours * 24 * 100;
 
-  const totalExpenses = intervention.expenses.reduce(
+  const totalExpenses = intervention.interventionExpenses.reduce(
     (acc, expense) => acc + expense.total_converted,
     0,
   );
@@ -191,8 +191,11 @@ export async function calculateInvoiceToCustomerData(
     totalWorkedNightHoursValue +
     totalTraveledHoursValue;
 
-  const total = isDolarInvoice ? sumTotal * invoice_currency_quote : sumTotal;
-  const final_total = Math.floor(total);
+  const calculatedTotal = isDolarInvoice
+    ? sumTotal / invoice_currency_quote
+    : sumTotal;
+  const total_value = Math.floor(sumTotal);
+  const total_value_in_dollar = Math.floor(calculatedTotal);
 
   return {
     traveledHours,
@@ -205,6 +208,7 @@ export async function calculateInvoiceToCustomerData(
     totalTraveledHoursValue,
     totalExpenses,
     expenseAdminCostValue,
-    final_total,
+    total_value,
+    total_value_in_dollar,
   };
 }

@@ -8,6 +8,7 @@ export interface EmployeesRepository {
     registration_number: string,
   ): Promise<Employee | null>;
   listMany(page: number): Promise<Employee[]>;
+  listAll(): Promise<Employee[]>;
   searchMany(query: string, page: number): Promise<Employee[]>;
   create(data: Prisma.EmployeeUncheckedCreateInput): Promise<Employee>;
   update(

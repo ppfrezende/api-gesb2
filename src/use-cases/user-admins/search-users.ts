@@ -19,8 +19,11 @@ export class SearchUsersUseCase {
   }: SearchUsersUseCaseRequest): Promise<SearchUsersUseCaseResponse> {
     const users = await this.usersRepository.searchMany(query, page);
 
-    return {
-      users,
-    };
+    users.map((user) => {
+      user.password_hash = 'NON-for-ur-bussines';
+      return user;
+    });
+
+    return { users };
   }
 }

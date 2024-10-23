@@ -25,10 +25,7 @@ export async function updateServiceProviderProfile(
     complement: z.string().optional(),
     city: z.string().optional(),
     uf: z.string().optional(),
-    contract_value: z.number().optional(),
-    normal_hour: z.number().optional(),
-    extra_hour: z.number().optional(),
-    day_hour: z.number().optional(),
+    skills: z.string().optional(),
   });
   const updateServiceProviderProfileQuerySchema = z.object({
     serviceProviderId: z.string(),
@@ -51,6 +48,7 @@ export async function updateServiceProviderProfile(
     complement,
     city,
     uf,
+    skills,
   } = updateServiceProviderBodySchema.parse(request.body);
 
   const { serviceProviderId } = updateServiceProviderProfileQuerySchema.parse(
@@ -81,6 +79,7 @@ export async function updateServiceProviderProfile(
         complement,
         city,
         uf,
+        skills,
       },
     });
 
@@ -91,6 +90,7 @@ export async function updateServiceProviderProfile(
         email,
         registration_number,
         job_title,
+        skills,
       },
     });
 

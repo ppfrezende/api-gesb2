@@ -11,7 +11,7 @@ export async function getSitesList(
     page: z.coerce.number().min(1).default(1),
   });
 
-  const { page } = getSitesListQuerySchema.parse(request.params);
+  const { page } = getSitesListQuerySchema.parse(request.query);
 
   try {
     const getSitesList = makeGetSitesListUseCase();
@@ -19,7 +19,7 @@ export async function getSitesList(
     const { numberOfRegisters, sites } = await getSitesList.execute({ page });
 
     return reply
-      .status(201)
+      .status(200)
       .headers({ 'x-total-count': numberOfRegisters })
       .send({ sites });
   } catch (err) {

@@ -11,19 +11,14 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
       include: {
         Site: true,
         Technician: true,
-        InvoiceToCustomer: true,
+        invoicesToCustomer: true,
         Customer: {
           include: {
             project_managers: true,
           },
         },
         CustomerProjectManager: true,
-        PurchaseOrder: {
-          include: {
-            skills: true,
-          },
-        },
-        Skill: true,
+        BillingOrder: true,
         timesheets: {
           include: {
             timesheetdays: {
@@ -36,7 +31,7 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
             created_at: 'asc',
           },
         },
-        expenses: {
+        interventionExpenses: {
           orderBy: {
             expense_date: 'asc',
           },
@@ -52,55 +47,17 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
       where: {
         progressive,
       },
-      include: {
-        Site: true,
-        Technician: true,
-        Customer: {
-          include: {
-            project_managers: true,
-          },
-        },
-        CustomerProjectManager: true,
-        PurchaseOrder: {
-          include: {
-            skills: true,
-          },
-        },
-        Skill: true,
-        timesheets: {
-          include: {
-            timesheetdays: {
-              orderBy: {
-                day: 'asc',
-              },
-            },
-          },
-        },
-        expenses: {
-          orderBy: {
-            expense_date: 'asc',
-          },
-        },
-      },
     });
 
     return intervention;
   }
 
-  async findByPO(purchaseOrderId?: string): Promise<Intervention | null> {
+  async findByBillingOrder(
+    billingOrderId?: string,
+  ): Promise<Intervention | null> {
     const intervention = await prisma.intervention.findFirst({
       where: {
-        purchaseOrderId,
-      },
-    });
-
-    return intervention;
-  }
-
-  async findBySkill(skillId?: string): Promise<Intervention | null> {
-    const intervention = await prisma.intervention.findFirst({
-      where: {
-        skillId,
+        billingOrderId,
       },
     });
 
@@ -151,25 +108,118 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
 
   async listMany(page: number) {
     const interventions = await prisma.intervention.findMany({
-      take: 100,
-      skip: (page - 1) * 100,
+      take: 10,
+      skip: (page - 1) * 10,
       include: {
         Site: true,
         Technician: true,
-        Customer: {
-          include: {
-            project_managers: true,
-          },
-        },
+        Customer: true,
         CustomerProjectManager: true,
-        PurchaseOrder: {
-          include: {
-            skills: true,
+        BillingOrder: true,
+        timesheets: true,
+        interventionExpenses: {
+          orderBy: {
+            expense_date: 'asc',
           },
         },
-        Skill: true,
+      },
+      orderBy: {
+        progressive: 'desc',
+      },
+    });
+
+    return interventions;
+  }
+
+  async listAll() {
+    const interventions = await prisma.intervention.findMany({
+      include: {
+        Site: true,
+        Technician: true,
+        Customer: true,
+        CustomerProjectManager: true,
+        BillingOrder: true,
         timesheets: true,
-        expenses: {
+        interventionExpenses: {
+          orderBy: {
+            expense_date: 'asc',
+          },
+        },
+      },
+      orderBy: {
+        progressive: 'desc',
+      },
+    });
+
+    return interventions;
+  }
+
+  async searchMany(query: string, page: number) {
+    const interventions = await prisma.intervention.findMany({
+      where: {
+        OR: [
+          {
+            progressive: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+          {
+            intervention_number: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+          {
+            customer_po_number: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+          {
+            Technician: {
+              name: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            },
+          },
+          {
+            Customer: {
+              company_name: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            },
+          },
+          {
+            CustomerProjectManager: {
+              name: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            },
+          },
+          {
+            BillingOrder: {
+              description: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            },
+          },
+        ],
+      },
+      take: 10,
+      skip: (page - 1) * 10,
+      include: {
+        Site: true,
+        Technician: true,
+        Customer: true,
+        CustomerProjectManager: true,
+        BillingOrder: true,
+        timesheets: true,
+        interventionExpenses: {
           orderBy: {
             expense_date: 'asc',
           },
@@ -191,12 +241,7 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
         Technician: true,
         Customer: true,
         CustomerProjectManager: true,
-        PurchaseOrder: {
-          include: {
-            skills: true,
-          },
-        },
-        Skill: true,
+        BillingOrder: true,
       },
     });
 
@@ -209,25 +254,19 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
         id,
       },
       data,
-      include: {
-        Site: true,
-        Technician: true,
-        Customer: true,
-        CustomerProjectManager: true,
-        PurchaseOrder: {
-          include: {
-            skills: true,
-          },
-        },
-        Skill: true,
-      },
     });
 
     return intervention;
   }
 
   async delete(id: string) {
-    await prisma.expense.deleteMany({
+    await prisma.interventionExpense.deleteMany({
+      where: {
+        interventionId: id,
+      },
+    });
+
+    await prisma.invoiceToCustomer.deleteMany({
       where: {
         interventionId: id,
       },

@@ -16,13 +16,17 @@ export async function getUsersList(
   try {
     const getUsersUseCase = makeGetUsersRepository();
 
-    const { users, numberOfRegisters } = await getUsersUseCase.execute({
-      page,
-    });
+    const { users, numberOfRegisters, totalCount } =
+      await getUsersUseCase.execute({
+        page,
+      });
 
     return reply
       .status(200)
-      .headers({ 'x-total-count': numberOfRegisters })
+      .headers({
+        'x-total-count': totalCount,
+        'x-page-count': numberOfRegisters,
+      })
 
       .send({ users });
   } catch (err) {

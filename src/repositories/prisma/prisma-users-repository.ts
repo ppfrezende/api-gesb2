@@ -6,12 +6,23 @@ export class PrismaUsersRepository implements UsersRepository {
   async searchMany(query: string, page: number) {
     const users = await prisma.user.findMany({
       where: {
-        name: {
-          contains: query,
-        },
+        OR: [
+          {
+            name: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+          {
+            email: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+        ],
       },
-      take: 100,
-      skip: (page - 1) * 100,
+      take: 10,
+      skip: (page - 1) * 10,
       orderBy: {
         created_at: 'desc',
       },
@@ -22,12 +33,18 @@ export class PrismaUsersRepository implements UsersRepository {
 
   async listMany(page: number) {
     const users = await prisma.user.findMany({
-      take: 100,
-      skip: (page - 1) * 100,
+      take: 10,
+      skip: (page - 1) * 10,
       orderBy: {
         created_at: 'desc',
       },
     });
+
+    return users;
+  }
+
+  async listAll() {
+    const users = await prisma.user.findMany();
 
     return users;
   }

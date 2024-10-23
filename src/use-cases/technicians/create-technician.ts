@@ -9,6 +9,7 @@ interface CreateTechnicianUseCaseRequest {
   job_title: string;
   registration_number: string;
   userName: string;
+  skills: string;
 }
 
 interface CreateTechnicianUseCaseResponse {
@@ -25,6 +26,7 @@ export class CreateTechnicianUseCase {
     job_title,
     registration_number,
     userName,
+    skills,
   }: CreateTechnicianUseCaseRequest): Promise<CreateTechnicianUseCaseResponse> {
     const techniciansWithSameEmail =
       await this.technicianRepository.findByEmail(email);
@@ -40,6 +42,7 @@ export class CreateTechnicianUseCase {
       job_title,
       registration_number,
       userName,
+      skills,
     });
 
     return {

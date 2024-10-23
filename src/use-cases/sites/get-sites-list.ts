@@ -18,10 +18,6 @@ export class GetSitesListUseCase {
   }: GetSitesListUseCaseRequest): Promise<GetSitesListUseCaseResponse> {
     const sites = await this.sitesRepository.listMany(page);
 
-    sites.map((site) => {
-      return site;
-    });
-
     const numberOfRegisters = sites.length.toString();
 
     return {

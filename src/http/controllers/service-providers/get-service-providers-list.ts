@@ -16,14 +16,15 @@ export async function getServiceProvidersList(
   try {
     const getServiceProvidersListUseCase = makeGetServiceProvidersListUseCase();
 
-    const { service_providers, numberOfRegisters } =
+    const { service_providers, numberOfRegisters, totalCount } =
       await getServiceProvidersListUseCase.execute({
         page,
       });
 
     return reply
       .status(200)
-      .headers({ 'x-total-count': numberOfRegisters })
+      .headers({ 'x-page-count': numberOfRegisters })
+      .headers({ 'x-total-count': totalCount })
 
       .send({ service_providers });
   } catch (err) {

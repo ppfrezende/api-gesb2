@@ -4,6 +4,8 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-get-user-profile';
 import { makeCreateTechnicianUseCase } from '@/use-cases/_factories/technicians_factories/make-create-technician-use-case';
+import { makeGetTechnicianByRegistrationNumberUseCase } from '@/use-cases/_factories/technicians_factories/make-get-technician-by-registration-number-use-case';
+import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
 
 export async function registerEmployee(
   request: FastifyRequest,
@@ -23,6 +25,7 @@ export async function registerEmployee(
     city: z.string(),
     uf: z.string(),
     job_title: z.string(),
+    skills: z.string(),
     salary: z.number(),
   });
 
@@ -47,11 +50,31 @@ export async function registerEmployee(
     uf,
     job_title,
     salary,
+    skills,
   } = registerEmployeeBodySchema.parse(request.body);
 
   try {
     const registerEmployee = makeRegisterEmployeeUseCase();
     const createTechnician = makeCreateTechnicianUseCase();
+    const getTechByRegistrationNumber =
+      makeGetTechnicianByRegistrationNumberUseCase();
+
+    let tech = null;
+
+    try {
+      const result = await getTechByRegistrationNumber.execute({
+        registration_number,
+      });
+      tech = result.technician;
+    } catch (err) {
+      if (!(err instanceof ResourceNotFoundError)) {
+        throw err;
+      }
+    }
+
+    if (tech) {
+      return reply.status(409).send({ message: 'Resource already exists' });
+    }
 
     const { employee } = await registerEmployee.execute({
       name,
@@ -69,6 +92,7 @@ export async function registerEmployee(
       salary,
       job_title,
       userName: user.name,
+      skills,
     });
 
     const { technician } = await createTechnician.execute({
@@ -78,6 +102,7 @@ export async function registerEmployee(
       job_title,
       registration_number,
       userName: user.name,
+      skills,
     });
 
     return reply.status(201).send({

@@ -46,8 +46,18 @@ export class PrismaEmployeesRepository implements EmployeesRepository {
 
   async listMany(page: number) {
     const employees = await prisma.employee.findMany({
-      take: 100,
-      skip: (page - 1) * 100,
+      take: 10,
+      skip: (page - 1) * 10,
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+
+    return employees;
+  }
+
+  async listAll() {
+    const employees = await prisma.employee.findMany({
       orderBy: {
         created_at: 'desc',
       },
@@ -62,9 +72,21 @@ export class PrismaEmployeesRepository implements EmployeesRepository {
         name: {
           contains: query,
         },
+        email: {
+          contains: query,
+        },
+        cpf: {
+          contains: query,
+        },
+        job_title: {
+          contains: query,
+        },
+        skills: {
+          contains: query,
+        },
       },
-      take: 100,
-      skip: (page - 1) * 100,
+      take: 10,
+      skip: (page - 1) * 10,
       orderBy: {
         created_at: 'desc',
       },

@@ -7,6 +7,7 @@ interface GetUsersUseCaseRequest {
 
 interface GetUsersUseCaseResponse {
   numberOfRegisters: string;
+  totalCount: string;
   users: User[];
 }
 
@@ -17,6 +18,7 @@ export class GetUsersUseCase {
     page,
   }: GetUsersUseCaseRequest): Promise<GetUsersUseCaseResponse> {
     const users = await this.usersRepository.listMany(page);
+    const allUsers = await this.usersRepository.listAll();
 
     users.map((user) => {
       user.password_hash = 'NON-for-ur-bussines';
@@ -24,10 +26,12 @@ export class GetUsersUseCase {
     });
 
     const numberOfRegisters = users.length.toString();
+    const totalCount = allUsers.length.toString();
 
     return {
       users,
       numberOfRegisters,
+      totalCount,
     };
   }
 }

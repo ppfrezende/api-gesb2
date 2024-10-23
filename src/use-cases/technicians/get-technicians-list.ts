@@ -7,6 +7,7 @@ interface GetTechniciansListUseCaseRequest {
 
 interface GetTechniciansListUseCaseResponse {
   numberOfRegisters: string;
+  totalCount: string;
   technicians: Technician[];
 }
 
@@ -17,16 +18,19 @@ export class GetTechniciansListUseCase {
     page,
   }: GetTechniciansListUseCaseRequest): Promise<GetTechniciansListUseCaseResponse> {
     const technicians = await this.techniciansRepository.listMany(page);
+    const allTechnicians = await this.techniciansRepository.listAll();
 
     technicians.map((technician) => {
       return technician;
     });
 
     const numberOfRegisters = technicians.length.toString();
+    const totalCount = allTechnicians.length.toString();
 
     return {
       technicians,
       numberOfRegisters,
+      totalCount,
     };
   }
 }

@@ -11,6 +11,7 @@ export class PrismaCustomersRepository implements CustomersRepository {
       include: {
         project_managers: true,
         interventions: true,
+        billing_orders: true,
       },
     });
 
@@ -21,9 +22,24 @@ export class PrismaCustomersRepository implements CustomersRepository {
     const customers = await prisma.customer.findMany({
       include: {
         project_managers: true,
+        billing_orders: true,
       },
-      take: 100,
-      skip: (page - 1) * 100,
+      take: 10,
+      skip: (page - 1) * 10,
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+
+    return customers;
+  }
+  async listAll() {
+    const customers = await prisma.customer.findMany({
+      include: {
+        project_managers: true,
+        billing_orders: true,
+      },
+
       orderBy: {
         created_at: 'desc',
       },
@@ -35,15 +51,49 @@ export class PrismaCustomersRepository implements CustomersRepository {
   async searchMany(query: string, page: number) {
     const customers = await prisma.customer.findMany({
       where: {
-        name: {
-          contains: query,
-        },
+        OR: [
+          {
+            company_name: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+          {
+            city: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+          {
+            uf: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+          {
+            street: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+          {
+            billing_orders: {
+              some: {
+                description: {
+                  contains: query,
+                  mode: 'insensitive',
+                },
+              },
+            },
+          },
+        ],
       },
       include: {
         project_managers: true,
+        billing_orders: true,
       },
-      take: 100,
-      skip: (page - 1) * 100,
+      take: 10,
+      skip: (page - 1) * 10,
       orderBy: {
         created_at: 'desc',
       },
@@ -78,12 +128,22 @@ export class PrismaCustomersRepository implements CustomersRepository {
       },
     });
 
+    const deleteBillingOrders = prisma.billingOrder.deleteMany({
+      where: {
+        customerId: id,
+      },
+    });
+
     const deleteCustomer = prisma.customer.delete({
       where: {
         id,
       },
     });
 
-    return prisma.$transaction([deleteProjectManagers, deleteCustomer]);
+    return prisma.$transaction([
+      deleteProjectManagers,
+      deleteBillingOrders,
+      deleteCustomer,
+    ]);
   }
 }

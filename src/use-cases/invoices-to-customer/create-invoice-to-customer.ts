@@ -4,7 +4,8 @@ import { InvoicesToCustomerRepository } from '@/repositories/invoices-to-custome
 interface CreateInvoiceToCustomerUseCaseRequest {
   isDolarInvoice: boolean;
   invoice_currency_quote: number;
-  final_total: number;
+  total_value: number;
+  total_value_in_dollar?: number;
   interventionId: string;
   technicianId: string;
   siteId: string;
@@ -24,7 +25,8 @@ export class CreateInvoiceToCustomerUseCase {
   async execute({
     isDolarInvoice,
     invoice_currency_quote,
-    final_total,
+    total_value,
+    total_value_in_dollar,
     interventionId,
     technicianId,
     siteId,
@@ -34,7 +36,8 @@ export class CreateInvoiceToCustomerUseCase {
     const invoiceToCustomer = await this.invoiceToCustomerRepository.create({
       isDolarInvoice,
       invoice_currency_quote,
-      final_total,
+      total_value,
+      total_value_in_dollar,
       interventionId,
       technicianId,
       siteId,

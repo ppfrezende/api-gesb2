@@ -5,17 +5,17 @@ import { ResourceAlreadyExists } from '../errors/resource-already-exists';
 interface CreateInterventionUseCaseRequest {
   progressive: string;
   intervention_number: string;
-  po_number: string;
+  customer_po_number: string;
   job_number: string;
-  isOffshore: boolean;
+  isMonthly: boolean;
   initial_at: Date;
   finished_at?: Date | string;
   technicianId: string;
   siteId: string;
   customerId: string;
   customerProjectManagerId: string;
-  purchaseOrderId: string;
-  skillId: string;
+  billingOrderId?: string | null;
+  total_value?: number | null;
   userName: string;
 }
 
@@ -29,17 +29,17 @@ export class CreateInterventionUseCase {
   async execute({
     progressive,
     intervention_number,
-    po_number,
+    customer_po_number,
     job_number,
-    isOffshore,
+    isMonthly,
     initial_at,
     finished_at,
     technicianId,
     siteId,
     customerId,
     customerProjectManagerId,
-    purchaseOrderId,
-    skillId,
+    billingOrderId,
+    total_value,
     userName,
   }: CreateInterventionUseCaseRequest): Promise<CreateInterventionUseCaseResponse> {
     const interventionWithSameProgressive =
@@ -52,17 +52,17 @@ export class CreateInterventionUseCase {
     const intervention = await this.interventionsRepository.create({
       progressive,
       intervention_number,
-      po_number,
+      customer_po_number,
       job_number,
-      isOffshore,
+      isMonthly,
       initial_at,
       finished_at,
       technicianId,
       siteId,
       customerId,
       customerProjectManagerId,
-      purchaseOrderId,
-      skillId,
+      billingOrderId,
+      total_value,
       userName,
     });
 

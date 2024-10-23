@@ -3,6 +3,9 @@ import { CustomerProjectManager } from '@prisma/client';
 
 interface CreateProjectManagerUseCaseRequest {
   name: string;
+  email: string;
+  job_title: string;
+  phone: string;
   customerId: string;
 }
 
@@ -17,11 +20,17 @@ export class CreateProjectManagerUseCase {
 
   async execute({
     name,
+    email,
+    job_title,
+    phone,
     customerId,
   }: CreateProjectManagerUseCaseRequest): Promise<CreateProjectManagerUseCaseResponse> {
     const project_manager = await this.customerProjectManagersRepository.create(
       {
         name,
+        email,
+        job_title,
+        phone,
         customerId,
       },
     );

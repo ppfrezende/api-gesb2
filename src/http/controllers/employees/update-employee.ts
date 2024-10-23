@@ -22,6 +22,7 @@ export async function updateEmployeeProfile(
     city: z.string().optional(),
     uf: z.string().optional(),
     job_title: z.string().optional(),
+    skills: z.string().optional(),
     salary: z.number().optional(),
   });
   const updateEmployeeProfileQuerySchema = z.object({
@@ -43,6 +44,7 @@ export async function updateEmployeeProfile(
     uf,
     job_title,
     salary,
+    skills,
   } = updateEmployeeBodySchema.parse(request.body);
 
   const { employeeId } = updateEmployeeProfileQuerySchema.parse(request.params);
@@ -68,6 +70,7 @@ export async function updateEmployeeProfile(
         uf,
         job_title,
         salary,
+        skills,
       },
     });
 
@@ -78,6 +81,7 @@ export async function updateEmployeeProfile(
         email,
         registration_number,
         job_title,
+        skills,
       },
     });
 

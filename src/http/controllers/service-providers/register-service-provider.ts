@@ -4,6 +4,8 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-get-user-profile';
 import { makeCreateTechnicianUseCase } from '@/use-cases/_factories/technicians_factories/make-create-technician-use-case';
+import { makeGetTechnicianByRegistrationNumberUseCase } from '@/use-cases/_factories/technicians_factories/make-get-technician-by-registration-number-use-case';
+import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
 
 export async function registerServiceProvider(
   request: FastifyRequest,
@@ -26,6 +28,7 @@ export async function registerServiceProvider(
     city: z.string(),
     job_title: z.string(),
     uf: z.string(),
+    skills: z.string(),
   });
 
   const getUserProfile = makeGetUserProfileUseCase();
@@ -51,11 +54,31 @@ export async function registerServiceProvider(
     city,
     uf,
     job_title,
+    skills,
   } = registerServiceProviderBodySchema.parse(request.body);
 
   try {
     const registerServiceProvider = makeRegisterServiceProviderUseCase();
     const createTechnician = makeCreateTechnicianUseCase();
+    const getTechByRegistrationNumber =
+      makeGetTechnicianByRegistrationNumberUseCase();
+
+    let tech = null;
+
+    try {
+      const result = await getTechByRegistrationNumber.execute({
+        registration_number,
+      });
+      tech = result.technician;
+    } catch (err) {
+      if (!(err instanceof ResourceNotFoundError)) {
+        throw err;
+      }
+    }
+
+    if (tech) {
+      return reply.status(409).send({ message: 'Resource already exists' });
+    }
 
     const { service_provider } = await registerServiceProvider.execute({
       name,
@@ -75,6 +98,7 @@ export async function registerServiceProvider(
       uf,
       job_title,
       userName: user.name,
+      skills,
     });
 
     const { technician } = await createTechnician.execute({
@@ -84,6 +108,7 @@ export async function registerServiceProvider(
       job_title,
       registration_number,
       userName: user.name,
+      skills,
     });
 
     return reply.status(201).send({

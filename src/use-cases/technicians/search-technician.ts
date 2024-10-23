@@ -8,6 +8,7 @@ interface SearchTechniciansUseCaseRequest {
 
 interface SearchTechniciansUseCaseResponse {
   technicians: Technician[];
+  numberOfRegisters: string;
 }
 
 export class SearchTechniciansUseCase {
@@ -22,8 +23,11 @@ export class SearchTechniciansUseCase {
       page,
     );
 
+    const numberOfRegisters = technicians.length.toString();
+
     return {
       technicians,
+      numberOfRegisters,
     };
   }
 }

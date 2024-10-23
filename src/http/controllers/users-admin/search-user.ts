@@ -23,10 +23,8 @@ export async function searchUsers(
     });
 
     return reply.status(200).send({
-      users: {
-        ...users,
-        password_hash: undefined,
-      },
+      ...users,
+      password_hash: undefined,
     });
   } catch (err) {
     if (err instanceof ResourceNotFoundError) {

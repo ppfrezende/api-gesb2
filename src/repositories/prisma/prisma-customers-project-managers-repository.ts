@@ -15,18 +15,6 @@ export class PrismaCustomerProjectManagersRepository
     return project_manager;
   }
 
-  async findByCustomerId(
-    customerId: string,
-  ): Promise<CustomerProjectManager[] | null> {
-    const project_managers = await prisma.customerProjectManager.findMany({
-      where: {
-        customerId: customerId,
-      },
-    });
-
-    return project_managers;
-  }
-
   async create(data: Prisma.CustomerProjectManagerUncheckedCreateInput) {
     const project_manager = await prisma.customerProjectManager.create({
       data,

@@ -7,6 +7,7 @@ interface GetInterventionsUseCaseRequest {
 
 interface GetInterventionsUseCaseResponse {
   numberOfRegisters: string;
+  totalCount: string;
   interventions: Intervention[];
 }
 
@@ -17,16 +18,15 @@ export class GetInterventionsListUseCase {
     page,
   }: GetInterventionsUseCaseRequest): Promise<GetInterventionsUseCaseResponse> {
     const interventions = await this.interventionsRepository.listMany(page);
-
-    interventions.map((intervention) => {
-      return intervention;
-    });
+    const totalOfInterventions = await this.interventionsRepository.listAll();
 
     const numberOfRegisters = interventions.length.toString();
+    const totalCount = totalOfInterventions.length.toString();
 
     return {
       interventions,
       numberOfRegisters,
+      totalCount,
     };
   }
 }

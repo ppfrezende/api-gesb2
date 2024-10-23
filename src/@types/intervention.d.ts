@@ -112,8 +112,8 @@ interface Expense {
   expense_value: number;
   total_converted: number;
   created_at: string;
-  interventionId: string;
-  technicianId: string;
+  interventionId?: string;
+  technicianId?: string;
   userName: string;
 }
 
@@ -141,5 +141,5 @@ export interface InterventionResponseData {
   PurchaseOrder: PurchaseOrder;
   Skill: Skill;
   timesheets: Timesheet[];
-  expenses: Expense[];
+  interventionExpenses: Expense[];
 }

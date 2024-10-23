@@ -13,16 +13,17 @@ export async function updateInterventions(
   const updateInterventionBodySchema = z.object({
     progressive: z.string().optional(),
     intervention_number: z.string().optional(),
-    po_number: z.string().optional(),
+    customer_po_number: z.string().optional(),
     job_number: z.string().optional(),
-    isOffshore: z.boolean().optional(),
+    isMonthly: z.boolean().optional(),
     initial_at: z.coerce.date().optional(),
     finished_at: z.coerce.date().or(z.string().max(0)).optional(),
     technicianId: z.string().optional(),
     siteId: z.string().optional(),
     customerId: z.string().optional(),
     customerProjectManagerId: z.string().optional(),
-    purchaseOrderId: z.string().optional(),
+    billingOrderId: z.string().optional(),
+    total_value: z.number().optional(),
   });
   const updateInterventionQuerySchema = z.object({
     interventionId: z.string(),
@@ -31,15 +32,16 @@ export async function updateInterventions(
   const {
     progressive,
     intervention_number,
-    po_number,
+    customer_po_number,
     job_number,
-    isOffshore,
+    isMonthly,
     initial_at,
     finished_at,
     technicianId,
     customerId,
     customerProjectManagerId,
-    purchaseOrderId,
+    billingOrderId,
+    total_value,
     siteId,
   } = updateInterventionBodySchema.parse(request.body);
 
@@ -101,16 +103,16 @@ export async function updateInterventions(
       data: {
         progressive,
         intervention_number,
-        po_number,
+        customer_po_number,
         job_number,
-        isOffshore,
+        isMonthly,
         initial_at,
         finished_at,
         technicianId,
-        siteId,
         customerId,
         customerProjectManagerId,
-        purchaseOrderId,
+        billingOrderId,
+        total_value,
       },
     });
 
