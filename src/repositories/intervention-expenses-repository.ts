@@ -8,6 +8,11 @@ export interface InterventionExpensesRepository {
     interventionId: string,
     page: number,
   ): Promise<InterventionExpense[]>;
+  totalAnualInterventionsExpensesValue(year: number): Promise<number>;
+  totalMonthlyInterventionsExpensesValue(
+    year: number,
+    month: number,
+  ): Promise<number>;
   createMany(data: Prisma.InterventionExpenseCreateManyInput[]): Promise<void>;
   delete(id: string): Promise<unknown>;
   deleteMany(interventionId: string): Promise<unknown>;

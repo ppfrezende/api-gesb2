@@ -59,7 +59,7 @@ export async function timeSheetsRoutes(app: FastifyInstance) {
     connectTimesheetToIntervention,
   );
   app.delete(
-    '/timesheet/:timesheetdataId/disconnect/',
+    '/timesheet/:timesheetdataId/disconnect/:interventionId',
     {
       onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
     },

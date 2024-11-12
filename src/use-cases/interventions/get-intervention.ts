@@ -1,5 +1,5 @@
 import { InterventionsRepository } from '@/repositories/interventions-repository';
-import { Intervention } from '@prisma/client';
+import { BillingOrder, Intervention, TimeSheetData } from '@prisma/client';
 import { ResourceNotFoundError } from '../errors/resource-not-found-error';
 
 interface GetInterventionUseCaseRequest {
@@ -7,7 +7,10 @@ interface GetInterventionUseCaseRequest {
 }
 
 interface GetInterventionUseCaseResponse {
-  intervention: Intervention;
+  intervention: Intervention & {
+    BillingOrder?: BillingOrder;
+    timesheets?: TimeSheetData[];
+  };
 }
 
 export class GetInterventionUseCase {

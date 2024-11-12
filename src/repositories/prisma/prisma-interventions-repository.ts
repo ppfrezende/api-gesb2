@@ -233,6 +233,51 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
     return interventions;
   }
 
+  async totalAnualInterventionsProfitValue(year: number) {
+    const totalAnualInterventionProfit = await prisma.intervention.aggregate({
+      _sum: {
+        total_value: true,
+      },
+      where: {
+        initial_at: {
+          gte: new Date(year, 0, 1),
+          lt: new Date(year + 1, 0, 1),
+        },
+      },
+    });
+
+    return totalAnualInterventionProfit._sum.total_value ?? 0;
+  }
+
+  async totalMonthlyInterventionsProfitValue(year: number, month: number) {
+    const totalMonthInterventionProfit = await prisma.intervention.aggregate({
+      _sum: {
+        total_value: true,
+      },
+      where: {
+        initial_at: {
+          gte: new Date(year, month - 1, 1),
+          lt: new Date(year, month, 1),
+        },
+      },
+    });
+
+    return totalMonthInterventionProfit._sum.total_value ?? 0;
+  }
+
+  async totalMonthlyInterventionsCount(year: number, month: number) {
+    const totalMonthInterventionCount = await prisma.intervention.count({
+      where: {
+        initial_at: {
+          gte: new Date(year, month - 1, 1),
+          lte: new Date(year, month, 1),
+        },
+      },
+    });
+
+    return totalMonthInterventionCount ?? 0;
+  }
+
   async create(data: Prisma.InterventionUncheckedCreateInput) {
     const intervention = await prisma.intervention.create({
       data,

@@ -60,6 +60,40 @@ export class PrismaInterventionExpensesRepository
     return interventionExpenses;
   }
 
+  async totalAnualInterventionsExpensesValue(year: number) {
+    const totalAnualInterventionExpenses =
+      await prisma.interventionExpense.aggregate({
+        _sum: {
+          expense_value: true,
+        },
+        where: {
+          expense_date: {
+            gte: new Date(year, 0, 1),
+            lt: new Date(year + 1, 0, 1),
+          },
+        },
+      });
+
+    return totalAnualInterventionExpenses._sum.expense_value ?? 0;
+  }
+
+  async totalMonthlyInterventionsExpensesValue(year: number, month: number) {
+    const totalMonthInterventionExpenses =
+      await prisma.interventionExpense.aggregate({
+        _sum: {
+          expense_value: true,
+        },
+        where: {
+          expense_date: {
+            gte: new Date(year, month - 1, 1),
+            lt: new Date(year, month, 1),
+          },
+        },
+      });
+
+    return totalMonthInterventionExpenses._sum.expense_value ?? 0;
+  }
+
   async createMany(data: Prisma.InterventionExpenseCreateManyInput[]) {
     await prisma.interventionExpense.createMany({
       data,

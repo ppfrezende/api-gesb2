@@ -48,6 +48,40 @@ export class PrismaTechnicianExpensesRepository
     return technicianExpenses;
   }
 
+  async totalAnualTechniciansExpensesValue(year: number) {
+    const totalAnualTechniciansExpenses =
+      await prisma.technicianExpense.aggregate({
+        _sum: {
+          expense_value: true,
+        },
+        where: {
+          expense_date: {
+            gte: new Date(year, 0, 1),
+            lt: new Date(year + 1, 0, 1),
+          },
+        },
+      });
+
+    return totalAnualTechniciansExpenses._sum.expense_value ?? 0;
+  }
+
+  async totalMonthlyTechniciansExpensesValue(year: number, month: number) {
+    const totalMonthTechniciansExpenses =
+      await prisma.technicianExpense.aggregate({
+        _sum: {
+          expense_value: true,
+        },
+        where: {
+          expense_date: {
+            gte: new Date(year, month - 1, 1),
+            lt: new Date(year, month, 1),
+          },
+        },
+      });
+
+    return totalMonthTechniciansExpenses._sum.expense_value ?? 0;
+  }
+
   async createMany(data: Prisma.TechnicianExpenseCreateManyInput[]) {
     await prisma.technicianExpense.createMany({
       data,

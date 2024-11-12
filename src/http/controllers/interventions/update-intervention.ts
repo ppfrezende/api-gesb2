@@ -15,15 +15,11 @@ export async function updateInterventions(
     intervention_number: z.string().optional(),
     customer_po_number: z.string().optional(),
     job_number: z.string().optional(),
-    isMonthly: z.boolean().optional(),
     initial_at: z.coerce.date().optional(),
     finished_at: z.coerce.date().or(z.string().max(0)).optional(),
     technicianId: z.string().optional(),
     siteId: z.string().optional(),
-    customerId: z.string().optional(),
     customerProjectManagerId: z.string().optional(),
-    billingOrderId: z.string().optional(),
-    total_value: z.number().optional(),
   });
   const updateInterventionQuerySchema = z.object({
     interventionId: z.string(),
@@ -34,14 +30,10 @@ export async function updateInterventions(
     intervention_number,
     customer_po_number,
     job_number,
-    isMonthly,
     initial_at,
     finished_at,
     technicianId,
-    customerId,
     customerProjectManagerId,
-    billingOrderId,
-    total_value,
     siteId,
   } = updateInterventionBodySchema.parse(request.body);
 
@@ -105,14 +97,10 @@ export async function updateInterventions(
         intervention_number,
         customer_po_number,
         job_number,
-        isMonthly,
         initial_at,
         finished_at,
         technicianId,
-        customerId,
         customerProjectManagerId,
-        billingOrderId,
-        total_value,
       },
     });
 

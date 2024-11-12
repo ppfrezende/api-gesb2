@@ -13,6 +13,12 @@ export interface InterventionsRepository {
   listMany(page: number): Promise<Intervention[]>;
   listAll(): Promise<Intervention[]>;
   searchMany(query: string, page: number): Promise<Intervention[]>;
+  totalAnualInterventionsProfitValue(year: number): Promise<number>;
+  totalMonthlyInterventionsProfitValue(
+    year: number,
+    month: number,
+  ): Promise<number>;
+  totalMonthlyInterventionsCount(year: number, month: number): Promise<number>;
   create(data: Prisma.InterventionUncheckedCreateInput): Promise<Intervention>;
   update(
     id: string,

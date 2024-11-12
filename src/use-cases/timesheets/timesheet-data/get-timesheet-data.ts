@@ -1,13 +1,13 @@
 import { TimeSheetsDataRepository } from '@/repositories/timesheets-data-repository';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
-import { TimeSheetData } from '@prisma/client';
+import { TimeSheetData, TimeSheetDay } from '@prisma/client';
 
 interface GetTimeSheetDataUseCaseRequest {
   timesheetdataId: string;
 }
 
 interface GetTimeSheetDataUseCaseResponse {
-  timesheetdata: TimeSheetData;
+  timesheetdata: TimeSheetData & { timesheetdays?: TimeSheetDay[] };
 }
 
 export class GetTimeSheetDataUseCase {

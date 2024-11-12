@@ -150,18 +150,18 @@ model BillingOrder {
   description                String
   isDoubled                  Boolean        @default(false)
   over_days                  Int?
-  onshore_travel_hour_value  Int?           @default(0)
-  onshore_normal_hour_value  Int?           @default(0)
-  onshore_extra_hour_value   Int?           @default(0)
-  onshore_double_hour_value  Int?           @default(0)
-  onshore_night_hour_value   Int?           @default(0)
-  onshore_over_hour_value    Int?           @default(0)
-  offshore_travel_hour_value Int?           @default(0)
-  offshore_normal_hour_value Int?           @default(0)
-  offshore_extra_hour_value  Int?           @default(0)
-  offshore_double_hour_value Int?           @default(0)
-  offshore_night_hour_value  Int?           @default(0)
-  offshore_over_hour_value   Int?           @default(0)
+  onshore_travel_hour_value  Int            @default(0)
+  onshore_normal_hour_value  Int            @default(0)
+  onshore_extra_hour_value   Int            @default(0)
+  onshore_double_hour_value  Int            @default(0)
+  onshore_night_hour_value   Int            @default(0)
+  onshore_over_hour_value    Int            @default(0)
+  offshore_travel_hour_value Int            @default(0)
+  offshore_normal_hour_value Int            @default(0)
+  offshore_extra_hour_value  Int            @default(0)
+  offshore_double_hour_value Int            @default(0)
+  offshore_night_hour_value  Int            @default(0)
+  offshore_over_hour_value   Int            @default(0)
   max_hours_day_onshore      Int?
   max_hours_day_offshore     Int?
   max_hours_day_travel       Int?

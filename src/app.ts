@@ -26,7 +26,12 @@ app.register(multer.contentParser);
 app.register(
   cors,
   {
-    exposedHeaders: ['x-total-count', 'x-page-count'],
+    exposedHeaders: [
+      'x-total-count',
+      'x-page-count',
+      'x-year-value',
+      'x-month-value',
+    ],
   } /*{
   origin: true,
   credentials: true,

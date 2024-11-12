@@ -5,6 +5,9 @@ import { createTechnicianExpenses } from './create-technician-expenses';
 import { deleteTechnicianExpense } from './delete-technician-expense';
 import { getTechnicianExpensesListByTechnicianId } from './get-technician-expenses-by-technician-id';
 import { getTechnicianExpensesList } from './get-technician-expenses';
+import { getMonthlyTechniciansExpensesTotalValue } from './get-total-monthly-technicians-expenses';
+import { getAnualTechniciansExpensesTotalValue } from './get-total-anual-technicians-expenses';
+import { getTotalEachMonthTechniciansExpenses } from './get-total-each-month-interventions-expenses';
 
 export async function technicianExpensesRoutes(app: FastifyInstance) {
   app.post(
@@ -40,5 +43,38 @@ export async function technicianExpensesRoutes(app: FastifyInstance) {
       ],
     },
     getTechnicianExpensesList,
+  );
+
+  app.get(
+    '/technicians-expenses/total-monthly',
+    {
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE', 'RH']),
+      ],
+    },
+    getMonthlyTechniciansExpensesTotalValue,
+  );
+
+  app.get(
+    '/technicians-expenses/total-anual',
+    {
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE', 'RH']),
+      ],
+    },
+    getAnualTechniciansExpensesTotalValue,
+  );
+
+  app.get(
+    '/technicians-expenses/each-month',
+    {
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE', 'RH']),
+      ],
+    },
+    getTotalEachMonthTechniciansExpenses,
   );
 }
