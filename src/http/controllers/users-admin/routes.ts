@@ -15,6 +15,7 @@ import { deleteUserProfile } from './delete-user';
 import { updateUserProfile } from './update-user';
 import { updateUserAvatar } from './update-avatar-user';
 import { testConnection } from './connection';
+import { updateSelfProfile } from './update-self-profile';
 
 const uploadAvatar = multer(uploadConfig.upload('tmp/avatar'));
 
@@ -79,5 +80,16 @@ export async function usersRoutes(app: FastifyInstance) {
       ],
     },
     userSelfProfile,
+  );
+
+  app.put(
+    '/me',
+    {
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['ADMIN', 'FINANCE', 'RH', 'SERVICE', 'COMERCIAL']),
+      ],
+    },
+    updateSelfProfile,
   );
 }

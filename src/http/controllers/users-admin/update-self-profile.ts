@@ -1,38 +1,29 @@
+import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-get-user-profile';
 import { makeUpdateUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-update-user-use-case';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
 import { hash } from 'bcryptjs';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 
-export async function updateUserProfile(
+export async function updateSelfProfile(
   request: FastifyRequest,
   reply: FastifyReply,
 ) {
-  const roleValues = [
-    'ADMIN',
-    'SERVICE',
-    'RH',
-    'FINANCE',
-    'COMERCIAL',
-    'GUEST',
-  ] as const;
+  const getUserProfile = makeGetUserProfileUseCase();
 
-  const updateUserBodySchema = z.object({
+  const { user } = await getUserProfile.execute({
+    userId: request.user.sub,
+  });
+
+  const updateSelfProfileBodySchema = z.object({
     name: z.string().optional(),
-    sector: z.string().optional(),
     email: z.string().email().optional(),
     password: z.string().min(6).optional(),
-    role: z.enum(roleValues).optional(),
   });
 
-  const updateUserProfileQuerySchema = z.object({
-    id: z.string(),
-  });
-
-  const { name, email, sector, password, role } = updateUserBodySchema.parse(
+  const { name, email, password } = updateSelfProfileBodySchema.parse(
     request.body,
   );
-  const { id } = updateUserProfileQuerySchema.parse(request.params);
 
   try {
     const updateUserProfile = makeUpdateUserProfileUseCase();
@@ -43,13 +34,11 @@ export async function updateUserProfile(
     }
 
     await updateUserProfile.execute({
-      userId: id,
+      userId: user.id,
       data: {
         name,
         email,
-        sector,
         password_hash: newPasswordHashed,
-        role,
       },
     });
 
