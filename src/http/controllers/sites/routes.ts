@@ -14,7 +14,7 @@ export async function sitesRoutes(app: FastifyInstance) {
   app.post(
     '/sites',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])],
     },
     createSite,
   );
@@ -22,7 +22,7 @@ export async function sitesRoutes(app: FastifyInstance) {
   app.put(
     '/sites/:siteId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])],
     },
     updateSite,
   );
@@ -30,7 +30,7 @@ export async function sitesRoutes(app: FastifyInstance) {
   app.get(
     '/sites/:siteId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])],
     },
     getSite,
   );
@@ -38,7 +38,7 @@ export async function sitesRoutes(app: FastifyInstance) {
   app.get(
     '/all-sites',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])],
     },
     getAllSitesList,
   );
@@ -46,7 +46,7 @@ export async function sitesRoutes(app: FastifyInstance) {
   app.get(
     '/sites',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])],
     },
     getSitesList,
   );
@@ -54,7 +54,7 @@ export async function sitesRoutes(app: FastifyInstance) {
   app.delete(
     '/sites/:siteId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])],
     },
     deleteSite,
   );
@@ -62,7 +62,7 @@ export async function sitesRoutes(app: FastifyInstance) {
   app.get(
     '/sites/search',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])],
     },
     searchSites,
   );
