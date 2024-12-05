@@ -13,7 +13,10 @@ export async function technicianExpensesRoutes(app: FastifyInstance) {
   app.post(
     '/technician-expenses/:technicianId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'FINANCE', 'ADMIN', 'RH']),
+      ],
     },
     createTechnicianExpenses,
   );
@@ -21,7 +24,10 @@ export async function technicianExpensesRoutes(app: FastifyInstance) {
   app.delete(
     '/technician-expenses/:technicianExpenseId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'FINANCE', 'ADMIN', 'RH']),
+      ],
     },
     deleteTechnicianExpense,
   );
@@ -29,7 +35,10 @@ export async function technicianExpensesRoutes(app: FastifyInstance) {
   app.get(
     '/technician-expenses/:technicianId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'FINANCE', 'ADMIN', 'RH']),
+      ],
     },
     getTechnicianExpensesListByTechnicianId,
   );

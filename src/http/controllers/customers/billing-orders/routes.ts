@@ -13,7 +13,10 @@ export async function billingOrdersRoutes(app: FastifyInstance) {
   app.post(
     '/billing-orders/:customerId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'COMERCIAL', 'ADMIN'])],
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'COMERCIAL', 'ADMIN', 'FINANCE']),
+      ],
     },
     createBillingOrder,
   );
@@ -21,7 +24,10 @@ export async function billingOrdersRoutes(app: FastifyInstance) {
   app.get(
     '/billing-orders/search',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'COMERCIAL', 'ADMIN'])],
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'COMERCIAL', 'ADMIN', 'FINANCE']),
+      ],
     },
     searchBillingOrders,
   );
@@ -29,7 +35,10 @@ export async function billingOrdersRoutes(app: FastifyInstance) {
   app.put(
     '/billing-orders/:billingOrderId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'COMERCIAL', 'ADMIN'])],
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'COMERCIAL', 'ADMIN', 'FINANCE']),
+      ],
     },
     updateBillingOrder,
   );
@@ -37,7 +46,10 @@ export async function billingOrdersRoutes(app: FastifyInstance) {
   app.get(
     '/billing-orders/:billingOrderId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'COMERCIAL', 'ADMIN'])],
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'COMERCIAL', 'ADMIN', 'FINANCE']),
+      ],
     },
     getBillingOrder,
   );
@@ -45,7 +57,10 @@ export async function billingOrdersRoutes(app: FastifyInstance) {
   app.get(
     '/billing-orders',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'COMERCIAL', 'ADMIN'])],
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'COMERCIAL', 'ADMIN', 'FINANCE']),
+      ],
     },
     getBillingOrdersList,
   );
@@ -53,7 +68,10 @@ export async function billingOrdersRoutes(app: FastifyInstance) {
   app.delete(
     '/billing-orders/:billingOrderId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'COMERCIAL', 'ADMIN'])],
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'COMERCIAL', 'ADMIN', 'FINANCE']),
+      ],
     },
     deleteBillingOrder,
   );

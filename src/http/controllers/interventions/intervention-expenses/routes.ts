@@ -13,7 +13,7 @@ export async function interventionExpensesRoutes(app: FastifyInstance) {
   app.post(
     '/intervention-expenses/:interventionId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])],
     },
     createInterventionExpenses,
   );
@@ -21,7 +21,7 @@ export async function interventionExpensesRoutes(app: FastifyInstance) {
   app.delete(
     '/intervention-expenses/:interventionExpenseId/:interventionId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])],
     },
     deleteInterventionExpense,
   );
@@ -29,7 +29,7 @@ export async function interventionExpensesRoutes(app: FastifyInstance) {
   app.get(
     '/intervention-expenses/:interventionId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])],
     },
     getInterventionExpensesListByInterventionId,
   );
@@ -37,7 +37,7 @@ export async function interventionExpensesRoutes(app: FastifyInstance) {
   app.get(
     '/intervention-expenses',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])],
     },
     getInterventionExpensesList,
   );
@@ -45,7 +45,7 @@ export async function interventionExpensesRoutes(app: FastifyInstance) {
   app.get(
     '/interventions-expenses/total-monthly',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])],
     },
     getMonthlyInterventionsExpensesTotalValue,
   );
@@ -53,7 +53,7 @@ export async function interventionExpensesRoutes(app: FastifyInstance) {
   app.get(
     '/interventions-expenses/total-anual',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])],
     },
     getAnualInterventionsExpensesTotalValue,
   );
@@ -61,7 +61,7 @@ export async function interventionExpensesRoutes(app: FastifyInstance) {
   app.get(
     '/interventions-expenses/each-month',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])],
     },
     getTotalEachMonthInterventionsExpenses,
   );

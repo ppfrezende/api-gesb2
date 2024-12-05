@@ -17,44 +17,77 @@ const uploadAvatar = multer(uploadConfig.upload('tmp/avatar'));
 export async function employeesRoutes(app: FastifyInstance) {
   app.post(
     '/employees',
-    { onRequest: [verifyJWT, verifyUserRole(['RH', 'SERVICE', 'ADMIN'])] },
+    {
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['RH', 'SERVICE', 'ADMIN', 'FINANCE']),
+      ],
+    },
     registerEmployee,
   );
 
   app.get(
     '/employees/:employeeId',
-    { onRequest: [verifyJWT, verifyUserRole(['RH', 'SERVICE', 'ADMIN'])] },
+    {
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['RH', 'SERVICE', 'ADMIN', 'FINANCE']),
+      ],
+    },
     getEmployeeProfile,
   );
 
   app.get(
     '/employees',
-    { onRequest: [verifyJWT, verifyUserRole(['RH', 'SERVICE', 'ADMIN'])] },
+    {
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['RH', 'SERVICE', 'ADMIN', 'FINANCE']),
+      ],
+    },
     getEmployeesList,
   );
 
   app.put(
     '/employees/:employeeId',
-    { onRequest: [verifyJWT, verifyUserRole(['RH', 'SERVICE', 'ADMIN'])] },
+    {
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['RH', 'SERVICE', 'ADMIN', 'FINANCE']),
+      ],
+    },
     updateEmployeeProfile,
   );
 
   app.delete(
     '/employees/:employeeId',
-    { onRequest: [verifyJWT, verifyUserRole(['RH', 'SERVICE', 'ADMIN'])] },
+    {
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['RH', 'SERVICE', 'ADMIN', 'FINANCE']),
+      ],
+    },
     deleteEmployeeProfile,
   );
 
   app.get(
     '/employees/search',
-    { onRequest: [verifyJWT, verifyUserRole(['RH', 'SERVICE', 'ADMIN'])] },
+    {
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['RH', 'SERVICE', 'ADMIN', 'FINANCE']),
+      ],
+    },
     searchEmployees,
   );
 
   app.patch(
     '/employees/avatar/:id',
     {
-      onRequest: [verifyJWT, verifyUserRole(['RH', 'SERVICE', 'ADMIN'])],
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['RH', 'SERVICE', 'ADMIN', 'FINANCE']),
+      ],
       preHandler: uploadAvatar.single('avatar'),
     },
     updateEmployeeAvatar,

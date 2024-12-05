@@ -14,7 +14,10 @@ export async function timeSheetsRoutes(app: FastifyInstance) {
   app.post(
     '/technicians/:technicianId/timesheet',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'RH', 'ADMIN'])],
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'FINANCE', 'RH', 'ADMIN']),
+      ],
     },
     createTimeSheetData,
   );
@@ -22,7 +25,10 @@ export async function timeSheetsRoutes(app: FastifyInstance) {
   app.get(
     '/timesheet',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'RH', 'ADMIN'])],
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'FINANCE', 'RH', 'ADMIN']),
+      ],
     },
     getTimeSheetDataList,
   );
@@ -30,7 +36,10 @@ export async function timeSheetsRoutes(app: FastifyInstance) {
   app.get(
     '/timesheet/data/:timesheetdataId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'RH', 'ADMIN'])],
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'FINANCE', 'RH', 'ADMIN']),
+      ],
     },
     getTimeSheet,
   );
@@ -38,7 +47,10 @@ export async function timeSheetsRoutes(app: FastifyInstance) {
   app.get(
     '/timesheet/:technicianId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'RH', 'ADMIN'])],
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'FINANCE', 'RH', 'ADMIN']),
+      ],
     },
     getTimeSheetDataListByTechId,
   );
@@ -46,7 +58,10 @@ export async function timeSheetsRoutes(app: FastifyInstance) {
   app.delete(
     '/timesheet/:timesheetdataId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'RH', 'ADMIN'])],
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'FINANCE', 'RH', 'ADMIN']),
+      ],
     },
     deleteTimeSheet,
   );
@@ -54,14 +69,20 @@ export async function timeSheetsRoutes(app: FastifyInstance) {
   app.put(
     '/timesheet/:timesheetdataId/connect/:interventionId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'RH', 'ADMIN'])],
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'FINANCE', 'RH', 'ADMIN']),
+      ],
     },
     connectTimesheetToIntervention,
   );
   app.delete(
     '/timesheet/:timesheetdataId/disconnect/:interventionId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'RH', 'ADMIN'])],
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'FINANCE', 'RH', 'ADMIN']),
+      ],
     },
     disconnectTimesheetToIntervention,
   );
