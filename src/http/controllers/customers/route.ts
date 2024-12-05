@@ -14,7 +14,7 @@ export async function customersRoutes(app: FastifyInstance) {
   app.post(
     '/customers',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['COMERCIAL', 'SERVICE', 'ADMIN'])],
     },
     createCustomer,
   );
@@ -22,7 +22,7 @@ export async function customersRoutes(app: FastifyInstance) {
   app.get(
     '/customers',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['COMERCIAL', 'SERVICE', 'ADMIN'])],
     },
     getCustomersList,
   );
@@ -30,7 +30,7 @@ export async function customersRoutes(app: FastifyInstance) {
   app.get(
     '/all-customers',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['COMERCIAL', 'SERVICE', 'ADMIN'])],
     },
     getAllCustomersList,
   );
@@ -38,21 +38,23 @@ export async function customersRoutes(app: FastifyInstance) {
   app.get(
     '/customers/:customerId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['COMERCIAL', 'SERVICE', 'ADMIN'])],
     },
     getCustomer,
   );
 
   app.get(
     '/customers/search',
-    { onRequest: [verifyJWT, verifyUserRole(['ADMIN'])] },
+    {
+      onRequest: [verifyJWT, verifyUserRole(['COMERCIAL', 'SERVICE', 'ADMIN'])],
+    },
     searchCustomers,
   );
 
   app.put(
     '/customers/:customerId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['COMERCIAL', 'SERVICE', 'ADMIN'])],
     },
     updateCustomer,
   );
@@ -60,7 +62,7 @@ export async function customersRoutes(app: FastifyInstance) {
   app.delete(
     '/customers/:customerId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['COMERCIAL', 'SERVICE', 'ADMIN'])],
     },
     deleteCustomer,
   );

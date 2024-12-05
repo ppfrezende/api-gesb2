@@ -14,7 +14,7 @@ export async function timeSheetsRoutes(app: FastifyInstance) {
   app.post(
     '/technicians/:technicianId/timesheet',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'RH', 'ADMIN'])],
     },
     createTimeSheetData,
   );
@@ -22,7 +22,7 @@ export async function timeSheetsRoutes(app: FastifyInstance) {
   app.get(
     '/timesheet',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'RH', 'ADMIN'])],
     },
     getTimeSheetDataList,
   );
@@ -30,7 +30,7 @@ export async function timeSheetsRoutes(app: FastifyInstance) {
   app.get(
     '/timesheet/data/:timesheetdataId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'RH', 'ADMIN'])],
     },
     getTimeSheet,
   );
@@ -38,7 +38,7 @@ export async function timeSheetsRoutes(app: FastifyInstance) {
   app.get(
     '/timesheet/:technicianId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'RH', 'ADMIN'])],
     },
     getTimeSheetDataListByTechId,
   );
@@ -46,7 +46,7 @@ export async function timeSheetsRoutes(app: FastifyInstance) {
   app.delete(
     '/timesheet/:timesheetdataId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'RH', 'ADMIN'])],
     },
     deleteTimeSheet,
   );
@@ -54,14 +54,14 @@ export async function timeSheetsRoutes(app: FastifyInstance) {
   app.put(
     '/timesheet/:timesheetdataId/connect/:interventionId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'RH', 'ADMIN'])],
     },
     connectTimesheetToIntervention,
   );
   app.delete(
     '/timesheet/:timesheetdataId/disconnect/:interventionId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'RH', 'ADMIN'])],
     },
     disconnectTimesheetToIntervention,
   );

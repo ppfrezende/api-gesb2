@@ -7,7 +7,14 @@ export async function registerUsers(
   request: FastifyRequest,
   reply: FastifyReply,
 ) {
-  const roleValues = ['ADMIN', 'SERVICE', 'RH', 'FINANCE', 'GUEST'] as const;
+  const roleValues = [
+    'ADMIN',
+    'SERVICE',
+    'RH',
+    'FINANCE',
+    'GUEST',
+    'COMERCIAL',
+  ] as const;
 
   const registerBodySchema = z.object({
     name: z.string(),

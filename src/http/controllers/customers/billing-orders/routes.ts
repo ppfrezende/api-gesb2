@@ -13,7 +13,7 @@ export async function billingOrdersRoutes(app: FastifyInstance) {
   app.post(
     '/billing-orders/:customerId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'COMERCIAL', 'ADMIN'])],
     },
     createBillingOrder,
   );
@@ -21,7 +21,7 @@ export async function billingOrdersRoutes(app: FastifyInstance) {
   app.get(
     '/billing-orders/search',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'COMERCIAL', 'ADMIN'])],
     },
     searchBillingOrders,
   );
@@ -29,7 +29,7 @@ export async function billingOrdersRoutes(app: FastifyInstance) {
   app.put(
     '/billing-orders/:billingOrderId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'COMERCIAL', 'ADMIN'])],
     },
     updateBillingOrder,
   );
@@ -37,7 +37,7 @@ export async function billingOrdersRoutes(app: FastifyInstance) {
   app.get(
     '/billing-orders/:billingOrderId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'COMERCIAL', 'ADMIN'])],
     },
     getBillingOrder,
   );
@@ -45,7 +45,7 @@ export async function billingOrdersRoutes(app: FastifyInstance) {
   app.get(
     '/billing-orders',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'COMERCIAL', 'ADMIN'])],
     },
     getBillingOrdersList,
   );
@@ -53,7 +53,7 @@ export async function billingOrdersRoutes(app: FastifyInstance) {
   app.delete(
     '/billing-orders/:billingOrderId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'COMERCIAL', 'ADMIN'])],
     },
     deleteBillingOrder,
   );

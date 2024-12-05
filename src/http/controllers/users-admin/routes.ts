@@ -68,7 +68,14 @@ export async function usersRoutes(app: FastifyInstance) {
     {
       onRequest: [
         verifyJWT,
-        verifyUserRole(['ADMIN', 'FINANCE', 'GUEST', 'RH', 'SERVICE']),
+        verifyUserRole([
+          'ADMIN',
+          'FINANCE',
+          'GUEST',
+          'RH',
+          'SERVICE',
+          'COMERCIAL',
+        ]),
       ],
     },
     userSelfProfile,

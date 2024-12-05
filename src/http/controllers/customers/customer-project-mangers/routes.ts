@@ -10,7 +10,7 @@ export async function customerProjectManegerRoutes(app: FastifyInstance) {
   app.delete(
     '/customer-project-manager/:customerProjectManagerId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'COMERCIAL', 'ADMIN'])],
     },
     deleteCustomerProjectManager,
   );
@@ -18,7 +18,7 @@ export async function customerProjectManegerRoutes(app: FastifyInstance) {
   app.post(
     '/customer-project-manager/:customerId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'COMERCIAL', 'ADMIN'])],
     },
     createCustomerProjectManager,
   );
@@ -26,7 +26,7 @@ export async function customerProjectManegerRoutes(app: FastifyInstance) {
   app.put(
     '/customer-project-manager/:customerProjectManagerId',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'COMERCIAL', 'ADMIN'])],
     },
     updateCustomerProjectManager,
   );

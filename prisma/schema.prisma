@@ -12,6 +12,7 @@ enum Role {
   SERVICE
   RH
   FINANCE
+  COMERCIAL
   GUEST
 }
 

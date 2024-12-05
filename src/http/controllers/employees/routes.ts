@@ -17,44 +17,44 @@ const uploadAvatar = multer(uploadConfig.upload('tmp/avatar'));
 export async function employeesRoutes(app: FastifyInstance) {
   app.post(
     '/employees',
-    { onRequest: [verifyJWT, verifyUserRole(['RH', 'ADMIN'])] },
+    { onRequest: [verifyJWT, verifyUserRole(['RH', 'SERVICE', 'ADMIN'])] },
     registerEmployee,
   );
 
   app.get(
     '/employees/:employeeId',
-    { onRequest: [verifyJWT, verifyUserRole(['RH', 'ADMIN'])] },
+    { onRequest: [verifyJWT, verifyUserRole(['RH', 'SERVICE', 'ADMIN'])] },
     getEmployeeProfile,
   );
 
   app.get(
     '/employees',
-    { onRequest: [verifyJWT, verifyUserRole(['RH', 'ADMIN'])] },
+    { onRequest: [verifyJWT, verifyUserRole(['RH', 'SERVICE', 'ADMIN'])] },
     getEmployeesList,
   );
 
   app.put(
     '/employees/:employeeId',
-    { onRequest: [verifyJWT, verifyUserRole(['RH', 'ADMIN'])] },
+    { onRequest: [verifyJWT, verifyUserRole(['RH', 'SERVICE', 'ADMIN'])] },
     updateEmployeeProfile,
   );
 
   app.delete(
     '/employees/:employeeId',
-    { onRequest: [verifyJWT, verifyUserRole(['RH', 'ADMIN'])] },
+    { onRequest: [verifyJWT, verifyUserRole(['RH', 'SERVICE', 'ADMIN'])] },
     deleteEmployeeProfile,
   );
 
   app.get(
     '/employees/search',
-    { onRequest: [verifyJWT, verifyUserRole(['RH', 'ADMIN'])] },
+    { onRequest: [verifyJWT, verifyUserRole(['RH', 'SERVICE', 'ADMIN'])] },
     searchEmployees,
   );
 
   app.patch(
     '/employees/avatar/:id',
     {
-      onRequest: [verifyJWT, verifyUserRole(['RH', 'ADMIN'])],
+      onRequest: [verifyJWT, verifyUserRole(['RH', 'SERVICE', 'ADMIN'])],
       preHandler: uploadAvatar.single('avatar'),
     },
     updateEmployeeAvatar,
