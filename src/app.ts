@@ -14,7 +14,6 @@ import { techniciansRoutes } from './http/controllers/technicians/routes';
 import { interventionsRoutes } from './http/controllers/interventions/routes';
 import { interventionExpensesRoutes } from './http/controllers/interventions/intervention-expenses/routes';
 import { customersRoutes } from './http/controllers/customers/route';
-import { invoicesToCustomerRoutes } from './http/controllers/invoices-to-customer/routes';
 import { technicianExpensesRoutes } from './http/controllers/technicians/technician-expenses/routes';
 import { customerProjectManegerRoutes } from './http/controllers/customers/customer-project-mangers/routes';
 import { billingOrdersRoutes } from './http/controllers/customers/billing-orders/routes';
@@ -60,7 +59,6 @@ app.register(customersRoutes);
 app.register(interventionsRoutes);
 app.register(interventionExpensesRoutes);
 app.register(customerProjectManegerRoutes);
-app.register(invoicesToCustomerRoutes);
 
 app.setErrorHandler((error, request, reply) => {
   if (error instanceof ZodError) {

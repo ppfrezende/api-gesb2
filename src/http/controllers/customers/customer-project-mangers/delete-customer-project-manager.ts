@@ -4,6 +4,7 @@ import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-err
 import { ResourceCannotBeDeletedError } from '@/use-cases/errors/resource-cannot-be-deleted';
 import { makeDeleteProjectManagerUseCase } from '@/use-cases/_factories/customers_factories/project-managers_factories/make-delete-project-manager-use-case';
 import { makeGetInterventionByCustomerProjectManagerUseCase } from '@/use-cases/_factories/interventions_factories/make-get-intervention-by-customer-project-manager-use-case';
+import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-get-user-profile';
 
 export async function deleteCustomerProjectManager(
   request: FastifyRequest,
@@ -20,6 +21,11 @@ export async function deleteCustomerProjectManager(
     const deleteProjectManagerUseCase = makeDeleteProjectManagerUseCase();
     const getInterventionByCustomerProjectManagerUseCase =
       makeGetInterventionByCustomerProjectManagerUseCase();
+    const getUserProfile = makeGetUserProfileUseCase();
+
+    const { user: userLoggedIn } = await getUserProfile.execute({
+      userId: request.user.sub,
+    });
 
     const isLinked =
       await getInterventionByCustomerProjectManagerUseCase.execute({
@@ -31,6 +37,7 @@ export async function deleteCustomerProjectManager(
     } else {
       await deleteProjectManagerUseCase.execute({
         customerProjectManagerId,
+        deletedBy: userLoggedIn.name,
       });
     }
 

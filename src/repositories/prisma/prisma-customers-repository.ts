@@ -9,9 +9,21 @@ export class PrismaCustomersRepository implements CustomersRepository {
         id,
       },
       include: {
-        project_managers: true,
-        interventions: true,
-        billing_orders: true,
+        project_managers: {
+          where: {
+            isDeleted: false,
+          },
+        },
+        interventions: {
+          where: {
+            isDeleted: false,
+          },
+        },
+        billing_orders: {
+          where: {
+            isDeleted: false,
+          },
+        },
       },
     });
 
@@ -20,9 +32,25 @@ export class PrismaCustomersRepository implements CustomersRepository {
 
   async listMany(page: number) {
     const customers = await prisma.customer.findMany({
+      where: {
+        isDeleted: false,
+      },
       include: {
-        project_managers: true,
-        billing_orders: true,
+        project_managers: {
+          where: {
+            isDeleted: false,
+          },
+        },
+        interventions: {
+          where: {
+            isDeleted: false,
+          },
+        },
+        billing_orders: {
+          where: {
+            isDeleted: false,
+          },
+        },
       },
       take: 10,
       skip: (page - 1) * 10,
@@ -33,8 +61,43 @@ export class PrismaCustomersRepository implements CustomersRepository {
 
     return customers;
   }
+
   async listAll() {
     const customers = await prisma.customer.findMany({
+      where: {
+        isDeleted: false,
+      },
+      include: {
+        project_managers: {
+          where: {
+            isDeleted: false,
+          },
+        },
+        interventions: {
+          where: {
+            isDeleted: false,
+          },
+        },
+        billing_orders: {
+          where: {
+            isDeleted: false,
+          },
+        },
+      },
+
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+
+    return customers;
+  }
+
+  async listAllCustomersTrash() {
+    const customers = await prisma.customer.findMany({
+      where: {
+        isDeleted: true,
+      },
       include: {
         project_managers: true,
         billing_orders: true,
@@ -51,6 +114,8 @@ export class PrismaCustomersRepository implements CustomersRepository {
   async searchMany(query: string, page: number) {
     const customers = await prisma.customer.findMany({
       where: {
+        isDeleted: false,
+
         OR: [
           {
             company_name: {
@@ -89,8 +154,21 @@ export class PrismaCustomersRepository implements CustomersRepository {
         ],
       },
       include: {
-        project_managers: true,
-        billing_orders: true,
+        project_managers: {
+          where: {
+            isDeleted: false,
+          },
+        },
+        interventions: {
+          where: {
+            isDeleted: false,
+          },
+        },
+        billing_orders: {
+          where: {
+            isDeleted: false,
+          },
+        },
       },
       take: 10,
       skip: (page - 1) * 10,
@@ -121,22 +199,37 @@ export class PrismaCustomersRepository implements CustomersRepository {
     return customer;
   }
 
-  async delete(id: string) {
-    const deleteProjectManagers = prisma.customerProjectManager.deleteMany({
+  async delete(id: string, deletedBy: string) {
+    const deleteProjectManagers = prisma.customerProjectManager.updateMany({
       where: {
         customerId: id,
       },
-    });
-
-    const deleteBillingOrders = prisma.billingOrder.deleteMany({
-      where: {
-        customerId: id,
+      data: {
+        isDeleted: true,
+        deleted_at: new Date(),
+        deletedBy,
       },
     });
 
-    const deleteCustomer = prisma.customer.delete({
+    const deleteBillingOrders = prisma.billingOrder.updateMany({
+      where: {
+        customerId: id,
+      },
+      data: {
+        isDeleted: true,
+        deleted_at: new Date(),
+        deletedBy,
+      },
+    });
+
+    const deleteCustomer = prisma.customer.update({
       where: {
         id,
+      },
+      data: {
+        isDeleted: true,
+        deleted_at: new Date(),
+        deletedBy,
       },
     });
 

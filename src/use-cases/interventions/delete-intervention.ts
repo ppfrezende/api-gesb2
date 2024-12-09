@@ -3,6 +3,7 @@ import { ResourceNotFoundError } from '../errors/resource-not-found-error';
 
 interface DeleteInterventionUseCaseRequest {
   interventionId: string;
+  deletedBy: string;
 }
 
 export class DeleteInterventionUseCase {
@@ -10,6 +11,7 @@ export class DeleteInterventionUseCase {
 
   async execute({
     interventionId,
+    deletedBy,
   }: DeleteInterventionUseCaseRequest): Promise<void> {
     const intervention = await this.interventionsRepository.findById(
       interventionId,
@@ -18,7 +20,7 @@ export class DeleteInterventionUseCase {
     if (!intervention) {
       throw new ResourceNotFoundError();
     } else {
-      await this.interventionsRepository.delete(interventionId);
+      await this.interventionsRepository.delete(interventionId, deletedBy);
 
       return;
     }

@@ -11,6 +11,7 @@ import { updateEmployeeProfile } from '../employees/update-employee';
 import { deleteEmployeeProfile } from '../employees/delete-employee';
 import { searchEmployees } from '../employees/search-employee';
 import { updateEmployeeAvatar } from '../employees/update-avatar-employee';
+import { getEmployeesTrashList } from './get-all-employees-trash';
 
 const uploadAvatar = multer(uploadConfig.upload('tmp/avatar'));
 
@@ -91,5 +92,11 @@ export async function employeesRoutes(app: FastifyInstance) {
       preHandler: uploadAvatar.single('avatar'),
     },
     updateEmployeeAvatar,
+  );
+
+  app.get(
+    '/employees/trash',
+    { onRequest: [verifyJWT, verifyUserRole(['ADMIN'])] },
+    getEmployeesTrashList,
   );
 }

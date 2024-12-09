@@ -9,11 +9,12 @@ export interface EmployeesRepository {
   ): Promise<Employee | null>;
   listMany(page: number): Promise<Employee[]>;
   listAll(): Promise<Employee[]>;
+  listAllEmployeesTrash(): Promise<Employee[]>;
   searchMany(query: string, page: number): Promise<Employee[]>;
   create(data: Prisma.EmployeeUncheckedCreateInput): Promise<Employee>;
   update(
     id: string,
     data: Prisma.EmployeeUpdateInput,
   ): Promise<Employee | null>;
-  delete(id: string): Promise<void | null>;
+  delete(id: string, deletedBy: string): Promise<void | null>;
 }

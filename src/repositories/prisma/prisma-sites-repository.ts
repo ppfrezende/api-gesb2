@@ -19,6 +19,9 @@ export class PrismaSitesRepository implements SitesRepository {
 
   async listMany(page: number) {
     const sites = await prisma.site.findMany({
+      where: {
+        isDeleted: false,
+      },
       take: 10,
       skip: (page - 1) * 10,
       orderBy: {
@@ -31,6 +34,22 @@ export class PrismaSitesRepository implements SitesRepository {
 
   async listAll() {
     const sites = await prisma.site.findMany({
+      where: {
+        isDeleted: false,
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+
+    return sites;
+  }
+
+  async listAllSitesTrash() {
+    const sites = await prisma.site.findMany({
+      where: {
+        isDeleted: true,
+      },
       orderBy: {
         created_at: 'desc',
       },
@@ -42,6 +61,8 @@ export class PrismaSitesRepository implements SitesRepository {
   async searchMany(query: string, page: number) {
     const sites = await prisma.site.findMany({
       where: {
+        isDeleted: false,
+
         OR: [
           {
             name: {
@@ -97,10 +118,15 @@ export class PrismaSitesRepository implements SitesRepository {
 
     return site;
   }
-  async delete(id: string) {
-    await prisma.site.delete({
+  async delete(id: string, deletedBy: string) {
+    await prisma.site.update({
       where: {
         id,
+      },
+      data: {
+        isDeleted: true,
+        deleted_at: new Date(),
+        deletedBy,
       },
     });
 

@@ -18,6 +18,9 @@ export class PrismaBillingOrdersRepository implements BillingOrdersRepository {
 
   async listMany(page: number) {
     const billing_orders = await prisma.billingOrder.findMany({
+      where: {
+        isDeleted: false,
+      },
       take: 10,
       skip: (page - 1) * 10,
       include: {
@@ -31,9 +34,30 @@ export class PrismaBillingOrdersRepository implements BillingOrdersRepository {
     return billing_orders;
   }
 
+  async listAllBillingOrdersTrash() {
+    const billing_orders = await prisma.billingOrder.findMany({
+      where: {
+        isDeleted: true,
+      },
+      include: {
+        interventions: {
+          where: {
+            isDeleted: true,
+          },
+        },
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+
+    return billing_orders;
+  }
+
   async searchMany(query: string, page: number) {
     const billing_orders = await prisma.billingOrder.findMany({
       where: {
+        isDeleted: true,
         OR: [
           {
             description: {
@@ -46,7 +70,11 @@ export class PrismaBillingOrdersRepository implements BillingOrdersRepository {
       take: 10,
       skip: (page - 1) * 10,
       include: {
-        interventions: true,
+        interventions: {
+          where: {
+            isDeleted: false,
+          },
+        },
       },
       orderBy: {
         created_at: 'desc',
@@ -75,10 +103,15 @@ export class PrismaBillingOrdersRepository implements BillingOrdersRepository {
     return purchase_order;
   }
 
-  async delete(id: string) {
-    await prisma.billingOrder.delete({
+  async delete(id: string, deletedBy: string) {
+    await prisma.billingOrder.update({
       where: {
         id,
+      },
+      data: {
+        isDeleted: true,
+        deleted_at: new Date(),
+        deletedBy,
       },
     });
 

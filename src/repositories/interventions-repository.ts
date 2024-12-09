@@ -12,6 +12,7 @@ export interface InterventionsRepository {
   findByTech(technicianId?: string): Promise<Intervention | null>;
   listMany(page: number): Promise<Intervention[]>;
   listAll(): Promise<Intervention[]>;
+  listAllInterventionsTrash(): Promise<Intervention[]>;
   searchMany(query: string, page: number): Promise<Intervention[]>;
   totalAnualInterventionsProfitValue(year: number): Promise<number>;
   totalMonthlyInterventionsProfitValue(
@@ -24,5 +25,5 @@ export interface InterventionsRepository {
     id: string,
     data: Prisma.InterventionUncheckedUpdateInput,
   ): Promise<Intervention | null>;
-  delete(id: string): Promise<unknown>;
+  delete(id: string, deletedBy: string): Promise<unknown>;
 }

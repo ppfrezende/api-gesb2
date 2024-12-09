@@ -2,6 +2,7 @@ import { CustomerProjectManager, Prisma } from '@prisma/client';
 
 export interface CustomerProjectManagersRepository {
   findById(id: string): Promise<CustomerProjectManager | null>;
+  listAllCustomerProjectManagersTrash(): Promise<CustomerProjectManager[]>;
   create(
     data: Prisma.CustomerProjectManagerUncheckedCreateInput,
   ): Promise<CustomerProjectManager>;
@@ -10,5 +11,5 @@ export interface CustomerProjectManagersRepository {
     data: Prisma.CustomerProjectManagerUpdateInput,
   ): Promise<CustomerProjectManager | null>;
 
-  delete(id: string): Promise<void | null>;
+  delete(id: string, deletedBy: string): Promise<void | null>;
 }

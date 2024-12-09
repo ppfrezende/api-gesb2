@@ -14,5 +14,5 @@ export interface TechniciansRepository {
     id: string,
     data: Prisma.TechnicianUpdateInput,
   ): Promise<Technician | null>;
-  delete(id: string): Promise<void | null>;
+  delete(id: string, deletedBy: string): Promise<void | null>;
 }

@@ -11,7 +11,6 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
       include: {
         Site: true,
         Technician: true,
-        invoicesToCustomer: true,
         Customer: {
           include: {
             project_managers: true,
@@ -43,9 +42,10 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
   }
 
   async findByProgressive(progressive?: string): Promise<Intervention | null> {
-    const intervention = await prisma.intervention.findUnique({
+    const intervention = await prisma.intervention.findFirst({
       where: {
         progressive,
+        isDeleted: false,
       },
     });
 
@@ -58,6 +58,7 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
     const intervention = await prisma.intervention.findFirst({
       where: {
         billingOrderId,
+        isDeleted: false,
       },
     });
 
@@ -68,6 +69,7 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
     const intervention = await prisma.intervention.findFirst({
       where: {
         customerId,
+        isDeleted: false,
       },
     });
 
@@ -80,6 +82,7 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
     const intervention = await prisma.intervention.findFirst({
       where: {
         customerProjectManagerId,
+        isDeleted: false,
       },
     });
 
@@ -90,6 +93,7 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
     const intervention = await prisma.intervention.findFirst({
       where: {
         siteId,
+        isDeleted: false,
       },
     });
 
@@ -100,6 +104,7 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
     const intervention = await prisma.intervention.findFirst({
       where: {
         technicianId,
+        isDeleted: false,
       },
     });
 
@@ -108,6 +113,9 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
 
   async listMany(page: number) {
     const interventions = await prisma.intervention.findMany({
+      where: {
+        isDeleted: false,
+      },
       take: 10,
       skip: (page - 1) * 10,
       include: {
@@ -118,6 +126,9 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
         BillingOrder: true,
         timesheets: true,
         interventionExpenses: {
+          where: {
+            isDeleted: false,
+          },
           orderBy: {
             expense_date: 'asc',
           },
@@ -133,6 +144,9 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
 
   async listAll() {
     const interventions = await prisma.intervention.findMany({
+      where: {
+        isDeleted: false,
+      },
       include: {
         Site: true,
         Technician: true,
@@ -141,6 +155,37 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
         BillingOrder: true,
         timesheets: true,
         interventionExpenses: {
+          where: {
+            isDeleted: false,
+          },
+          orderBy: {
+            expense_date: 'asc',
+          },
+        },
+      },
+      orderBy: {
+        progressive: 'desc',
+      },
+    });
+
+    return interventions;
+  }
+  async listAllInterventionsTrash() {
+    const interventions = await prisma.intervention.findMany({
+      where: {
+        isDeleted: true,
+      },
+      include: {
+        Site: true,
+        Technician: true,
+        Customer: true,
+        CustomerProjectManager: true,
+        BillingOrder: true,
+        timesheets: true,
+        interventionExpenses: {
+          where: {
+            isDeleted: true,
+          },
           orderBy: {
             expense_date: 'asc',
           },
@@ -157,6 +202,8 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
   async searchMany(query: string, page: number) {
     const interventions = await prisma.intervention.findMany({
       where: {
+        isDeleted: false,
+
         OR: [
           {
             progressive: {
@@ -220,6 +267,9 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
         BillingOrder: true,
         timesheets: true,
         interventionExpenses: {
+          where: {
+            isDeleted: false,
+          },
           orderBy: {
             expense_date: 'asc',
           },
@@ -239,6 +289,7 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
         total_value: true,
       },
       where: {
+        isDeleted: false,
         initial_at: {
           gte: new Date(year, 0, 1),
           lt: new Date(year + 1, 0, 1),
@@ -255,6 +306,7 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
         total_value: true,
       },
       where: {
+        isDeleted: false,
         initial_at: {
           gte: new Date(year, month - 1, 1),
           lt: new Date(year, month, 1),
@@ -268,6 +320,7 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
   async totalMonthlyInterventionsCount(year: number, month: number) {
     const totalMonthInterventionCount = await prisma.intervention.count({
       where: {
+        isDeleted: false,
         initial_at: {
           gte: new Date(year, month - 1, 1),
           lte: new Date(year, month, 1),
@@ -304,22 +357,26 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
     return intervention;
   }
 
-  async delete(id: string) {
-    await prisma.interventionExpense.deleteMany({
+  async delete(id: string, deletedBy: string) {
+    await prisma.interventionExpense.updateMany({
       where: {
         interventionId: id,
       },
-    });
-
-    await prisma.invoiceToCustomer.deleteMany({
-      where: {
-        interventionId: id,
+      data: {
+        isDeleted: true,
+        deleted_at: new Date(),
+        deletedBy,
       },
     });
 
-    await prisma.intervention.delete({
+    await prisma.intervention.update({
       where: {
         id,
+      },
+      data: {
+        isDeleted: true,
+        deleted_at: new Date(),
+        deletedBy,
       },
     });
 

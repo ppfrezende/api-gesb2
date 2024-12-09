@@ -9,6 +9,7 @@ import { getSitesList } from './get-sites-list';
 import { deleteSite } from './delete-site';
 import { searchSites } from './search-site';
 import { getAllSitesList } from './get-all-sites';
+import { getAllSitesTrashList } from './get-all-sites-trash';
 
 export async function sitesRoutes(app: FastifyInstance) {
   app.post(
@@ -65,5 +66,11 @@ export async function sitesRoutes(app: FastifyInstance) {
       onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])],
     },
     searchSites,
+  );
+
+  app.get(
+    '/sites/trash',
+    { onRequest: [verifyJWT, verifyUserRole(['ADMIN'])] },
+    getAllSitesTrashList,
   );
 }

@@ -6,6 +6,7 @@ export class PrismaUsersRepository implements UsersRepository {
   async searchMany(query: string, page: number) {
     const users = await prisma.user.findMany({
       where: {
+        isDeleted: false,
         OR: [
           {
             name: {
@@ -33,6 +34,9 @@ export class PrismaUsersRepository implements UsersRepository {
 
   async listMany(page: number) {
     const users = await prisma.user.findMany({
+      where: {
+        isDeleted: false,
+      },
       take: 10,
       skip: (page - 1) * 10,
       orderBy: {
@@ -44,7 +48,21 @@ export class PrismaUsersRepository implements UsersRepository {
   }
 
   async listAll() {
-    const users = await prisma.user.findMany();
+    const users = await prisma.user.findMany({
+      where: {
+        isDeleted: false,
+      },
+    });
+
+    return users;
+  }
+
+  async listAllTrash() {
+    const users = await prisma.user.findMany({
+      where: {
+        isDeleted: true,
+      },
+    });
 
     return users;
   }
@@ -60,9 +78,10 @@ export class PrismaUsersRepository implements UsersRepository {
   }
 
   async findByEmail(email: string) {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findFirst({
       where: {
         email,
+        isDeleted: false,
       },
     });
 
@@ -77,10 +96,15 @@ export class PrismaUsersRepository implements UsersRepository {
     return user;
   }
 
-  async delete(id: string) {
-    await prisma.user.delete({
+  async delete(id: string, deletedBy: string) {
+    await prisma.user.update({
       where: {
         id,
+      },
+      data: {
+        isDeleted: true,
+        deletedBy,
+        deleted_at: new Date(),
       },
     });
 

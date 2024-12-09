@@ -10,6 +10,7 @@ export interface ServiceProvidersRepository {
   ): Promise<ServiceProvider | null>;
   listMany(page: number): Promise<ServiceProvider[]>;
   listAll(): Promise<ServiceProvider[]>;
+  listAllServiceProvidersTrash(): Promise<ServiceProvider[]>;
   searchMany(query: string, page: number): Promise<ServiceProvider[]>;
   create(
     data: Prisma.ServiceProviderUncheckedCreateInput,
@@ -18,5 +19,5 @@ export interface ServiceProvidersRepository {
     id: string,
     data: Prisma.ServiceProviderUpdateInput,
   ): Promise<ServiceProvider | null>;
-  delete(id: string): Promise<void | null>;
+  delete(id: string, deletedBy: string): Promise<void | null>;
 }

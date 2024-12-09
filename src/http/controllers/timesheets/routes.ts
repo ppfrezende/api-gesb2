@@ -9,6 +9,7 @@ import { getTimeSheetDataListByTechId } from './timesheet-data/get-timesheet-dat
 import { getTimeSheet } from './timesheet-data/get-timesheet-data';
 import { connectTimesheetToIntervention } from './timesheet-data/connect-timesheet-to-internvetion';
 import { disconnectTimesheetToIntervention } from './timesheet-data/disconnect-timesheet-to-intervention';
+import { getTimeSheetDataTrashList } from './timesheet-data/get-all-timesheets-trash';
 
 export async function timeSheetsRoutes(app: FastifyInstance) {
   app.post(
@@ -85,5 +86,11 @@ export async function timeSheetsRoutes(app: FastifyInstance) {
       ],
     },
     disconnectTimesheetToIntervention,
+  );
+
+  app.get(
+    '/timesheetsdata/trash',
+    { onRequest: [verifyJWT, verifyUserRole(['ADMIN'])] },
+    getTimeSheetDataTrashList,
   );
 }

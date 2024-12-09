@@ -19,6 +19,7 @@ export class PrismaInterventionExpensesRepository
     const expenses = await prisma.interventionExpense.findMany({
       where: {
         interventionId,
+        isDeleted: false,
       },
       take: 100,
       skip: (page - 1) * 100,
@@ -35,6 +36,9 @@ export class PrismaInterventionExpensesRepository
 
   async listMany(page: number) {
     const interventionExpenses = await prisma.interventionExpense.findMany({
+      where: {
+        isDeleted: false,
+      },
       take: 50,
       skip: (page - 1) * 50,
       include: {
@@ -47,8 +51,28 @@ export class PrismaInterventionExpensesRepository
 
     return interventionExpenses;
   }
+
   async listAll() {
     const interventionExpenses = await prisma.interventionExpense.findMany({
+      where: {
+        isDeleted: false,
+      },
+      include: {
+        Intervention: true,
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+
+    return interventionExpenses;
+  }
+
+  async listAllInterventionExpensesTrash() {
+    const interventionExpenses = await prisma.interventionExpense.findMany({
+      where: {
+        isDeleted: true,
+      },
       include: {
         Intervention: true,
       },
@@ -67,6 +91,7 @@ export class PrismaInterventionExpensesRepository
           expense_value: true,
         },
         where: {
+          isDeleted: false,
           expense_date: {
             gte: new Date(year, 0, 1),
             lt: new Date(year + 1, 0, 1),
@@ -84,6 +109,7 @@ export class PrismaInterventionExpensesRepository
           expense_value: true,
         },
         where: {
+          isDeleted: false,
           expense_date: {
             gte: new Date(year, month - 1, 1),
             lt: new Date(year, month, 1),
@@ -102,20 +128,30 @@ export class PrismaInterventionExpensesRepository
     return;
   }
 
-  async delete(id: string) {
-    await prisma.interventionExpense.delete({
+  async delete(id: string, deletedBy: string) {
+    await prisma.interventionExpense.updateMany({
       where: {
         id,
+      },
+      data: {
+        isDeleted: true,
+        deleted_at: new Date(),
+        deletedBy,
       },
     });
 
     return;
   }
 
-  async deleteMany(interventionId: string) {
-    await prisma.interventionExpense.deleteMany({
+  async deleteMany(interventionId: string, deletedBy: string) {
+    await prisma.interventionExpense.updateMany({
       where: {
         interventionId,
+      },
+      data: {
+        isDeleted: true,
+        deleted_at: new Date(),
+        deletedBy,
       },
     });
 

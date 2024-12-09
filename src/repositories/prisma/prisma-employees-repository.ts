@@ -13,9 +13,10 @@ export class PrismaEmployeesRepository implements EmployeesRepository {
     return employee;
   }
   async findByEmail(email: string): Promise<Employee | null> {
-    const employee = await prisma.employee.findUnique({
+    const employee = await prisma.employee.findFirst({
       where: {
         email,
+        isDeleted: false,
       },
     });
 
@@ -23,9 +24,10 @@ export class PrismaEmployeesRepository implements EmployeesRepository {
   }
 
   async findByCpf(cpf: string): Promise<Employee | null> {
-    const employee = await prisma.employee.findUnique({
+    const employee = await prisma.employee.findFirst({
       where: {
         cpf,
+        isDeleted: false,
       },
     });
 
@@ -35,9 +37,10 @@ export class PrismaEmployeesRepository implements EmployeesRepository {
   async findByRegistrationNumber(
     registration_number: string,
   ): Promise<Employee | null> {
-    const employee = await prisma.employee.findUnique({
+    const employee = await prisma.employee.findFirst({
       where: {
         registration_number,
+        isDeleted: false,
       },
     });
 
@@ -46,6 +49,9 @@ export class PrismaEmployeesRepository implements EmployeesRepository {
 
   async listMany(page: number) {
     const employees = await prisma.employee.findMany({
+      where: {
+        isDeleted: false,
+      },
       take: 10,
       skip: (page - 1) * 10,
       orderBy: {
@@ -58,6 +64,22 @@ export class PrismaEmployeesRepository implements EmployeesRepository {
 
   async listAll() {
     const employees = await prisma.employee.findMany({
+      where: {
+        isDeleted: false,
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+
+    return employees;
+  }
+
+  async listAllEmployeesTrash() {
+    const employees = await prisma.employee.findMany({
+      where: {
+        isDeleted: true,
+      },
       orderBy: {
         created_at: 'desc',
       },
@@ -69,6 +91,7 @@ export class PrismaEmployeesRepository implements EmployeesRepository {
   async searchMany(query: string, page: number) {
     const employees = await prisma.employee.findMany({
       where: {
+        isDeleted: false,
         name: {
           contains: query,
         },
@@ -114,10 +137,15 @@ export class PrismaEmployeesRepository implements EmployeesRepository {
     return employee;
   }
 
-  async delete(id: string) {
-    await prisma.employee.delete({
+  async delete(id: string, deletedBy: string) {
+    await prisma.employee.update({
       where: {
         id,
+      },
+      data: {
+        isDeleted: true,
+        deleted_at: new Date(),
+        deletedBy,
       },
     });
 

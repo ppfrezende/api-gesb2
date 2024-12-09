@@ -6,7 +6,8 @@ export interface UsersRepository {
   searchMany(query: string, page: number): Promise<User[]>;
   listMany(page: number): Promise<User[]>;
   listAll(): Promise<User[]>;
+  listAllTrash(): Promise<User[]>;
   create(data: Prisma.UserCreateInput): Promise<User>;
-  delete(id: string): Promise<void | null>;
+  delete(id: string, deletedBy: string): Promise<void | null>;
   update(id: string, data: Prisma.UserUpdateInput): Promise<User | null>;
 }

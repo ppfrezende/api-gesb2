@@ -2,6 +2,7 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
 import { makeDeleteTechnicianExpenseUseCase } from '@/use-cases/_factories/technicians_factories/technician_expenses_factories/make-delete-technician-expense-use-case';
+import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-get-user-profile';
 
 export async function deleteTechnicianExpense(
   request: FastifyRequest,
@@ -15,11 +16,18 @@ export async function deleteTechnicianExpense(
     request.params,
   );
 
+  const getUserProfile = makeGetUserProfileUseCase();
+
+  const { user: userLoggedIn } = await getUserProfile.execute({
+    userId: request.user.sub,
+  });
+
   try {
     const deleteTechnicianExpenseUseCase = makeDeleteTechnicianExpenseUseCase();
 
     await deleteTechnicianExpenseUseCase.execute({
       technicianExpenseId,
+      deletedBy: userLoggedIn.name,
     });
 
     return reply.status(200).send();

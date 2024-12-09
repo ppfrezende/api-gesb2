@@ -8,6 +8,7 @@ import { getBillingOrder } from './get-billing-order';
 import { getBillingOrdersList } from './get-billing-orders-list';
 import { searchBillingOrders } from './search-billing-orders';
 import { updateBillingOrder } from './update-billing-order';
+import { getBillingOrdersTrashList } from './get-all-billing-orders-trash';
 
 export async function billingOrdersRoutes(app: FastifyInstance) {
   app.post(
@@ -74,5 +75,11 @@ export async function billingOrdersRoutes(app: FastifyInstance) {
       ],
     },
     deleteBillingOrder,
+  );
+
+  app.get(
+    '/billing-orders/trash',
+    { onRequest: [verifyJWT, verifyUserRole(['ADMIN'])] },
+    getBillingOrdersTrashList,
   );
 }

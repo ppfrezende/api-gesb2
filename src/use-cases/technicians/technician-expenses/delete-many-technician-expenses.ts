@@ -4,6 +4,7 @@ import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-err
 interface DeleteManyTechnicianExpensesUseCaseRequest {
   technicianId: string;
   page: number;
+  deleteBy: string;
 }
 
 export class DeleteManyTechnicianExpensesUseCaseResponse {
@@ -14,6 +15,7 @@ export class DeleteManyTechnicianExpensesUseCaseResponse {
   async execute({
     technicianId,
     page,
+    deleteBy,
   }: DeleteManyTechnicianExpensesUseCaseRequest): Promise<void> {
     const expenses =
       await this.technicianExpensesRepository.listManyByTechnicianId(
@@ -24,7 +26,10 @@ export class DeleteManyTechnicianExpensesUseCaseResponse {
     if (!expenses) {
       throw new ResourceNotFoundError();
     } else {
-      await this.technicianExpensesRepository.deleteMany(technicianId);
+      await this.technicianExpensesRepository.deleteMany(
+        technicianId,
+        deleteBy,
+      );
 
       return;
     }

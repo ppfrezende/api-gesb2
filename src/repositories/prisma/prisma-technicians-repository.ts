@@ -26,7 +26,7 @@ export class PrismaTechniciansRepository implements TechniciansRepository {
     return technician;
   }
   async findByEmail(email: string): Promise<Technician | null> {
-    const technician = await prisma.technician.findUnique({
+    const technician = await prisma.technician.findFirst({
       where: {
         email,
       },
@@ -38,7 +38,7 @@ export class PrismaTechniciansRepository implements TechniciansRepository {
   async findByRegistrationNumber(
     registration_number: string,
   ): Promise<Technician | null> {
-    const technician = await prisma.technician.findUnique({
+    const technician = await prisma.technician.findFirst({
       where: {
         registration_number,
       },
@@ -124,10 +124,15 @@ export class PrismaTechniciansRepository implements TechniciansRepository {
     return technician;
   }
 
-  async delete(id: string) {
-    await prisma.technician.delete({
+  async delete(id: string, deletedBy: string) {
+    await prisma.technician.update({
       where: {
         id,
+      },
+      data: {
+        isDeleted: true,
+        deleted_at: new Date(),
+        deletedBy,
       },
     });
 

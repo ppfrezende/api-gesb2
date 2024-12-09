@@ -4,6 +4,7 @@ import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-err
 import { makeDeleteInterventionUseCase } from '@/use-cases/_factories/interventions_factories/make-delete-intervention-use-case';
 import { makeGetInterventionUseCase } from '@/use-cases/_factories/interventions_factories/make-get-intervention-use-case';
 import { makeUpdateTechnicianUseCase } from '@/use-cases/_factories/technicians_factories/make-update-technician-use-case';
+import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-get-user-profile';
 
 export async function deleteIntervention(
   request: FastifyRequest,
@@ -21,6 +22,11 @@ export async function deleteIntervention(
     const deleteIntervention = makeDeleteInterventionUseCase();
     const getIntervention = makeGetInterventionUseCase();
     const updateTechnician = makeUpdateTechnicianUseCase();
+    const getUserProfile = makeGetUserProfileUseCase();
+
+    const { user: userLoggedIn } = await getUserProfile.execute({
+      userId: request.user.sub,
+    });
 
     const { intervention } = await getIntervention.execute({ interventionId });
 
@@ -41,6 +47,7 @@ export async function deleteIntervention(
     }
     await deleteIntervention.execute({
       interventionId,
+      deletedBy: userLoggedIn.name,
     });
 
     return reply.status(204).send();

@@ -19,6 +19,7 @@ export class PrismaTechnicianExpensesRepository
     const expenses = await prisma.technicianExpense.findMany({
       where: {
         technicianId,
+        isDeleted: false,
       },
       take: 100,
       skip: (page - 1) * 100,
@@ -35,8 +36,27 @@ export class PrismaTechnicianExpensesRepository
 
   async listMany(page: number) {
     const technicianExpenses = await prisma.technicianExpense.findMany({
+      where: {
+        isDeleted: false,
+      },
       take: 100,
       skip: (page - 1) * 100,
+      include: {
+        Technician: true,
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+
+    return technicianExpenses;
+  }
+
+  async listAllTechnicianExpensesTrash() {
+    const technicianExpenses = await prisma.technicianExpense.findMany({
+      where: {
+        isDeleted: true,
+      },
       include: {
         Technician: true,
       },
@@ -59,6 +79,7 @@ export class PrismaTechnicianExpensesRepository
             gte: new Date(year, 0, 1),
             lt: new Date(year + 1, 0, 1),
           },
+          isDeleted: false,
         },
       });
 
@@ -76,6 +97,7 @@ export class PrismaTechnicianExpensesRepository
             gte: new Date(year, month - 1, 1),
             lt: new Date(year, month, 1),
           },
+          isDeleted: false,
         },
       });
 
@@ -90,20 +112,30 @@ export class PrismaTechnicianExpensesRepository
     return;
   }
 
-  async delete(id: string) {
-    await prisma.technicianExpense.delete({
+  async delete(id: string, deletedBy: string) {
+    await prisma.technicianExpense.update({
       where: {
         id,
+      },
+      data: {
+        isDeleted: true,
+        deleted_at: new Date(),
+        deletedBy,
       },
     });
 
     return;
   }
 
-  async deleteMany(technicianId: string) {
-    await prisma.technicianExpense.deleteMany({
+  async deleteMany(technicianId: string, deletedBy: string) {
+    await prisma.technicianExpense.updateMany({
       where: {
         technicianId,
+      },
+      data: {
+        isDeleted: true,
+        deleted_at: new Date(),
+        deletedBy,
       },
     });
 

@@ -5,6 +5,7 @@ import { FastifyInstance } from 'fastify';
 import { deleteCustomerProjectManager } from './delete-customer-project-manager';
 import { updateCustomerProjectManager } from './update-customer-project-manager';
 import { createCustomerProjectManager } from './create-customer-project-manager';
+import { getAllCustomerProjectManagersTrashList } from './get-all-customer-project-managers-trash';
 
 export async function customerProjectManegerRoutes(app: FastifyInstance) {
   app.delete(
@@ -38,5 +39,11 @@ export async function customerProjectManegerRoutes(app: FastifyInstance) {
       ],
     },
     updateCustomerProjectManager,
+  );
+
+  app.get(
+    '/customer-project-manager/trash',
+    { onRequest: [verifyJWT, verifyUserRole(['ADMIN'])] },
+    getAllCustomerProjectManagersTrashList,
   );
 }

@@ -1,6 +1,7 @@
 import { makeGetInterventionByTechUseCase } from '@/use-cases/_factories/interventions_factories/make-get-intervention-by-tech-use-case';
 import { makeDeleteServiceProviderProfileUseCase } from '@/use-cases/_factories/service-providers_factories/make-delete-service-provider-use-case';
 import { makeDeleteTechnicianUseCase } from '@/use-cases/_factories/technicians_factories/make-delete-technician-use-case';
+import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-get-user-profile';
 import { ResourceCannotBeDeletedError } from '@/use-cases/errors/resource-cannot-be-deleted';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
 import { FastifyRequest, FastifyReply } from 'fastify';
@@ -24,6 +25,12 @@ export async function deleteServiceProviderProfile(
     const getInterventionByTechUseCase = makeGetInterventionByTechUseCase();
     const deleteTechnicianUseCase = makeDeleteTechnicianUseCase();
 
+    const getUserProfile = makeGetUserProfileUseCase();
+
+    const { user: userLoggedIn } = await getUserProfile.execute({
+      userId: request.user.sub,
+    });
+
     const isLinked = await getInterventionByTechUseCase.execute({
       technicianId: serviceProviderId,
     });
@@ -33,6 +40,7 @@ export async function deleteServiceProviderProfile(
     } else {
       await deleteServiceProviderProfile.execute({
         serviceProviderId: serviceProviderId,
+        deletedBy: userLoggedIn.name,
       });
 
       await deleteTechnicianUseCase.execute({

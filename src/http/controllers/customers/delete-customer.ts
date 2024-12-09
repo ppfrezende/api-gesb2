@@ -4,6 +4,7 @@ import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-err
 import { makeDeleteCustomerUseCase } from '@/use-cases/_factories/customers_factories/make-delete-customer-use-case';
 import { makeGetInterventionByCustomerUseCase } from '@/use-cases/_factories/interventions_factories/make-get-intervention-by-customer-use-case';
 import { ResourceCannotBeDeletedError } from '@/use-cases/errors/resource-cannot-be-deleted';
+import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-get-user-profile';
 
 export async function deleteCustomer(
   request: FastifyRequest,
@@ -19,6 +20,11 @@ export async function deleteCustomer(
     const deleteCustomer = makeDeleteCustomerUseCase();
     const getInterventionByCustomerUseCase =
       makeGetInterventionByCustomerUseCase();
+    const getUserProfile = makeGetUserProfileUseCase();
+
+    const { user: userLoggedIn } = await getUserProfile.execute({
+      userId: request.user.sub,
+    });
 
     const isLinked = await getInterventionByCustomerUseCase.execute({
       customerId,
@@ -29,6 +35,7 @@ export async function deleteCustomer(
     } else {
       await deleteCustomer.execute({
         customerId,
+        deletedBy: userLoggedIn.name,
       });
     }
 

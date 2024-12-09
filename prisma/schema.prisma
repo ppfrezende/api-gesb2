@@ -18,13 +18,12 @@ enum Role {
 
 model User {
   id                   String                @id @default(uuid())
-  name                 String                @unique
+  name                 String
   sector               String
-  email                String                @unique
+  email                String
   password_hash        String
   role                 Role                  @default(GUEST)
   avatar               String?
-  created_at           DateTime              @default(now())
   employees            Employee[]
   service_providers    ServiceProvider[]
   billing_orders       BillingOrder[]
@@ -35,18 +34,23 @@ model User {
   interventions        Intervention[]
   interventionExpenses InterventionExpense[]
   technicianExpenses   TechnicianExpense[]
-  invoicesToCustomer   InvoiceToCustomer[]
+  created_at           DateTime              @default(now())
+  updated_at           DateTime              @updatedAt
+  isDeleted            Boolean               @default(false)
+  deleted_at           DateTime?
+  deletedBy            String?
+  createdBy            String?
 
   @@map("users")
 }
 
 model Employee {
-  id                  String   @id @default(uuid())
-  registration_number String   @unique
-  cpf                 String   @unique
+  id                  String    @id @default(uuid())
+  registration_number String
+  cpf                 String
   name                String
-  email               String   @unique
-  admission_at        DateTime @default(now())
+  email               String
+  admission_at        DateTime  @default(now())
   phone               String
   cep                 String
   street              String
@@ -58,23 +62,27 @@ model Employee {
   avatar              String?
   skills              String?
   salary              Int
-  created_at          DateTime @default(now())
-  User                User?    @relation(fields: [userName], references: [name])
-  userName            String?
+  created_at          DateTime  @default(now())
+  User                User?     @relation(fields: [userId], references: [id])
+  userId              String?
+  updated_at          DateTime  @updatedAt
+  isDeleted           Boolean   @default(false)
+  deleted_at          DateTime?
+  deletedBy           String?
 
   @@map("employees")
 }
 
 model ServiceProvider {
-  id                  String   @id @default(uuid())
-  registration_number String   @unique
-  cpf                 String   @unique
-  cnpj                String   @unique
+  id                  String    @id @default(uuid())
+  registration_number String
+  cpf                 String
+  cnpj                String
   name                String
   company             String
-  email               String   @unique
-  start_of_contract   DateTime @default(now())
-  contract_validity   DateTime @default(now())
+  email               String
+  start_of_contract   DateTime  @default(now())
+  contract_validity   DateTime  @default(now())
   phone               String
   cep                 String
   street              String
@@ -85,10 +93,14 @@ model ServiceProvider {
   job_title           String
   avatar              String?
   skills              String?
+  updated_at          DateTime  @updatedAt
+  isDeleted           Boolean   @default(false)
+  deleted_at          DateTime?
+  deletedBy           String?
 
   created_at DateTime @default(now())
-  User       User?    @relation(fields: [userName], references: [name])
-  userName   String?
+  User       User?    @relation(fields: [userId], references: [id])
+  userId     String?
 
   @@map("service_providers")
 }
@@ -96,9 +108,9 @@ model ServiceProvider {
 model Technician {
   id                  String              @id
   name                String
-  email               String              @unique
+  email               String
   job_title           String
-  registration_number String?             @unique
+  registration_number String?
   skills              String?
   created_at          DateTime            @default(now())
   timesheetdata       TimeSheetData[]
@@ -107,15 +119,18 @@ model Technician {
   interventions       Intervention[]
   TechSite            TechSite[]
   technicianExpenses  TechnicianExpense[]
-  invoicesToCustomer  InvoiceToCustomer[]
-  User                User?               @relation(fields: [userName], references: [name])
-  userName            String?
+  User                User?               @relation(fields: [userId], references: [id])
+  userId              String?
+  updated_at          DateTime            @updatedAt
+  isDeleted           Boolean             @default(false)
+  deleted_at          DateTime?
+  deletedBy           String?
 
   @@map("technicians")
 }
 
 model Site {
-  id                  String              @id @default(uuid())
+  id                  String          @id @default(uuid())
   name                String
   description         String?
   operation_zone      String?
@@ -124,15 +139,18 @@ model Site {
   administrator_name  String?
   administrator_phone String?
   administrator_email String?
-  isOffshore          Boolean?            @default(false)
-  created_at          DateTime            @default(now())
-  User                User?               @relation(fields: [userName], references: [name])
-  userName            String?
+  isOffshore          Boolean?        @default(false)
+  created_at          DateTime        @default(now())
+  User                User?           @relation(fields: [userId], references: [id])
+  userId              String?
   technicians         Technician[]
   timesheetsdata      TimeSheetData[]
   TechSite            TechSite[]
-  invoicesToCustomer  InvoiceToCustomer[]
   interventions       Intervention[]
+  updated_at          DateTime        @updatedAt
+  isDeleted           Boolean         @default(false)
+  deleted_at          DateTime?
+  deletedBy           String?
 
   @@map("sites")
 }
@@ -170,11 +188,15 @@ model BillingOrder {
   currency                   String
   expense_administration_tax Int
   created_at                 DateTime       @default(now())
-  User                       User?          @relation(fields: [userName], references: [name])
-  userName                   String?
+  User                       User?          @relation(fields: [userId], references: [id])
+  userId                     String?
   interventions              Intervention[]
   Customer                   Customer?      @relation(fields: [customerId], references: [id])
   customerId                 String?
+  updated_at                 DateTime       @updatedAt
+  isDeleted                  Boolean        @default(false)
+  deleted_at                 DateTime?
+  deletedBy                  String?
 
   @@map("billing_orders")
 }
@@ -202,56 +224,61 @@ model TimeSheetDay {
 }
 
 model TimeSheetData {
-  id                  String             @id @default(uuid())
+  id                  String         @id @default(uuid())
   first_date          DateTime?
   second_date         DateTime?
   intervention_number String?
-  isInternational     Boolean?           @default(false)
+  isInternational     Boolean?       @default(false)
   timesheetdays       TimeSheetDay[]
-  created_at          DateTime           @default(now())
-  User                User?              @relation(fields: [userName], references: [name])
-  userName            String?
-  Technician          Technician?        @relation(fields: [technicianId], references: [id])
+  created_at          DateTime       @default(now())
+  User                User?          @relation(fields: [userId], references: [id])
+  userId              String?
+  Technician          Technician?    @relation(fields: [technicianId], references: [id])
   technicianId        String?
-  Intervention        Intervention?      @relation(fields: [interventionId], references: [id])
+  Intervention        Intervention?  @relation(fields: [interventionId], references: [id])
   interventionId      String?
-  Customer            Customer?          @relation(fields: [customerId], references: [id])
+  Customer            Customer?      @relation(fields: [customerId], references: [id])
   customerId          String?
-  Site                Site?              @relation(fields: [siteId], references: [id])
+  Site                Site?          @relation(fields: [siteId], references: [id])
   siteId              String?
-  InvoiceToCustomer   InvoiceToCustomer? @relation(fields: [invoiceToCustomerId], references: [id])
-  invoiceToCustomerId String?
+  updated_at          DateTime       @updatedAt
+  isDeleted           Boolean        @default(false)
+  deleted_at          DateTime?
+  deletedBy           String?
 
   @@map("timesheets_data")
 }
 
 model Intervention {
-  id                            String                          @id @default(uuid())
-  progressive                   String                          @unique
-  intervention_number           String
-  customer_po_number            String
-  job_number                    String
-  isMonthly                     Boolean                         @default(false)
-  initial_at                    DateTime?
-  finished_at                   DateTime?
-  total_value                   Int?
-  created_at                    DateTime                        @default(now())
-  Technician                    Technician?                     @relation(fields: [technicianId], references: [id])
-  technicianId                  String?
-  Site                          Site?                           @relation(fields: [siteId], references: [id])
-  siteId                        String?
-  User                          User?                           @relation(fields: [userName], references: [name])
-  userName                      String?
-  Customer                      Customer?                       @relation(fields: [customerId], references: [id])
-  customerId                    String?
-  CustomerProjectManager        CustomerProjectManager?         @relation(fields: [customerProjectManagerId], references: [id])
-  customerProjectManagerId      String?
-  BillingOrder                  BillingOrder?                   @relation(fields: [billingOrderId], references: [id])
-  billingOrderId                String?
-  timesheets                    TimeSheetData[]
-  invoicesToCustomer            InvoiceToCustomer[]
-  InvoiceToCustomerIntervention InvoiceToCustomerIntervention[]
-  interventionExpenses          InterventionExpense[]
+  id                       String                  @id @default(uuid())
+  progressive              String
+  intervention_number      String
+  customer_po_number       String
+  job_number               String
+  isMonthly                Boolean                 @default(false)
+  initial_at               DateTime?
+  finished_at              DateTime?
+  total_value              Int?
+  created_at               DateTime                @default(now())
+  Technician               Technician?             @relation(fields: [technicianId], references: [id])
+  technicianId             String?
+  Site                     Site?                   @relation(fields: [siteId], references: [id])
+  siteId                   String?
+  User                     User?                   @relation(fields: [userId], references: [id])
+  userId                   String?
+  Customer                 Customer?               @relation(fields: [customerId], references: [id])
+  customerId               String?
+  CustomerProjectManager   CustomerProjectManager? @relation(fields: [customerProjectManagerId], references: [id])
+  customerProjectManagerId String?
+  BillingOrder             BillingOrder?           @relation(fields: [billingOrderId], references: [id])
+  billingOrderId           String?
+  timesheets               TimeSheetData[]
+
+  interventionExpenses InterventionExpense[]
+  updated_at           DateTime              @updatedAt
+  isDeleted            Boolean               @default(false)
+  deleted_at           DateTime?
+  deletedBy            String?
 
   @@map("interventions")
 }
@@ -268,8 +295,12 @@ model InterventionExpense {
   created_at      DateTime      @default(now())
   Intervention    Intervention? @relation(fields: [interventionId], references: [id])
   interventionId  String?
-  User            User?         @relation(fields: [userName], references: [name])
-  userName        String?
+  User            User?         @relation(fields: [userId], references: [id])
+  userId          String?
+  updated_at      DateTime      @updatedAt
+  isDeleted       Boolean       @default(false)
+  deleted_at      DateTime?
+  deletedBy       String?
 
   @@map("intervention_expenses")
 }
@@ -285,10 +316,14 @@ model TechnicianExpense {
   total_converted Int
   created_at      DateTime @default(now())
 
-  User         User?       @relation(fields: [userName], references: [name])
-  userName     String?
+  User         User?       @relation(fields: [userId], references: [id])
+  userId       String?
   Technician   Technician? @relation(fields: [technicianId], references: [id])
   technicianId String?
+  updated_at   DateTime    @updatedAt
+  isDeleted    Boolean     @default(false)
+  deleted_at   DateTime?
+  deletedBy    String?
 
   @@map("technician_expenses")
 }
@@ -296,7 +331,7 @@ model TechnicianExpense {
 model Customer {
   id                   String   @id @default(uuid())
   company_name         String
-  cnpj                 String   @unique
+  cnpj                 String
   phone                String?
   cep                  String?
   street               String?
@@ -306,13 +341,16 @@ model Customer {
   uf                   String?
   created_at           DateTime @default(now())
 
-  project_managers   CustomerProjectManager[]
-  billing_orders     BillingOrder[]
-  interventions      Intervention[]
-  timesheetsdata     TimeSheetData[]
-  invoicesToCustomer InvoiceToCustomer[]
-  User               User?                    @relation(fields: [userName], references: [name])
-  userName           String?
+  project_managers CustomerProjectManager[]
+  billing_orders   BillingOrder[]
+  interventions    Intervention[]
+  timesheetsdata   TimeSheetData[]
+  User             User?                    @relation(fields: [userId], references: [id])
+  userId           String?
+  updated_at       DateTime                 @updatedAt
+  isDeleted        Boolean                  @default(false)
+  deleted_at       DateTime?
+  deletedBy        String?
 
   @@map("customers")
 }
@@ -328,39 +366,10 @@ model CustomerProjectManager {
   interventions Intervention[]
   Customer      Customer?      @relation(fields: [customerId], references: [id])
   customerId    String?
+  updated_at    DateTime       @updatedAt
+  isDeleted     Boolean        @default(false)
+  deleted_at    DateTime?
+  deletedBy     String?
 
   @@map("customer_project_managers")
-}
-
-model InvoiceToCustomer {
-  id                            String                          @id @default(uuid())
-  isDolarInvoice                Boolean                         @default(false)
-  invoice_currency_quote        Int                             @default(1)
-  total_value                   Int?
-  total_value_in_dollar         Int?
-  isApproved                    Boolean                         @default(false)
-  timesheetsdata                TimeSheetData[]
-  Intervention                  Intervention?                   @relation(fields: [interventionId], references: [id])
-  interventionId                String?
-  created_at                    DateTime                        @default(now())
-  User                          User?                           @relation(fields: [userName], references: [name])
-  userName                      String?
-  InvoiceToCustomerIntervention InvoiceToCustomerIntervention[]
-  Technician                    Technician?                     @relation(fields: [technicianId], references: [id])
-  technicianId                  String?
-  Site                          Site?                           @relation(fields: [siteId], references: [id])
-  siteId                        String?
-  Customer                      Customer?                       @relation(fields: [customerId], references: [id])
-  customerId                    String?
-
-  @@map("invoice_to_customer")
-}
-
-model InvoiceToCustomerIntervention {
-  Intervention        Intervention      @relation(fields: [interventionId], references: [id])
-  interventionId      String
-  invoiceToCustomer   InvoiceToCustomer @relation(fields: [invoiceToCustomerId], references: [id])
-  invoiceToCustomerId String
-
-  @@id([interventionId, invoiceToCustomerId])
 }

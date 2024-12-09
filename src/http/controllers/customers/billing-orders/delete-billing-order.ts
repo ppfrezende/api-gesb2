@@ -4,6 +4,7 @@ import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-err
 import { makeGetInterventionByBillingOrderUseCase } from '@/use-cases/_factories/interventions_factories/make-get-intervention-by-billing-order-use-case';
 import { ResourceCannotBeDeletedError } from '@/use-cases/errors/resource-cannot-be-deleted';
 import { makeDeleteBillingOrderUseCase } from '@/use-cases/_factories/customers_factories/billing-orders_factories/make-delete-billing-order-use-case';
+import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-get-user-profile';
 
 export async function deleteBillingOrder(
   request: FastifyRequest,
@@ -23,6 +24,12 @@ export async function deleteBillingOrder(
     const getInterventionByBillingUseCase =
       makeGetInterventionByBillingOrderUseCase();
 
+    const getUserProfile = makeGetUserProfileUseCase();
+
+    const { user: userLoggedIn } = await getUserProfile.execute({
+      userId: request.user.sub,
+    });
+
     const isLinked = await getInterventionByBillingUseCase.execute({
       billingOrderId,
     });
@@ -32,6 +39,7 @@ export async function deleteBillingOrder(
     } else {
       await deleteBillingOrder.execute({
         billingOrderId,
+        deletedBy: userLoggedIn.name,
       });
     }
 

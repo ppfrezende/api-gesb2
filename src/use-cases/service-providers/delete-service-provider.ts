@@ -3,6 +3,7 @@ import { ResourceNotFoundError } from '../errors/resource-not-found-error';
 
 interface DeleteServiceProviderUseCaseRequest {
   serviceProviderId: string;
+  deletedBy: string;
 }
 
 export class DeleteServiceProviderUseCase {
@@ -10,6 +11,7 @@ export class DeleteServiceProviderUseCase {
 
   async execute({
     serviceProviderId,
+    deletedBy,
   }: DeleteServiceProviderUseCaseRequest): Promise<void> {
     const serviceProvider = await this.serviceProvidersRepository.findById(
       serviceProviderId,
@@ -18,7 +20,10 @@ export class DeleteServiceProviderUseCase {
     if (!serviceProvider) {
       throw new ResourceNotFoundError();
     } else {
-      await this.serviceProvidersRepository.delete(serviceProviderId);
+      await this.serviceProvidersRepository.delete(
+        serviceProviderId,
+        deletedBy,
+      );
 
       return;
     }

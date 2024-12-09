@@ -9,6 +9,7 @@ import { updateCustomer } from './update-customer';
 import { getCustomer } from './get-customer';
 import { searchCustomers } from './search-customers';
 import { getAllCustomersList } from './get-all-customers';
+import { getAllCustomersTrashList } from './get-all-customers-trash';
 
 export async function customersRoutes(app: FastifyInstance) {
   app.post(
@@ -86,5 +87,11 @@ export async function customersRoutes(app: FastifyInstance) {
       ],
     },
     deleteCustomer,
+  );
+
+  app.get(
+    '/customers/trash',
+    { onRequest: [verifyJWT, verifyUserRole(['ADMIN'])] },
+    getAllCustomersTrashList,
   );
 }

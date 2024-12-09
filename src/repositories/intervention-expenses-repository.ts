@@ -4,6 +4,7 @@ export interface InterventionExpensesRepository {
   findById(id: string): Promise<InterventionExpense | null>;
   listMany(page: number): Promise<InterventionExpense[]>;
   listAll(): Promise<InterventionExpense[]>;
+  listAllInterventionExpensesTrash(): Promise<InterventionExpense[]>;
   listManyByInterventionId(
     interventionId: string,
     page: number,
@@ -14,6 +15,6 @@ export interface InterventionExpensesRepository {
     month: number,
   ): Promise<number>;
   createMany(data: Prisma.InterventionExpenseCreateManyInput[]): Promise<void>;
-  delete(id: string): Promise<unknown>;
-  deleteMany(interventionId: string): Promise<unknown>;
+  delete(id: string, deletedBy: string): Promise<unknown>;
+  deleteMany(interventionId: string, deletedBy: string): Promise<unknown>;
 }

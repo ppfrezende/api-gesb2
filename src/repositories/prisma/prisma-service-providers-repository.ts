@@ -16,9 +16,10 @@ export class PrismaServiceProvidersRepository
   }
 
   async findByEmail(email: string): Promise<ServiceProvider | null> {
-    const service_provider = await prisma.serviceProvider.findUnique({
+    const service_provider = await prisma.serviceProvider.findFirst({
       where: {
         email,
+        isDeleted: false,
       },
     });
 
@@ -26,9 +27,10 @@ export class PrismaServiceProvidersRepository
   }
 
   async findByCpf(cpf: string): Promise<ServiceProvider | null> {
-    const service_provider = await prisma.serviceProvider.findUnique({
+    const service_provider = await prisma.serviceProvider.findFirst({
       where: {
         cpf,
+        isDeleted: false,
       },
     });
 
@@ -36,9 +38,10 @@ export class PrismaServiceProvidersRepository
   }
 
   async findByCnpj(cnpj: string): Promise<ServiceProvider | null> {
-    const service_provider = await prisma.serviceProvider.findUnique({
+    const service_provider = await prisma.serviceProvider.findFirst({
       where: {
         cnpj,
+        isDeleted: false,
       },
     });
 
@@ -48,9 +51,10 @@ export class PrismaServiceProvidersRepository
   async findByRegistrationNumber(
     registration_number: string,
   ): Promise<ServiceProvider | null> {
-    const service_provider = await prisma.serviceProvider.findUnique({
+    const service_provider = await prisma.serviceProvider.findFirst({
       where: {
         registration_number,
+        isDeleted: false,
       },
     });
 
@@ -59,6 +63,9 @@ export class PrismaServiceProvidersRepository
 
   async listMany(page: number) {
     const service_providers = await prisma.serviceProvider.findMany({
+      where: {
+        isDeleted: false,
+      },
       take: 10,
       skip: (page - 1) * 10,
       orderBy: {
@@ -71,6 +78,22 @@ export class PrismaServiceProvidersRepository
 
   async listAll() {
     const service_providers = await prisma.serviceProvider.findMany({
+      where: {
+        isDeleted: false,
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+
+    return service_providers;
+  }
+
+  async listAllServiceProvidersTrash() {
+    const service_providers = await prisma.serviceProvider.findMany({
+      where: {
+        isDeleted: true,
+      },
       orderBy: {
         created_at: 'desc',
       },
@@ -82,6 +105,7 @@ export class PrismaServiceProvidersRepository
   async searchMany(query: string, page: number) {
     const service_providers = await prisma.serviceProvider.findMany({
       where: {
+        isDeleted: false,
         name: {
           contains: query,
         },
@@ -127,10 +151,15 @@ export class PrismaServiceProvidersRepository
     return service_provider;
   }
 
-  async delete(id: string) {
-    await prisma.serviceProvider.delete({
+  async delete(id: string, deletedBy: string) {
+    await prisma.serviceProvider.update({
       where: {
         id,
+      },
+      data: {
+        isDeleted: true,
+        deleted_at: new Date(),
+        deletedBy,
       },
     });
 

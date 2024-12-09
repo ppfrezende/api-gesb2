@@ -16,6 +16,7 @@ import { updateUserProfile } from './update-user';
 import { updateUserAvatar } from './update-avatar-user';
 import { testConnection } from './connection';
 import { updateSelfProfile } from './update-self-profile';
+import { getAllUsersTrashList } from './get-all-users-trash';
 
 const uploadAvatar = multer(uploadConfig.upload('tmp/avatar'));
 
@@ -91,5 +92,11 @@ export async function usersRoutes(app: FastifyInstance) {
       ],
     },
     updateSelfProfile,
+  );
+
+  app.get(
+    '/users/trash',
+    { onRequest: [verifyJWT, verifyUserRole(['ADMIN'])] },
+    getAllUsersTrashList,
   );
 }

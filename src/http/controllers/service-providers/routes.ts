@@ -11,6 +11,7 @@ import { getServiceProviderProfile } from '../service-providers/get-service-prov
 import { deleteServiceProviderProfile } from '../service-providers/delete-service-provider';
 import { getServiceProvidersList } from '../service-providers/get-service-providers-list';
 import { updateServiceProviderAvatar } from '../service-providers/update-avatar-service-provider';
+import { getServiceProvidersTrashList } from './get-all-service-providers-trash';
 
 const uploadAvatar = multer(uploadConfig.upload('tmp/avatar'));
 
@@ -58,5 +59,11 @@ export async function serviceProvidersRoutes(app: FastifyInstance) {
       preHandler: uploadAvatar.single('avatar'),
     },
     updateServiceProviderAvatar,
+  );
+
+  app.get(
+    '/service-providers/trash',
+    { onRequest: [verifyJWT, verifyUserRole(['ADMIN'])] },
+    getServiceProvidersTrashList,
   );
 }

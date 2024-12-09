@@ -51,37 +51,6 @@ export class PrismaTimeSheetsDataRepository
     });
   }
 
-  async connectToInvoiceToCustomer(
-    timesheetId: string,
-    invoiceToCustomerId: string,
-  ): Promise<void> {
-    await prisma.timeSheetData.update({
-      where: {
-        id: timesheetId,
-      },
-      data: {
-        InvoiceToCustomer: {
-          connect: {
-            id: invoiceToCustomerId,
-          },
-        },
-      },
-    });
-  }
-
-  async disconnectToInvoiceToCustomer(timesheetId: string): Promise<void> {
-    await prisma.timeSheetData.update({
-      where: {
-        id: timesheetId,
-      },
-      data: {
-        InvoiceToCustomer: {
-          disconnect: true,
-        },
-      },
-    });
-  }
-
   async listManyByTechnicianId(
     technicianId: string,
     page: number,
@@ -89,6 +58,7 @@ export class PrismaTimeSheetsDataRepository
     const timesheetsdata = await prisma.timeSheetData.findMany({
       where: {
         technicianId,
+        isDeleted: false,
       },
       take: 100,
       skip: (page - 1) * 100,
@@ -107,8 +77,29 @@ export class PrismaTimeSheetsDataRepository
 
   async listMany(page: number): Promise<TimeSheetData[] | []> {
     const timesheetsdata = await prisma.timeSheetData.findMany({
+      where: {
+        isDeleted: false,
+      },
       take: 100,
       skip: (page - 1) * 100,
+      include: {
+        timesheetdays: true,
+        Intervention: true,
+        Technician: true,
+      },
+      orderBy: {
+        first_date: 'asc',
+      },
+    });
+
+    return timesheetsdata;
+  }
+
+  async listAllTimesheetsTrash(): Promise<TimeSheetData[] | []> {
+    const timesheetsdata = await prisma.timeSheetData.findMany({
+      where: {
+        isDeleted: true,
+      },
       include: {
         timesheetdays: true,
         Intervention: true,
@@ -141,10 +132,15 @@ export class PrismaTimeSheetsDataRepository
     return timesheetdata;
   }
 
-  async delete(id: string) {
-    await prisma.timeSheetData.delete({
+  async delete(id: string, deletedBy: string) {
+    await prisma.timeSheetData.update({
       where: {
         id,
+      },
+      data: {
+        isDeleted: true,
+        deleted_at: new Date(),
+        deletedBy,
       },
     });
 

@@ -13,6 +13,7 @@ import { getMonthlyInterventionsProfitTotalValue } from './get-total-monthly-int
 import { getAnualInterventionsProfitTotalValue } from './get-total-anual-interventions-profit';
 import { getTotalEachMonthInterventionsProfit } from './get-total-each-month-interventions-profit';
 import { getTotalEachMonthInterventionsCount } from './get-total-each-month-interventions-count';
+import { getAllInterventionsTrashList } from './get-all-interventions-trash';
 
 export async function interventionsRoutes(app: FastifyInstance) {
   app.post(
@@ -99,5 +100,11 @@ export async function interventionsRoutes(app: FastifyInstance) {
       onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])],
     },
     getTotalEachMonthInterventionsProfit,
+  );
+
+  app.get(
+    '/interventions/trash',
+    { onRequest: [verifyJWT, verifyUserRole(['ADMIN'])] },
+    getAllInterventionsTrashList,
   );
 }

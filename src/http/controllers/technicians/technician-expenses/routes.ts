@@ -8,6 +8,7 @@ import { getTechnicianExpensesList } from './get-technician-expenses';
 import { getMonthlyTechniciansExpensesTotalValue } from './get-total-monthly-technicians-expenses';
 import { getAnualTechniciansExpensesTotalValue } from './get-total-anual-technicians-expenses';
 import { getTotalEachMonthTechniciansExpenses } from './get-total-each-month-interventions-expenses';
+import { getTechnicianExpensesTrashList } from './get-technician-expenses-trash';
 
 export async function technicianExpensesRoutes(app: FastifyInstance) {
   app.post(
@@ -85,5 +86,12 @@ export async function technicianExpensesRoutes(app: FastifyInstance) {
       ],
     },
     getTotalEachMonthTechniciansExpenses,
+  );
+  app.get(
+    '/technician-expenses/trash',
+    {
+      onRequest: [verifyJWT, verifyUserRole(['ADMIN'])],
+    },
+    getTechnicianExpensesTrashList,
   );
 }
