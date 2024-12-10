@@ -45,7 +45,7 @@ export async function createTechnicianExpenses(
       expense_date: new Date(expense.expense_date),
       total_converted: (expense.expense_value * expense.currency_quote) / 100,
       technicianId,
-      userName: user.name,
+      userId: user.id,
     }));
 
     const createdTechnicianExpenses =

@@ -11,11 +11,17 @@ export class PrismaTechniciansRepository implements TechniciansRepository {
       include: {
         interventions: true,
         timesheetdata: {
+          where: {
+            isDeleted: false,
+          },
           orderBy: {
             first_date: 'asc',
           },
         },
         technicianExpenses: {
+          where: {
+            isDeleted: false,
+          },
           orderBy: {
             expense_date: 'desc',
           },
@@ -29,6 +35,7 @@ export class PrismaTechniciansRepository implements TechniciansRepository {
     const technician = await prisma.technician.findFirst({
       where: {
         email,
+        isDeleted: false,
       },
     });
 
@@ -41,6 +48,7 @@ export class PrismaTechniciansRepository implements TechniciansRepository {
     const technician = await prisma.technician.findFirst({
       where: {
         registration_number,
+        isDeleted: false,
       },
     });
 
@@ -49,6 +57,9 @@ export class PrismaTechniciansRepository implements TechniciansRepository {
 
   async listMany(page: number) {
     const technicians = await prisma.technician.findMany({
+      where: {
+        isDeleted: false,
+      },
       take: 10,
       skip: (page - 1) * 10,
       orderBy: {
@@ -60,7 +71,11 @@ export class PrismaTechniciansRepository implements TechniciansRepository {
   }
 
   async listAll() {
-    const technicians = await prisma.technician.findMany();
+    const technicians = await prisma.technician.findMany({
+      where: {
+        isDeleted: false,
+      },
+    });
 
     return technicians;
   }
@@ -68,6 +83,8 @@ export class PrismaTechniciansRepository implements TechniciansRepository {
   async searchMany(query: string, page: number) {
     const technicians = await prisma.technician.findMany({
       where: {
+        isDeleted: false,
+
         OR: [
           {
             name: {

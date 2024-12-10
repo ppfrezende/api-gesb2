@@ -63,7 +63,7 @@ export async function createTimeSheetData(
 
     const { timesheetdata } = await createTimeSheetData.execute({
       technicianId,
-      userName: user.name,
+      userId: user.id,
     });
 
     // const dayHoursArray = day.map((item, index) => {

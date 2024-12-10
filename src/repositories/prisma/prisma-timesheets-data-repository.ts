@@ -141,6 +141,9 @@ export class PrismaTimeSheetsDataRepository
         isDeleted: true,
         deleted_at: new Date(),
         deletedBy,
+        Intervention: {
+          disconnect: true,
+        },
       },
     });
 

@@ -11,7 +11,7 @@ interface CreateSiteUseCaseRequest {
   administrator_phone: string;
   administrator_email: string;
   isOffshore: boolean;
-  userName: string;
+  userId: string;
 }
 
 interface CreateSiteUseCaseResponse {
@@ -31,7 +31,7 @@ export class CreateSiteUseCase {
     administrator_name,
     administrator_phone,
     isOffshore,
-    userName,
+    userId,
   }: CreateSiteUseCaseRequest): Promise<CreateSiteUseCaseResponse> {
     const site = await this.sitesRepository.create({
       name,
@@ -43,7 +43,7 @@ export class CreateSiteUseCase {
       administrator_name,
       administrator_phone,
       isOffshore,
-      userName,
+      userId,
     });
 
     return {

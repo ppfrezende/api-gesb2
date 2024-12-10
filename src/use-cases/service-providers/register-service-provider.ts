@@ -19,7 +19,7 @@ interface RegisterServiceProviderUseCaseRequest {
   city: string;
   uf: string;
   job_title: string;
-  userName: string;
+  userId: string;
   skills: string;
 }
 
@@ -47,7 +47,7 @@ export class RegisterServiceProviderUseCase {
     city,
     uf,
     job_title,
-    userName,
+    userId,
     skills,
   }: RegisterServiceProviderUseCaseRequest): Promise<RegisterServiceProviderUseCaseResponse> {
     const serviceProviderWithSameEmail =
@@ -87,7 +87,7 @@ export class RegisterServiceProviderUseCase {
       city,
       uf,
       job_title,
-      userName,
+      userId,
       skills,
     });
 

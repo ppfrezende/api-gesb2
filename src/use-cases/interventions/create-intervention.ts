@@ -16,7 +16,7 @@ interface CreateInterventionUseCaseRequest {
   customerProjectManagerId: string;
   billingOrderId?: string | null;
   total_value?: number | null;
-  userName: string;
+  userId: string;
 }
 
 interface CreateInterventionUseCaseResponse {
@@ -40,7 +40,7 @@ export class CreateInterventionUseCase {
     customerProjectManagerId,
     billingOrderId,
     total_value,
-    userName,
+    userId,
   }: CreateInterventionUseCaseRequest): Promise<CreateInterventionUseCaseResponse> {
     const interventionWithSameProgressive =
       await this.interventionsRepository.findByProgressive(progressive);
@@ -63,7 +63,7 @@ export class CreateInterventionUseCase {
       customerProjectManagerId,
       billingOrderId,
       total_value,
-      userName,
+      userId,
     });
 
     return {

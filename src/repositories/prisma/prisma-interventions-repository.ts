@@ -13,12 +13,19 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
         Technician: true,
         Customer: {
           include: {
-            project_managers: true,
+            project_managers: {
+              where: {
+                isDeleted: false,
+              },
+            },
           },
         },
         CustomerProjectManager: true,
         BillingOrder: true,
         timesheets: {
+          where: {
+            isDeleted: false,
+          },
           include: {
             timesheetdays: {
               orderBy: {
@@ -31,6 +38,9 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
           },
         },
         interventionExpenses: {
+          where: {
+            isDeleted: false,
+          },
           orderBy: {
             expense_date: 'asc',
           },

@@ -97,7 +97,7 @@ export async function registerServiceProvider(
       city,
       uf,
       job_title,
-      userName: user.name,
+      userId: user.id,
       skills,
     });
 
@@ -107,7 +107,7 @@ export async function registerServiceProvider(
       email,
       job_title,
       registration_number,
-      userName: user.name,
+      userId: user.id,
       skills,
     });
 

@@ -45,6 +45,7 @@ export async function deleteServiceProviderProfile(
 
       await deleteTechnicianUseCase.execute({
         technicianId: serviceProviderId,
+        deletedBy: userLoggedIn.name,
       });
     }
 

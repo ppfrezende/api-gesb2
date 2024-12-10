@@ -16,7 +16,7 @@ interface RegisterEmployeeUseCaseRequest {
   city: string;
   uf: string;
   job_title: string;
-  userName: string;
+  userId: string;
   salary: number;
   skills: string;
 }
@@ -43,7 +43,7 @@ export class RegisterEmployeeUseCase {
     uf,
     salary,
     job_title,
-    userName,
+    userId,
     skills,
   }: RegisterEmployeeUseCaseRequest): Promise<RegisterEmployeeUseCaseResponse> {
     const employeesWithSameEmail = await this.employeeRepository.findByEmail(
@@ -79,7 +79,7 @@ export class RegisterEmployeeUseCase {
       uf,
       salary,
       job_title,
-      userName,
+      userId,
       skills,
     });
 

@@ -9,7 +9,7 @@ type InterventionExpenseData = {
   expense_value: number;
   total_converted: number;
   interventionId: string;
-  userName: string;
+  userId: string;
 };
 
 export class CreateInterventionExpensesUseCase {

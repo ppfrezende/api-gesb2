@@ -94,7 +94,7 @@ export async function createBillingOrder(
       currency,
       expense_administration_tax,
       customerId,
-      userName: user.name,
+      userId: user.id,
     });
 
     return reply.status(201).send({

@@ -5,6 +5,7 @@ import { makeDeleteInterventionExpenseUseCase } from '@/use-cases/_factories/int
 import { makeUpdateInterventionUseCase } from '@/use-cases/_factories/interventions_factories/make-update-intervention-use-case';
 import { makeGetInterventionExpenseUseCase } from '@/use-cases/_factories/interventions_factories/intervention_expenses_factories/make-get-intervention-expense-use-case';
 import { makeGetInterventionUseCase } from '@/use-cases/_factories/interventions_factories/make-get-intervention-use-case';
+import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-get-user-profile';
 
 export async function deleteInterventionExpense(
   request: FastifyRequest,
@@ -25,6 +26,11 @@ export async function deleteInterventionExpense(
     const getInterventionExpenseUseCase = makeGetInterventionExpenseUseCase();
     const getInterventionUseCase = makeGetInterventionUseCase();
     const updateInterventionUseCase = makeUpdateInterventionUseCase();
+    const getUserProfile = makeGetUserProfileUseCase();
+
+    const { user: userLoggedIn } = await getUserProfile.execute({
+      userId: request.user.sub,
+    });
 
     const { intervention } = await getInterventionUseCase.execute({
       interventionId,
@@ -48,6 +54,7 @@ export async function deleteInterventionExpense(
 
     await deleteInterventionExpenseUseCase.execute({
       interventionExpenseId,
+      deletedBy: userLoggedIn.name,
     });
 
     return reply.status(204).send();

@@ -13,7 +13,7 @@ interface CreateTimeSheetDataUseCaseRequest {
   siteId?: string;
   isInternational?: boolean;
   technicianId: string;
-  userName: string;
+  userId: string;
 }
 
 export class CreateTimeSheetDataUseCase {
@@ -27,7 +27,7 @@ export class CreateTimeSheetDataUseCase {
     siteId,
     intervention_number,
     isInternational,
-    userName,
+    userId,
   }: CreateTimeSheetDataUseCaseRequest): Promise<CreateTimeSheetDataUseCaseResponse> {
     const timesheetdata = await this.timesheetdataRepository.create({
       first_date,
@@ -37,7 +37,7 @@ export class CreateTimeSheetDataUseCase {
       siteId,
       intervention_number,
       isInternational,
-      userName,
+      userId,
     });
 
     return {

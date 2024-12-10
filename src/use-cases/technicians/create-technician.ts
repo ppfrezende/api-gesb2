@@ -8,7 +8,7 @@ interface CreateTechnicianUseCaseRequest {
   email: string;
   job_title: string;
   registration_number: string;
-  userName: string;
+  userId: string;
   skills: string;
 }
 
@@ -25,7 +25,7 @@ export class CreateTechnicianUseCase {
     email,
     job_title,
     registration_number,
-    userName,
+    userId,
     skills,
   }: CreateTechnicianUseCaseRequest): Promise<CreateTechnicianUseCaseResponse> {
     const techniciansWithSameEmail =
@@ -41,7 +41,7 @@ export class CreateTechnicianUseCase {
       email,
       job_title,
       registration_number,
-      userName,
+      userId,
       skills,
     });
 

@@ -76,7 +76,7 @@ export async function createIntervention(
       customerProjectManagerId,
       billingOrderId,
       total_value,
-      userName: user.name,
+      userId: user.id,
     });
 
     return reply.status(201).send({

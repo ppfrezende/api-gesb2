@@ -11,7 +11,7 @@ interface CreateCustomerUseCaseRequest {
   uf: string;
   establishment_number: string;
   phone: string;
-  userName: string;
+  userId: string;
 }
 
 interface CreateCustomerUseCaseResponse {
@@ -31,7 +31,7 @@ export class CreateCustomerUseCase {
     uf,
     establishment_number,
     phone,
-    userName,
+    userId,
   }: CreateCustomerUseCaseRequest): Promise<CreateCustomerUseCaseResponse> {
     const customer = await this.customersRepository.create({
       company_name,
@@ -43,7 +43,7 @@ export class CreateCustomerUseCase {
       uf,
       establishment_number,
       phone,
-      userName,
+      userId,
     });
 
     return {

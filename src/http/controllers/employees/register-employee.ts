@@ -91,7 +91,7 @@ export async function registerEmployee(
       uf,
       salary,
       job_title,
-      userName: user.name,
+      userId: user.id,
       skills,
     });
 
@@ -101,7 +101,7 @@ export async function registerEmployee(
       email,
       job_title,
       registration_number,
-      userName: user.name,
+      userId: user.id,
       skills,
     });
 

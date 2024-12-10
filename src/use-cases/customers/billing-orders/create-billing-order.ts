@@ -23,7 +23,7 @@ interface CreateBillingOrderUseCaseRequest {
   whatsCalendar: string;
   currency: string;
   expense_administration_tax: number;
-  userName: string;
+  userId: string;
   customerId: string;
 }
 
@@ -57,7 +57,7 @@ export class CreateBillingOrderUseCase {
     currency,
     expense_administration_tax,
     customerId,
-    userName,
+    userId,
   }: CreateBillingOrderUseCaseRequest): Promise<CreateBillingOrderUseCaseResponse> {
     const billing_order = await this.billingOrderRepository.create({
       description,
@@ -82,7 +82,7 @@ export class CreateBillingOrderUseCase {
       currency,
       expense_administration_tax,
       customerId,
-      userName,
+      userId,
     });
 
     return {

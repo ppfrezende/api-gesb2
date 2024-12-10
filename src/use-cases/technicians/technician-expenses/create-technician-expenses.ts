@@ -9,7 +9,7 @@ type TechnicianExpenseData = {
   expense_value: number;
   total_converted: number;
   technicianId: string;
-  userName: string;
+  userId: string;
 };
 
 export class CreateTechnicianExpensesUseCase {

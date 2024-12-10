@@ -64,7 +64,7 @@ export async function createCustomer(
       phone,
       street,
       uf,
-      userName: user.name,
+      userId: user.id,
     });
 
     if (project_managers) {

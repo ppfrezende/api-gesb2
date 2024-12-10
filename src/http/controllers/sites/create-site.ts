@@ -48,7 +48,7 @@ export async function createSite(request: FastifyRequest, reply: FastifyReply) {
       administrator_name,
       administrator_phone,
       isOffshore,
-      userName: user.name,
+      userId: user.id,
     });
 
     return reply.status(201).send({
