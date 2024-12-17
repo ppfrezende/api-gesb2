@@ -78,7 +78,7 @@ export async function timeSheetsRoutes(app: FastifyInstance) {
     connectTimesheetToIntervention,
   );
   app.delete(
-    '/timesheet/:timesheetdataId/disconnect/:interventionId',
+    '/timesheet/:timesheetdataId/disconnect',
     {
       onRequest: [
         verifyJWT,

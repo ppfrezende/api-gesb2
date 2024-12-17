@@ -7,6 +7,6 @@ export interface TimeSheetDaysRepository {
   ): Promise<TimeSheetDay[] | null>;
   listMany(page: number): Promise<TimeSheetDay[] | null>;
   createMany(data: Prisma.TimeSheetDayCreateManyInput[]): Promise<void>;
-  delete(id: string): Promise<unknown>;
-  deleteMany(timeSheetDataId: string): Promise<unknown>;
+  delete(id: string, deletedBy: string): Promise<unknown>;
+  deleteMany(timeSheetDataId: string, deletedBy: string): Promise<unknown>;
 }

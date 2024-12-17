@@ -14,6 +14,8 @@ import { getAnualInterventionsProfitTotalValue } from './get-total-anual-interve
 import { getTotalEachMonthInterventionsProfit } from './get-total-each-month-interventions-profit';
 import { getTotalEachMonthInterventionsCount } from './get-total-each-month-interventions-count';
 import { getAllInterventionsTrashList } from './get-all-interventions-trash';
+import { generateResumeForApproval } from './generate-resume-for-approval';
+import { approveIntervention } from './approve-intervention';
 
 export async function interventionsRoutes(app: FastifyInstance) {
   app.post(
@@ -106,5 +108,21 @@ export async function interventionsRoutes(app: FastifyInstance) {
     '/interventions/trash',
     { onRequest: [verifyJWT, verifyUserRole(['ADMIN'])] },
     getAllInterventionsTrashList,
+  );
+
+  app.get(
+    '/interventions/resume-for-approval/:interventionId',
+    {
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])],
+    },
+    generateResumeForApproval,
+  );
+
+  app.patch(
+    '/interventions/approve-intervention/:interventionId',
+    {
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])],
+    },
+    approveIntervention,
   );
 }

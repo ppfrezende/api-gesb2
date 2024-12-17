@@ -37,6 +37,7 @@ export async function deleteTimeSheet(
     } else {
       await deleteTimeSheetDays.execute({
         timesheetdataId,
+        deletedBy: userLoggedIn.name,
       });
 
       await deleteTimeSheet.execute({

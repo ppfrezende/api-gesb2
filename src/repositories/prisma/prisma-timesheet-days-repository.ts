@@ -50,20 +50,30 @@ export class PrismaTimeSheetDaysRepository implements TimeSheetDaysRepository {
     return;
   }
 
-  async delete(id: string) {
-    await prisma.timeSheetDay.delete({
+  async delete(id: string, deletedBy: string) {
+    await prisma.timeSheetDay.update({
       where: {
         id,
+      },
+      data: {
+        isDeleted: true,
+        deleted_at: new Date(),
+        deletedBy,
       },
     });
 
     return;
   }
 
-  async deleteMany(timeSheetDataId: string) {
-    await prisma.timeSheetDay.deleteMany({
+  async deleteMany(timeSheetDataId: string, deletedBy: string) {
+    await prisma.timeSheetDay.updateMany({
       where: {
         timeSheetDataId,
+      },
+      data: {
+        isDeleted: true,
+        deleted_at: new Date(),
+        deletedBy,
       },
     });
 

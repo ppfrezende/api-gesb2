@@ -3,6 +3,7 @@ import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-err
 
 interface DeleteTimeSheetDaysUseCaseRequest {
   timesheetdataId: string;
+  deletedBy: string;
 }
 
 export class DeleteTimeSheetDaysUseCaseResponse {
@@ -10,6 +11,7 @@ export class DeleteTimeSheetDaysUseCaseResponse {
 
   async execute({
     timesheetdataId,
+    deletedBy,
   }: DeleteTimeSheetDaysUseCaseRequest): Promise<void> {
     const timesheetdays =
       await this.timesheetdaysRepository.findByTimeSheetDataId(timesheetdataId);
@@ -17,7 +19,7 @@ export class DeleteTimeSheetDaysUseCaseResponse {
     if (!timesheetdays) {
       throw new ResourceNotFoundError();
     } else {
-      await this.timesheetdaysRepository.deleteMany(timesheetdataId);
+      await this.timesheetdaysRepository.deleteMany(timesheetdataId, deletedBy);
 
       return;
     }

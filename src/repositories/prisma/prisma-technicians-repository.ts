@@ -142,6 +142,17 @@ export class PrismaTechniciansRepository implements TechniciansRepository {
   }
 
   async delete(id: string, deletedBy: string) {
+    await prisma.technicianExpense.updateMany({
+      where: {
+        technicianId: id,
+      },
+      data: {
+        isDeleted: true,
+        deleted_at: new Date(),
+        deletedBy,
+      },
+    });
+
     await prisma.technician.update({
       where: {
         id,

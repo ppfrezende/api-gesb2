@@ -1,8 +1,4 @@
-import {
-  BillingOrder,
-  InterventionExpense,
-  TimeSheetData,
-} from '@prisma/client';
+import { BillingOrder, InterventionExpense } from '@prisma/client';
 
 export interface InterventionResponseData {
   id: string;
@@ -25,6 +21,23 @@ export interface InterventionResponseData {
   Customer: Customer;
   CustomerProjectManager: ProjectManager;
   BillingOrder: BillingOrder;
-  timesheets: TimeSheetData[];
+  timesheets?: {
+    id: string;
+    first_date: Date | null;
+    second_date: Date | null;
+    intervention_number: string | null;
+    isInternational: boolean | null;
+    created_at: Date;
+    userId: string | null;
+    technicianId: string | null;
+    interventionId: string | null;
+    customerId: string | null;
+    siteId: string | null;
+    updated_at: Date;
+    isDeleted: boolean;
+    deleted_at: Date | null;
+    deletedBy: string | null;
+    timesheetdays: TimeSheetDay[];
+  }[];
   interventionExpenses: InterventionExpense[];
 }
