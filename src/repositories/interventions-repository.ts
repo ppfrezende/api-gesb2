@@ -15,6 +15,7 @@ export interface InterventionsRepository {
   listAllInterventionsTrash(): Promise<Intervention[]>;
   searchMany(query: string, page: number): Promise<Intervention[]>;
   totalAnualInterventionsProfitValue(year: number): Promise<number>;
+  expectedAnualInterventionsProfitValue(year: number): Promise<number>;
   totalMonthlyInterventionsProfitValue(
     year: number,
     month: number,

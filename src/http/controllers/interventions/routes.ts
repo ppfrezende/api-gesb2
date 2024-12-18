@@ -16,6 +16,7 @@ import { getTotalEachMonthInterventionsCount } from './get-total-each-month-inte
 import { getAllInterventionsTrashList } from './get-all-interventions-trash';
 import { generateResumeForApproval } from './generate-resume-for-approval';
 import { approveIntervention } from './approve-intervention';
+import { getAnualInterventionsProfitExpectedValue } from './get-expected-anual-interventions-profit';
 
 export async function interventionsRoutes(app: FastifyInstance) {
   app.post(
@@ -94,6 +95,14 @@ export async function interventionsRoutes(app: FastifyInstance) {
       onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])],
     },
     getAnualInterventionsProfitTotalValue,
+  );
+
+  app.get(
+    '/interventions-profit/total-anual-expected',
+    {
+      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])],
+    },
+    getAnualInterventionsProfitExpectedValue,
   );
 
   app.get(

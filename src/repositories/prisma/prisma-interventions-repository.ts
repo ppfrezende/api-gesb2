@@ -299,6 +299,7 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
         total_value: true,
       },
       where: {
+        isApproved: true,
         isDeleted: false,
         initial_at: {
           gte: new Date(year, 0, 1),
@@ -310,12 +311,32 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
     return totalAnualInterventionProfit._sum.total_value ?? 0;
   }
 
+  async expectedAnualInterventionsProfitValue(year: number) {
+    const expectedAnualInterventionsProfit =
+      await prisma.intervention.aggregate({
+        _sum: {
+          total_value: true,
+        },
+        where: {
+          isApproved: false,
+          isDeleted: false,
+          initial_at: {
+            gte: new Date(year, 0, 1),
+            lt: new Date(year + 1, 0, 1),
+          },
+        },
+      });
+
+    return expectedAnualInterventionsProfit._sum.total_value ?? 0;
+  }
+
   async totalMonthlyInterventionsProfitValue(year: number, month: number) {
     const totalMonthInterventionProfit = await prisma.intervention.aggregate({
       _sum: {
         total_value: true,
       },
       where: {
+        isApproved: true,
         isDeleted: false,
         initial_at: {
           gte: new Date(year, month - 1, 1),

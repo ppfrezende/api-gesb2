@@ -15,6 +15,7 @@ import {
 } from '@/utils/currencyFormat';
 import { generateTimesheetResumingTable } from './_generateTimesheetResuming';
 import { InterventionResponseData } from '@/@types/intervention';
+import { makeUpdateInterventionUseCase } from '@/use-cases/_factories/interventions_factories/make-update-intervention-use-case';
 
 export async function generateResumeForApproval(
   request: FastifyRequest,
@@ -30,13 +31,13 @@ export async function generateResumeForApproval(
 
   try {
     const getInterventionUseCase = makeGetInterventionUseCase();
-    // const updateInterventionUseCase = makeUpdateInterventionUseCase();
+    const updateInterventionUseCase = makeUpdateInterventionUseCase();
 
     const { intervention } = await getInterventionUseCase.execute({
       interventionId,
     });
 
-    if (intervention.timesheets!.length === 0) {
+    if (!intervention.isMonthly && intervention.timesheets!.length === 0) {
       throw new ResourceNotFoundError();
     }
 
@@ -82,6 +83,21 @@ export async function generateResumeForApproval(
             let additionalNightHours = 0;
             let normalHours = 0;
             let extraHours = 0;
+            let travelRangeSumValue = 0;
+
+            if (day.isOffshore) {
+              travelRangeSumValue = intervention.BillingOrder
+                ?.offshore_travel_hour_value
+                ? travelRangeSum *
+                  intervention.BillingOrder?.offshore_travel_hour_value
+                : 0;
+            } else {
+              travelRangeSumValue = intervention.BillingOrder
+                ?.onshore_travel_hour_value
+                ? travelRangeSum *
+                  intervention.BillingOrder?.onshore_travel_hour_value
+                : 0;
+            }
 
             if (minHour <= morningNightHoursLimit) {
               additionalNightHours += morningNightHoursLimit - minHour;
@@ -110,6 +126,7 @@ export async function generateResumeForApproval(
             return {
               date: day.day,
               travelRangeSum,
+              travelRangeSumValue,
               minHour,
               maxHour,
               isOffshore: day.isOffshore,
@@ -129,20 +146,23 @@ export async function generateResumeForApproval(
         return day.rangeSums > 0;
       });
 
-      const calculatedTravelHoursValueArray = onlyTraveledDays?.map((day) => {
-        const travelRangeSumValue =
-          day.travelRangeSum *
-          24 *
-          (day.isOffshore === true
-            ? intervention.BillingOrder!.offshore_travel_hour_value
-            : intervention.BillingOrder!.onshore_travel_hour_value);
+      const calculatedOnlyTraveledHoursValueArray = onlyTraveledDays?.map(
+        (day) => {
+          const travelRangeSumValue =
+            day.travelRangeSum *
+            24 *
+            (day.isOffshore === true
+              ? intervention.BillingOrder!.offshore_travel_hour_value
+              : intervention.BillingOrder!.onshore_travel_hour_value);
 
-        return {
-          date: day.date,
-          travelRangeSumValue,
-          isOffshore: day.isOffshore,
-        };
-      });
+          return {
+            date: day.date,
+            travelRangeSumValue,
+            travelRangeSum: day.travelRangeSum,
+            isOffshore: day.isOffshore,
+          };
+        },
+      );
 
       const calculatedDayHoursValueArray = workedDays?.map((day, index) => {
         if (
@@ -180,10 +200,15 @@ export async function generateResumeForApproval(
           return {
             date: day.date,
             travelRangeSumValue,
+            travelRangeSum: day.travelRangeSum,
             isOffshore: day.isOffshore,
             additionalNightHoursValue,
+            additionalNightHours: day.additionalNightHours,
             extraHoursValue,
+            extraHours: day.extraHours,
             normalHoursValue,
+            normalHours: day.normalHours,
+            isOver: false,
           };
         } else {
           const travelRangeSumValue =
@@ -217,16 +242,21 @@ export async function generateResumeForApproval(
           return {
             date: day.date,
             travelRangeSumValue,
+            travelRangeSum: day.travelRangeSum,
             isOffshore: day.isOffshore,
             additionalNightHoursValue,
+            additionalNightHours: day.additionalNightHours,
             extraHoursValue,
+            extraHours: day.extraHours,
             normalHoursValue,
+            normalHours: day.normalHours,
+            isOver: true,
           };
         }
       });
 
       const onlyTraveledHoursTotalValue =
-        calculatedTravelHoursValueArray?.reduce(
+        calculatedOnlyTraveledHoursValueArray?.reduce(
           (acc, item) => {
             acc.travelRangeSumValue = parseFloat(
               (
@@ -241,7 +271,59 @@ export async function generateResumeForApproval(
           },
         );
 
-      const workedTotalValues = calculatedDayHoursValueArray?.reduce(
+      const traveledHours = calculatedDayHoursArray?.reduce(
+        (acc, item) => {
+          acc.travelRangeSum = parseFloat(
+            (acc.travelRangeSum + (item.travelRangeSum || 0)).toFixed(3),
+          );
+
+          return acc;
+        },
+        {
+          travelRangeSum: 0,
+        },
+      );
+
+      const roundedTraveledHours = traveledHours
+        ? (traveledHours?.travelRangeSum * 24).toFixed(0)
+        : 0;
+
+      const traveledHoursValue = traveledHours
+        ? Number(roundedTraveledHours) *
+          (intervention.Site?.isOffshore
+            ? intervention.BillingOrder.offshore_travel_hour_value
+            : intervention.BillingOrder.onshore_travel_hour_value)
+        : 0;
+
+      const notOverWorkedDaysArray = calculatedDayHoursValueArray?.filter(
+        (day) => {
+          return day.isOver === false;
+        },
+      );
+
+      const notOverWorkedTotalHours = notOverWorkedDaysArray?.reduce(
+        (acc, item) => {
+          acc.additionalNightHours = parseFloat(
+            (
+              acc.additionalNightHours + (item.additionalNightHours || 0)
+            ).toFixed(3),
+          );
+          acc.extraHours = parseFloat(
+            (acc.extraHours + (item.extraHours || 0)).toFixed(3),
+          );
+          acc.normalHours = parseFloat(
+            (acc.normalHours + (item.normalHours || 0)).toFixed(3),
+          );
+          return acc;
+        },
+        {
+          additionalNightHours: 0,
+          extraHours: 0,
+          normalHours: 0,
+        },
+      );
+
+      const notOverWorkedTotalValues = notOverWorkedDaysArray?.reduce(
         (acc, item) => {
           acc.travelRangeSumValue = parseFloat(
             (acc.travelRangeSumValue + (item.travelRangeSumValue || 0)).toFixed(
@@ -270,23 +352,16 @@ export async function generateResumeForApproval(
         },
       );
 
-      workedTotalValues!.travelRangeSumValue +=
+      notOverWorkedTotalValues!.travelRangeSumValue +=
         onlyTraveledHoursTotalValue!.travelRangeSumValue;
 
-      const traveledHours = calculatedDayHoursArray?.reduce(
-        (acc, item) => {
-          acc.travelRangeSum = parseFloat(
-            (acc.travelRangeSum + (item.travelRangeSum || 0)).toFixed(3),
-          );
-
-          return acc;
-        },
-        {
-          travelRangeSum: 0,
+      const overWorkedDaysArray = calculatedDayHoursValueArray?.filter(
+        (day) => {
+          return day.isOver;
         },
       );
 
-      const workedTotalHours = workedDays?.reduce(
+      const overWorkedTotalHours = overWorkedDaysArray?.reduce(
         (acc, item) => {
           acc.additionalNightHours = parseFloat(
             (
@@ -308,6 +383,43 @@ export async function generateResumeForApproval(
         },
       );
 
+      const overWorkedTotalHoursSum =
+        overWorkedTotalHours!.additionalNightHours +
+        overWorkedTotalHours!.extraHours +
+        overWorkedTotalHours!.normalHours;
+
+      const overWorkedTotalValues = overWorkedDaysArray?.reduce(
+        (acc, item) => {
+          acc.travelRangeSumValue = parseFloat(
+            (acc.travelRangeSumValue + (item.travelRangeSumValue || 0)).toFixed(
+              3,
+            ),
+          );
+          acc.additionalNightHoursValue = parseFloat(
+            (
+              acc.additionalNightHoursValue +
+              (item.additionalNightHoursValue || 0)
+            ).toFixed(3),
+          );
+          acc.extraHoursValue = parseFloat(
+            (acc.extraHoursValue + (item.extraHoursValue || 0)).toFixed(3),
+          );
+          acc.normalHoursValue = parseFloat(
+            (acc.normalHoursValue + (item.normalHoursValue || 0)).toFixed(3),
+          );
+          return acc;
+        },
+        {
+          travelRangeSumValue: 0,
+          additionalNightHoursValue: 0,
+          extraHoursValue: 0,
+          normalHoursValue: 0,
+        },
+      );
+
+      overWorkedTotalValues!.travelRangeSumValue +=
+        onlyTraveledHoursTotalValue!.travelRangeSumValue;
+
       const expensesTotalValue = intervention.interventionExpenses?.reduce(
         (acc, item) => {
           acc.expense_value = parseFloat(
@@ -320,6 +432,27 @@ export async function generateResumeForApproval(
           expense_value: 0,
         },
       );
+
+      const total =
+        (expensesTotalValue
+          ? expensesTotalValue.expense_value *
+            (intervention.BillingOrder.expense_administration_tax / 1000)
+          : 0) +
+        expensesTotalValue!.expense_value +
+        overWorkedTotalValues!.additionalNightHoursValue +
+        overWorkedTotalValues!.extraHoursValue +
+        overWorkedTotalValues!.normalHoursValue +
+        traveledHoursValue +
+        notOverWorkedTotalValues!.additionalNightHoursValue +
+        notOverWorkedTotalValues!.extraHoursValue +
+        notOverWorkedTotalValues!.normalHoursValue;
+
+      await updateInterventionUseCase.execute({
+        interventionId: interventionId,
+        data: {
+          total_value: total,
+        },
+      });
 
       // gerar PDF
 
@@ -448,6 +581,14 @@ export async function generateResumeForApproval(
           {
             label: `${
               intervention.BillingOrder.currency === 'USD'
+                ? '$/HOUR'
+                : 'R$/HOUR'
+            }`,
+            align: 'center',
+          },
+          {
+            label: `${
+              intervention.BillingOrder.currency === 'USD'
                 ? 'TOTAL $'
                 : 'TOTAL R$'
             }`,
@@ -463,44 +604,83 @@ export async function generateResumeForApproval(
             `${
               intervention.BillingOrder.currency === 'USD'
                 ? genericCurrencyFormatter(
-                    workedTotalValues
-                      ? workedTotalValues.travelRangeSumValue
-                      : 0,
+                    intervention.Site?.isOffshore
+                      ? intervention.BillingOrder.offshore_travel_hour_value
+                      : intervention.BillingOrder.onshore_travel_hour_value,
                   )
                 : brazilCurrencyFormatter(
-                    workedTotalValues
-                      ? workedTotalValues.travelRangeSumValue
-                      : 0,
+                    intervention.Site?.isOffshore
+                      ? intervention.BillingOrder.offshore_travel_hour_value
+                      : intervention.BillingOrder.onshore_travel_hour_value,
                   )
+            }`,
+            `${
+              intervention.BillingOrder.currency === 'USD'
+                ? genericCurrencyFormatter(traveledHoursValue)
+                : brazilCurrencyFormatter(traveledHoursValue)
             }`,
           ],
           [
             'NORMAL HOURS',
             `${convertDecimalToHour(
-              workedTotalHours ? workedTotalHours.normalHours : 0,
+              notOverWorkedTotalHours ? notOverWorkedTotalHours.normalHours : 0,
             )}`,
             `${
               intervention.BillingOrder.currency === 'USD'
                 ? genericCurrencyFormatter(
-                    workedTotalValues ? workedTotalValues.normalHoursValue : 0,
+                    intervention.Site?.isOffshore
+                      ? intervention.BillingOrder.offshore_normal_hour_value
+                      : intervention.BillingOrder.onshore_normal_hour_value,
                   )
                 : brazilCurrencyFormatter(
-                    workedTotalValues ? workedTotalValues.normalHoursValue : 0,
+                    intervention.Site?.isOffshore
+                      ? intervention.BillingOrder.offshore_normal_hour_value
+                      : intervention.BillingOrder.onshore_normal_hour_value,
+                  )
+            }`,
+            `${
+              intervention.BillingOrder.currency === 'USD'
+                ? genericCurrencyFormatter(
+                    notOverWorkedTotalValues
+                      ? notOverWorkedTotalValues.normalHoursValue
+                      : 0,
+                  )
+                : brazilCurrencyFormatter(
+                    notOverWorkedTotalValues
+                      ? notOverWorkedTotalValues.normalHoursValue
+                      : 0,
                   )
             }`,
           ],
           [
             'EXTRA HOURS',
             `${convertDecimalToHour(
-              workedTotalHours ? workedTotalHours.extraHours : 0,
+              notOverWorkedTotalHours ? notOverWorkedTotalHours.extraHours : 0,
             )}`,
             `${
               intervention.BillingOrder.currency === 'USD'
                 ? genericCurrencyFormatter(
-                    workedTotalValues ? workedTotalValues.extraHoursValue : 0,
+                    intervention.Site?.isOffshore
+                      ? intervention.BillingOrder.offshore_extra_hour_value
+                      : intervention.BillingOrder.onshore_extra_hour_value,
                   )
                 : brazilCurrencyFormatter(
-                    workedTotalValues ? workedTotalValues.extraHoursValue : 0,
+                    intervention.Site?.isOffshore
+                      ? intervention.BillingOrder.offshore_extra_hour_value
+                      : intervention.BillingOrder.onshore_extra_hour_value,
+                  )
+            }`,
+            `${
+              intervention.BillingOrder.currency === 'USD'
+                ? genericCurrencyFormatter(
+                    notOverWorkedTotalValues
+                      ? notOverWorkedTotalValues.extraHoursValue
+                      : 0,
+                  )
+                : brazilCurrencyFormatter(
+                    notOverWorkedTotalValues
+                      ? notOverWorkedTotalValues.extraHoursValue
+                      : 0,
                   )
             }`,
           ],
@@ -508,18 +688,70 @@ export async function generateResumeForApproval(
           [
             'NIGHT HOURS',
             `${convertDecimalToHour(
-              workedTotalHours ? workedTotalHours.additionalNightHours : 0,
+              notOverWorkedTotalHours
+                ? notOverWorkedTotalHours.additionalNightHours
+                : 0,
             )}`,
             `${
               intervention.BillingOrder.currency === 'USD'
                 ? genericCurrencyFormatter(
-                    workedTotalValues
-                      ? workedTotalValues.additionalNightHoursValue
+                    intervention.Site?.isOffshore
+                      ? intervention.BillingOrder.offshore_night_hour_value
+                      : intervention.BillingOrder.onshore_night_hour_value,
+                  )
+                : brazilCurrencyFormatter(
+                    intervention.Site?.isOffshore
+                      ? intervention.BillingOrder.offshore_night_hour_value
+                      : intervention.BillingOrder.onshore_night_hour_value,
+                  )
+            }`,
+            `${
+              intervention.BillingOrder.currency === 'USD'
+                ? genericCurrencyFormatter(
+                    notOverWorkedTotalValues
+                      ? notOverWorkedTotalValues.additionalNightHoursValue
                       : 0,
                   )
                 : brazilCurrencyFormatter(
-                    workedTotalValues
-                      ? workedTotalValues.additionalNightHoursValue
+                    notOverWorkedTotalValues
+                      ? notOverWorkedTotalValues.additionalNightHoursValue
+                      : 0,
+                  )
+            }`,
+          ],
+
+          [
+            'OVER HOURS',
+            `${convertDecimalToHour(
+              overWorkedTotalHoursSum ? overWorkedTotalHoursSum : 0,
+            )}`,
+            `${
+              intervention.BillingOrder.currency === 'USD'
+                ? genericCurrencyFormatter(
+                    intervention.Site?.isOffshore
+                      ? intervention.BillingOrder.offshore_over_hour_value
+                      : intervention.BillingOrder.onshore_over_hour_value,
+                  )
+                : brazilCurrencyFormatter(
+                    intervention.Site?.isOffshore
+                      ? intervention.BillingOrder.offshore_over_hour_value
+                      : intervention.BillingOrder.onshore_over_hour_value,
+                  )
+            }`,
+            `${
+              intervention.BillingOrder.currency === 'USD'
+                ? genericCurrencyFormatter(
+                    overWorkedTotalValues
+                      ? overWorkedTotalValues.additionalNightHoursValue +
+                          overWorkedTotalValues.extraHoursValue +
+                          overWorkedTotalValues.normalHoursValue
+                      : 0,
+                  )
+                : brazilCurrencyFormatter(
+                    overWorkedTotalValues
+                      ? overWorkedTotalValues.additionalNightHoursValue +
+                          overWorkedTotalValues.extraHoursValue +
+                          overWorkedTotalValues.normalHoursValue
                       : 0,
                   )
             }`,
@@ -527,6 +759,7 @@ export async function generateResumeForApproval(
 
           [
             'EXPENSES ADMIN. COST',
+            '-',
             '-',
             `${
               intervention.BillingOrder.currency === 'USD'
@@ -551,6 +784,7 @@ export async function generateResumeForApproval(
           [
             'EXPENSES',
             '-',
+            '-',
             `${
               intervention.BillingOrder.currency === 'USD'
                 ? genericCurrencyFormatter(
@@ -565,27 +799,16 @@ export async function generateResumeForApproval(
       };
 
       const tableOfValuesOptions = {
-        x: 60 + 40,
+        x: 60,
         y: 170 + 150 + 50,
         padding: [1, 1, 5],
-        columnsSize: [120, 120, 120],
+        columnsSize: [120, 120, 120, 120],
         divider: {
           header: {
             width: 1,
           },
         },
       };
-
-      const resume_total =
-        (expensesTotalValue
-          ? expensesTotalValue.expense_value *
-            (intervention.BillingOrder.expense_administration_tax / 1000)
-          : 0) +
-        expensesTotalValue!.expense_value +
-        workedTotalValues!.travelRangeSumValue +
-        workedTotalValues!.additionalNightHoursValue +
-        workedTotalValues!.extraHoursValue +
-        workedTotalValues!.normalHoursValue;
 
       doc.table(tableOfValues, tableOfValuesOptions);
       doc
@@ -595,10 +818,10 @@ export async function generateResumeForApproval(
         .text(
           `${
             intervention.BillingOrder.currency === 'USD'
-              ? genericCurrencyFormatter(resume_total)
-              : brazilCurrencyFormatter(resume_total)
+              ? genericCurrencyFormatter(total)
+              : brazilCurrencyFormatter(total)
           }`,
-          0,
+          20,
           170 + 150 + 50 + 130,
           {
             align: 'right',
@@ -634,13 +857,156 @@ export async function generateResumeForApproval(
 
       doc.end();
       return reply.status(200).send(doc);
+    } else {
+      reply.header('Content-Type', 'application/pdf');
+      reply.header(
+        'Content-Disposition',
+        'attachment; filename="intervention-summary.pdf"',
+      );
+      const doc = new PDFDocumentWithTables({ size: 'A4' });
+      const filePath = 'tmp/invoice.pdf';
+      doc.pipe(fs.createWriteStream(filePath));
+
+      doc
+        .image('logo.png', 50, 32, { width: 50 })
+        .fillColor('#000000')
+        // .image('iso9001.png', 480, 38, { width: 70 })
+        .fontSize(8)
+        .font('Helvetica')
+        .text('CNPJ: 11.141.338/0001-80', 110, 40, {
+          align: 'left',
+        })
+        .text('Phone:  +55 (21) 2239-0118', 110, 50, {
+          align: 'left',
+        })
+        .text(
+          'Av Embaixador Abelardo Bueno, 001, Ed. Lagoa 1 - Salas 413 à 416',
+          110,
+          60,
+          {
+            align: 'left',
+          },
+        )
+        .text(
+          'CEP: 22775-040 Barra Olímpica, Rio de Janeiro - RJ, Brazil',
+          110,
+          70,
+          {
+            align: 'left',
+          },
+        )
+        .fontSize(14)
+        .fillColor('#ff0000')
+        .font('Helvetica-Bold')
+        .text('RESUMING FOR INVOICE APPROVAL', 50, 120)
+        .fillColor('#000000')
+        .text(
+          `${format(new Date(), 'dd/MM/yyyy', {
+            locale: ptBR,
+          })}`,
+          0,
+          120,
+          {
+            align: 'right',
+          },
+        )
+        .moveDown();
+
+      // //Intervention Information
+
+      doc
+        .fontSize(12)
+        .font('Helvetica')
+        .text('PROGRESSIVE:', 50, 170)
+        .text(intervention.progressive, 50 + 145, 170)
+        .text('OUR REF.:', 50, 170 + 15)
+        .text(intervention.intervention_number, 50 + 145, 170 + 15)
+        .text('DATE:', 50, 170 + 30)
+        .font('Helvetica-Oblique')
+        .text(
+          `${
+            intervention.initial_at
+              ? formatDateToDDMMYYYY(intervention.initial_at.toDateString())
+              : 'N/A'
+          } - ${
+            intervention.finished_at
+              ? formatDateToDDMMYYYY(intervention.finished_at.toDateString())
+              : 'N/A'
+          }`,
+          50 + 145,
+          170 + 30,
+        )
+        .font('Helvetica')
+        .text('PLACE:', 50, 170 + 45)
+        .text(
+          `${intervention.Site!.name} - ${
+            intervention.Site!.isOffshore ? 'OFFSHORE' : 'ONSHORE'
+          }`,
+          50 + 145,
+          170 + 45,
+        )
+        .text('CUSTOMER:', 50, 170 + 60)
+        .text(intervention.Customer!.company_name, 50 + 145, 170 + 60)
+        .text('PROJECT MANAGER:', 50, 170 + 75)
+        .text(intervention.CustomerProjectManager!.name, 50 + 145, 170 + 75)
+        .text('JOB NUMB.:', 50, 170 + 90)
+        .text(intervention.job_number, 50 + 145, 170 + 90)
+        .text('TECHNICIAN:', 50, 170 + 105)
+        .text(
+          `${intervention.Technician!.name} - ${
+            intervention.Technician!.job_title
+          }`,
+          50 + 145,
+          170 + 105,
+        )
+        .text('PURCHASE ORDER:', 50, 170 + 120)
+        .text(intervention.customer_po_number, 50 + 145, 170 + 120)
+        .text('CURRENCY:', 50, 170 + 135)
+        .text('??', 50 + 145, 170 + 135)
+        .moveDown();
+
+      //Table Informations
+
+      doc
+        .fontSize(14)
+        .font('Helvetica-Bold')
+        .text('TOTAL', 60, 170 + 150 + 50 + 130)
+        .text(
+          brazilCurrencyFormatter(
+            intervention.total_value ? intervention.total_value : 0,
+          ),
+          20,
+          170 + 150 + 50 + 130,
+          {
+            align: 'right',
+          },
+        );
+
+      doc
+        .fontSize(12)
+        .font('Helvetica')
+        .text('CHECKED BY:   ___________________', 50, 580);
+      doc.text('DATE:   ___________________', 50, 580, {
+        align: 'right',
+      });
+      doc.fontSize(12).font('Helvetica').text('COMMENTS:', 50, 630);
+      doc.text('____________________________', 50, 645);
+      doc.text('____________________________', 50, 665);
+      doc.text('____________________________', 50, 685);
+      doc.lineJoin('round').rect(350, 625, 20, 20).stroke();
+      doc.text('APPROVED FOR INVOICE', 50, 630, {
+        align: 'right',
+      });
+      doc.text('_____________________________', 50, 685, {
+        align: 'right',
+      });
+      doc.text('PROJECT MANAGER SIGNATURE', 50, 700, {
+        align: 'right',
+      });
+
+      doc.end();
+      return reply.status(200).send(doc);
     }
-    // await updateInterventionUseCase.execute({
-    //   interventionId: interventionId,
-    //   data: {
-    //     total_value: totalValue,
-    //   },
-    // });
   } catch (err) {
     if (err instanceof ResourceNotFoundError) {
       return reply.status(409).send({ message: err.message });

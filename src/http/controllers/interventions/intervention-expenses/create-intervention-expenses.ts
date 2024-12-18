@@ -1,6 +1,4 @@
 import { makeCreateInterventionExpensesUseCase } from '@/use-cases/_factories/interventions_factories/intervention_expenses_factories/make-create-intervention-expenses-use-case';
-import { makeGetInterventionUseCase } from '@/use-cases/_factories/interventions_factories/make-get-intervention-use-case';
-import { makeUpdateInterventionUseCase } from '@/use-cases/_factories/interventions_factories/make-update-intervention-use-case';
 import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-get-user-profile';
 import { ResourceAlreadyExists } from '@/use-cases/errors/resource-already-exists';
 import { FastifyRequest, FastifyReply } from 'fastify';
@@ -41,13 +39,6 @@ export async function createInterventionExpenses(
     const createInterventionExpensesUseCase =
       makeCreateInterventionExpensesUseCase();
 
-    const updateInterventionUseCase = makeUpdateInterventionUseCase();
-    const getInterventionUseCase = makeGetInterventionUseCase();
-
-    const { intervention } = await getInterventionUseCase.execute({
-      interventionId,
-    });
-
     const interventionExpensesData = interventionExpenseArray.map(
       (expense) => ({
         ...expense,
@@ -57,21 +48,6 @@ export async function createInterventionExpenses(
         userId: user.id,
       }),
     );
-
-    const totalInterventionExpensesValue = interventionExpensesData.reduce(
-      (acc, expense) => acc + expense.total_converted,
-      0,
-    );
-
-    await updateInterventionUseCase.execute({
-      interventionId: interventionId,
-      data: {
-        total_value:
-          intervention.total_value !== null
-            ? intervention.total_value + totalInterventionExpensesValue
-            : totalInterventionExpensesValue,
-      },
-    });
 
     const createdInterventionExpenses =
       await createInterventionExpensesUseCase.execute(interventionExpensesData);

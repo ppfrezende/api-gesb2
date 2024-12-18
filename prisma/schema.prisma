@@ -262,7 +262,6 @@ model Intervention {
   initial_at               DateTime?
   finished_at              DateTime?
   total_value              Int?
-  resume_total_value       Int?
   isApproved               Boolean                 @default(false)
   created_at               DateTime                @default(now())
   Technician               Technician?             @relation(fields: [technicianId], references: [id])
