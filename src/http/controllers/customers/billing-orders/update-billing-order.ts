@@ -27,8 +27,6 @@ export async function updateBillingOrder(
     max_hours_day_offshore: z.number().optional(),
     max_hours_day_travel: z.number().optional(),
     whatsCalendar: z.string().optional(),
-    currency: z.string().optional(),
-    expense_administration_tax: z.number().optional(),
   });
 
   const updateBillingOrderQuerySchema = z.object({
@@ -55,8 +53,6 @@ export async function updateBillingOrder(
     max_hours_day_offshore,
     max_hours_day_travel,
     whatsCalendar,
-    currency,
-    expense_administration_tax,
   } = updateBillingOrderBodySchema.parse(request.body);
 
   const { billingOrderId } = updateBillingOrderQuerySchema.parse(
@@ -88,8 +84,6 @@ export async function updateBillingOrder(
         max_hours_day_offshore,
         max_hours_day_travel,
         whatsCalendar,
-        currency,
-        expense_administration_tax,
       },
     });
     return reply.status(201).send(updatedBillingOrder);

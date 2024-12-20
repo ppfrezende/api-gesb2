@@ -21,8 +21,6 @@ interface CreateBillingOrderUseCaseRequest {
   max_hours_day_offshore?: number;
   max_hours_day_travel?: number;
   whatsCalendar: string;
-  currency: string;
-  expense_administration_tax: number;
   userId: string;
   customerId: string;
 }
@@ -54,8 +52,6 @@ export class CreateBillingOrderUseCase {
     max_hours_day_offshore,
     max_hours_day_travel,
     whatsCalendar,
-    currency,
-    expense_administration_tax,
     customerId,
     userId,
   }: CreateBillingOrderUseCaseRequest): Promise<CreateBillingOrderUseCaseResponse> {
@@ -79,8 +75,6 @@ export class CreateBillingOrderUseCase {
       max_hours_day_offshore,
       max_hours_day_travel,
       whatsCalendar,
-      currency,
-      expense_administration_tax,
       customerId,
       userId,
     });

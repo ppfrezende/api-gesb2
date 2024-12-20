@@ -10,6 +10,8 @@ export interface InterventionResponseData {
   initial_at: string;
   finished_at: string;
   created_at: string;
+  currency: string;
+  expensesexpense_administration_tax: string;
   technicianId: string;
   siteId: string;
   userName: string;

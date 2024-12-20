@@ -62,7 +62,7 @@ export function generateTimesheetResumingTable(
           }
           const dates = formatWeekday(
             day.day,
-            intervention.BillingOrder.currency === 'USD' ? 'USD' : 'BRL',
+            intervention.currency === 'USD' ? 'USD' : 'BRL',
           );
           return [
             dates.dateFormatted || '',

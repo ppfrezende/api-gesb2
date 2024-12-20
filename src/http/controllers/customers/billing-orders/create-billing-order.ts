@@ -28,8 +28,6 @@ export async function createBillingOrder(
     max_hours_day_offshore: z.number().optional(),
     max_hours_day_travel: z.number().optional(),
     whatsCalendar: z.string(),
-    currency: z.string(),
-    expense_administration_tax: z.number(),
   });
 
   const createBillingOrderQuerySchema = z.object({
@@ -62,8 +60,6 @@ export async function createBillingOrder(
     max_hours_day_offshore,
     max_hours_day_travel,
     whatsCalendar,
-    currency,
-    expense_administration_tax,
   } = createBillingOrderBodySchema.parse(request.body);
 
   const { customerId } = createBillingOrderQuerySchema.parse(request.params);
@@ -91,8 +87,7 @@ export async function createBillingOrder(
       max_hours_day_offshore,
       max_hours_day_travel,
       whatsCalendar,
-      currency,
-      expense_administration_tax,
+
       customerId,
       userId: user.id,
     });

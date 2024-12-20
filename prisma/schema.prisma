@@ -165,38 +165,37 @@ model TechSite {
 }
 
 model BillingOrder {
-  id                         String         @id @default(uuid())
+  id                         String  @id @default(uuid())
   description                String
-  isDoubled                  Boolean        @default(false)
+  isDoubled                  Boolean @default(false)
   over_days                  Int?
-  onshore_travel_hour_value  Int            @default(0)
-  onshore_normal_hour_value  Int            @default(0)
-  onshore_extra_hour_value   Int            @default(0)
-  onshore_double_hour_value  Int            @default(0)
-  onshore_night_hour_value   Int            @default(0)
-  onshore_over_hour_value    Int            @default(0)
-  offshore_travel_hour_value Int            @default(0)
-  offshore_normal_hour_value Int            @default(0)
-  offshore_extra_hour_value  Int            @default(0)
-  offshore_double_hour_value Int            @default(0)
-  offshore_night_hour_value  Int            @default(0)
-  offshore_over_hour_value   Int            @default(0)
+  onshore_travel_hour_value  Int     @default(0)
+  onshore_normal_hour_value  Int     @default(0)
+  onshore_extra_hour_value   Int     @default(0)
+  onshore_double_hour_value  Int     @default(0)
+  onshore_night_hour_value   Int     @default(0)
+  onshore_over_hour_value    Int     @default(0)
+  offshore_travel_hour_value Int     @default(0)
+  offshore_normal_hour_value Int     @default(0)
+  offshore_extra_hour_value  Int     @default(0)
+  offshore_double_hour_value Int     @default(0)
+  offshore_night_hour_value  Int     @default(0)
+  offshore_over_hour_value   Int     @default(0)
   max_hours_day_onshore      Int?
   max_hours_day_offshore     Int?
   max_hours_day_travel       Int?
   whatsCalendar              String
-  currency                   String
-  expense_administration_tax Int
-  created_at                 DateTime       @default(now())
-  User                       User?          @relation(fields: [userId], references: [id])
-  userId                     String?
-  interventions              Intervention[]
-  Customer                   Customer?      @relation(fields: [customerId], references: [id])
-  customerId                 String?
-  updated_at                 DateTime       @updatedAt
-  isDeleted                  Boolean        @default(false)
-  deleted_at                 DateTime?
-  deletedBy                  String?
+
+  created_at    DateTime       @default(now())
+  User          User?          @relation(fields: [userId], references: [id])
+  userId        String?
+  interventions Intervention[]
+  Customer      Customer?      @relation(fields: [customerId], references: [id])
+  customerId    String?
+  updated_at    DateTime       @updatedAt
+  isDeleted     Boolean        @default(false)
+  deleted_at    DateTime?
+  deletedBy     String?
 
   @@map("billing_orders")
 }
@@ -253,30 +252,32 @@ model TimeSheetData {
 }
 
 model Intervention {
-  id                       String                  @id @default(uuid())
-  progressive              String
-  intervention_number      String
-  customer_po_number       String
-  job_number               String
-  isMonthly                Boolean                 @default(false)
-  initial_at               DateTime?
-  finished_at              DateTime?
-  total_value              Int?
-  isApproved               Boolean                 @default(false)
-  created_at               DateTime                @default(now())
-  Technician               Technician?             @relation(fields: [technicianId], references: [id])
-  technicianId             String?
-  Site                     Site?                   @relation(fields: [siteId], references: [id])
-  siteId                   String?
-  User                     User?                   @relation(fields: [userId], references: [id])
-  userId                   String?
-  Customer                 Customer?               @relation(fields: [customerId], references: [id])
-  customerId               String?
-  CustomerProjectManager   CustomerProjectManager? @relation(fields: [customerProjectManagerId], references: [id])
-  customerProjectManagerId String?
-  BillingOrder             BillingOrder?           @relation(fields: [billingOrderId], references: [id])
-  billingOrderId           String?
-  timesheets               TimeSheetData[]
+  id                         String                  @id @default(uuid())
+  progressive                String
+  intervention_number        String
+  customer_po_number         String
+  job_number                 String
+  isMonthly                  Boolean                 @default(false)
+  initial_at                 DateTime?
+  finished_at                DateTime?
+  total_value                Int?
+  currency                   String
+  expense_administration_tax Int
+  isApproved                 Boolean                 @default(false)
+  created_at                 DateTime                @default(now())
+  Technician                 Technician?             @relation(fields: [technicianId], references: [id])
+  technicianId               String?
+  Site                       Site?                   @relation(fields: [siteId], references: [id])
+  siteId                     String?
+  User                       User?                   @relation(fields: [userId], references: [id])
+  userId                     String?
+  Customer                   Customer?               @relation(fields: [customerId], references: [id])
+  customerId                 String?
+  CustomerProjectManager     CustomerProjectManager? @relation(fields: [customerProjectManagerId], references: [id])
+  customerProjectManagerId   String?
+  BillingOrder               BillingOrder?           @relation(fields: [billingOrderId], references: [id])
+  billingOrderId             String?
+  timesheets                 TimeSheetData[]
 
   interventionExpenses InterventionExpense[]
   updated_at           DateTime              @updatedAt

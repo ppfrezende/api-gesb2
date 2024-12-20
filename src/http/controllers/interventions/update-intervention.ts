@@ -17,6 +17,7 @@ export async function updateInterventions(
     job_number: z.string().optional(),
     initial_at: z.coerce.date().optional(),
     finished_at: z.coerce.date().or(z.string().max(0)).optional(),
+    currency: z.string().optional(),
     technicianId: z.string().optional(),
     siteId: z.string().optional(),
     customerProjectManagerId: z.string().optional(),
@@ -35,6 +36,7 @@ export async function updateInterventions(
     technicianId,
     customerProjectManagerId,
     siteId,
+    currency,
   } = updateInterventionBodySchema.parse(request.body);
 
   const { interventionId } = updateInterventionQuerySchema.parse(
@@ -101,6 +103,7 @@ export async function updateInterventions(
         finished_at,
         technicianId,
         customerProjectManagerId,
+        currency,
       },
     });
 

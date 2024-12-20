@@ -436,7 +436,7 @@ export async function generateResumeForApproval(
       const total =
         (expensesTotalValue
           ? expensesTotalValue.expense_value *
-            (intervention.BillingOrder.expense_administration_tax / 1000)
+            (intervention.expense_administration_tax / 1000)
           : 0) +
         expensesTotalValue!.expense_value +
         overWorkedTotalValues!.additionalNightHoursValue +
@@ -501,14 +501,9 @@ export async function generateResumeForApproval(
         .text(
           `${format(
             new Date(),
-            `${
-              intervention.BillingOrder.currency === 'USD'
-                ? 'MM/dd/yyyy'
-                : 'dd/MM/yyyy'
-            }`,
+            `${intervention.currency === 'USD' ? 'MM/dd/yyyy' : 'dd/MM/yyyy'}`,
             {
-              locale:
-                intervention.BillingOrder.currency === 'USD' ? enUS : ptBR,
+              locale: intervention.currency === 'USD' ? enUS : ptBR,
             },
           )}`,
           0,
@@ -569,7 +564,7 @@ export async function generateResumeForApproval(
         .text('PURCHASE ORDER:', 50, 170 + 120)
         .text(intervention.customer_po_number, 50 + 145, 170 + 120)
         .text('CURRENCY:', 50, 170 + 135)
-        .text(intervention.BillingOrder.currency, 50 + 145, 170 + 135)
+        .text(intervention.currency, 50 + 145, 170 + 135)
         .moveDown();
 
       //Table Informations
@@ -579,18 +574,12 @@ export async function generateResumeForApproval(
           { label: 'DESCRIPTION', align: 'center' },
           { label: 'HOURS', align: 'center' },
           {
-            label: `${
-              intervention.BillingOrder.currency === 'USD'
-                ? '$/HOUR'
-                : 'R$/HOUR'
-            }`,
+            label: `${intervention.currency === 'USD' ? '$/HOUR' : 'R$/HOUR'}`,
             align: 'center',
           },
           {
             label: `${
-              intervention.BillingOrder.currency === 'USD'
-                ? 'TOTAL $'
-                : 'TOTAL R$'
+              intervention.currency === 'USD' ? 'TOTAL $' : 'TOTAL R$'
             }`,
             align: 'center',
           },
@@ -602,7 +591,7 @@ export async function generateResumeForApproval(
               traveledHours ? traveledHours.travelRangeSum : 0,
             )}`,
             `${
-              intervention.BillingOrder.currency === 'USD'
+              intervention.currency === 'USD'
                 ? genericCurrencyFormatter(
                     intervention.Site?.isOffshore
                       ? intervention.BillingOrder.offshore_travel_hour_value
@@ -615,7 +604,7 @@ export async function generateResumeForApproval(
                   )
             }`,
             `${
-              intervention.BillingOrder.currency === 'USD'
+              intervention.currency === 'USD'
                 ? genericCurrencyFormatter(traveledHoursValue)
                 : brazilCurrencyFormatter(traveledHoursValue)
             }`,
@@ -626,7 +615,7 @@ export async function generateResumeForApproval(
               notOverWorkedTotalHours ? notOverWorkedTotalHours.normalHours : 0,
             )}`,
             `${
-              intervention.BillingOrder.currency === 'USD'
+              intervention.currency === 'USD'
                 ? genericCurrencyFormatter(
                     intervention.Site?.isOffshore
                       ? intervention.BillingOrder.offshore_normal_hour_value
@@ -639,7 +628,7 @@ export async function generateResumeForApproval(
                   )
             }`,
             `${
-              intervention.BillingOrder.currency === 'USD'
+              intervention.currency === 'USD'
                 ? genericCurrencyFormatter(
                     notOverWorkedTotalValues
                       ? notOverWorkedTotalValues.normalHoursValue
@@ -658,7 +647,7 @@ export async function generateResumeForApproval(
               notOverWorkedTotalHours ? notOverWorkedTotalHours.extraHours : 0,
             )}`,
             `${
-              intervention.BillingOrder.currency === 'USD'
+              intervention.currency === 'USD'
                 ? genericCurrencyFormatter(
                     intervention.Site?.isOffshore
                       ? intervention.BillingOrder.offshore_extra_hour_value
@@ -671,7 +660,7 @@ export async function generateResumeForApproval(
                   )
             }`,
             `${
-              intervention.BillingOrder.currency === 'USD'
+              intervention.currency === 'USD'
                 ? genericCurrencyFormatter(
                     notOverWorkedTotalValues
                       ? notOverWorkedTotalValues.extraHoursValue
@@ -693,7 +682,7 @@ export async function generateResumeForApproval(
                 : 0,
             )}`,
             `${
-              intervention.BillingOrder.currency === 'USD'
+              intervention.currency === 'USD'
                 ? genericCurrencyFormatter(
                     intervention.Site?.isOffshore
                       ? intervention.BillingOrder.offshore_night_hour_value
@@ -706,7 +695,7 @@ export async function generateResumeForApproval(
                   )
             }`,
             `${
-              intervention.BillingOrder.currency === 'USD'
+              intervention.currency === 'USD'
                 ? genericCurrencyFormatter(
                     notOverWorkedTotalValues
                       ? notOverWorkedTotalValues.additionalNightHoursValue
@@ -726,7 +715,7 @@ export async function generateResumeForApproval(
               overWorkedTotalHoursSum ? overWorkedTotalHoursSum : 0,
             )}`,
             `${
-              intervention.BillingOrder.currency === 'USD'
+              intervention.currency === 'USD'
                 ? genericCurrencyFormatter(
                     intervention.Site?.isOffshore
                       ? intervention.BillingOrder.offshore_over_hour_value
@@ -739,7 +728,7 @@ export async function generateResumeForApproval(
                   )
             }`,
             `${
-              intervention.BillingOrder.currency === 'USD'
+              intervention.currency === 'USD'
                 ? genericCurrencyFormatter(
                     overWorkedTotalValues
                       ? overWorkedTotalValues.additionalNightHoursValue +
@@ -762,21 +751,17 @@ export async function generateResumeForApproval(
             '-',
             '-',
             `${
-              intervention.BillingOrder.currency === 'USD'
+              intervention.currency === 'USD'
                 ? genericCurrencyFormatter(
                     expensesTotalValue
                       ? expensesTotalValue.expense_value *
-                          (intervention.BillingOrder
-                            .expense_administration_tax /
-                            1000)
+                          (intervention.expense_administration_tax / 1000)
                       : 0,
                   )
                 : brazilCurrencyFormatter(
                     expensesTotalValue
                       ? expensesTotalValue.expense_value *
-                          (intervention.BillingOrder
-                            .expense_administration_tax /
-                            1000)
+                          (intervention.expense_administration_tax / 1000)
                       : 0,
                   )
             }`,
@@ -786,7 +771,7 @@ export async function generateResumeForApproval(
             '-',
             '-',
             `${
-              intervention.BillingOrder.currency === 'USD'
+              intervention.currency === 'USD'
                 ? genericCurrencyFormatter(
                     expensesTotalValue ? expensesTotalValue.expense_value : 0,
                   )
@@ -817,7 +802,7 @@ export async function generateResumeForApproval(
         .text('TOTAL', 60, 170 + 150 + 50 + 130)
         .text(
           `${
-            intervention.BillingOrder.currency === 'USD'
+            intervention.currency === 'USD'
               ? genericCurrencyFormatter(total)
               : brazilCurrencyFormatter(total)
           }`,
@@ -857,7 +842,38 @@ export async function generateResumeForApproval(
 
       doc.end();
       return reply.status(200).send(doc);
-    } else {
+    } else if (intervention.isMonthly) {
+      const expensesTotalValue = intervention.interventionExpenses?.reduce(
+        (acc, item) => {
+          acc.expense_value = parseFloat(
+            (acc.expense_value + (item.expense_value || 0)).toFixed(3),
+          );
+
+          return acc;
+        },
+        {
+          expense_value: 0,
+        },
+      );
+
+      const total = intervention.total_value
+        ? intervention.total_value +
+          (expensesTotalValue?.expense_value
+            ? expensesTotalValue?.expense_value
+            : 0) +
+          (expensesTotalValue
+            ? expensesTotalValue.expense_value *
+              (intervention.expense_administration_tax / 1000)
+            : 0)
+        : 0;
+
+      await updateInterventionUseCase.execute({
+        interventionId: interventionId,
+        data: {
+          total_value: total,
+        },
+      });
+
       reply.header('Content-Type', 'application/pdf');
       reply.header(
         'Content-Disposition',
@@ -962,18 +978,100 @@ export async function generateResumeForApproval(
         .text('PURCHASE ORDER:', 50, 170 + 120)
         .text(intervention.customer_po_number, 50 + 145, 170 + 120)
         .text('CURRENCY:', 50, 170 + 135)
-        .text('??', 50 + 145, 170 + 135)
+        .text(intervention.currency, 50 + 145, 170 + 135)
         .moveDown();
 
       //Table Informations
 
+      const tableOfValues = {
+        headers: [
+          { label: 'DESCRIPTION', align: 'center' },
+          { label: 'MONTH', align: 'center' },
+          {
+            label: `${
+              intervention.currency === 'USD' ? 'TOTAL $' : 'TOTAL R$'
+            }`,
+            align: 'center',
+          },
+        ],
+        rows: [
+          [
+            `${intervention.Site?.isOffshore ? 'OFFSHORE' : 'ONSHORE'}`,
+            `1`,
+            `${
+              intervention.currency === 'USD'
+                ? genericCurrencyFormatter(
+                    intervention.total_value ? intervention.total_value : 0,
+                  )
+                : brazilCurrencyFormatter(
+                    intervention.total_value ? intervention.total_value : 0,
+                  )
+            }`,
+          ],
+          [
+            'EXPENSES ADMIN. COST',
+            '-',
+            `${
+              intervention.currency === 'USD'
+                ? genericCurrencyFormatter(
+                    expensesTotalValue
+                      ? expensesTotalValue.expense_value *
+                          (intervention.expense_administration_tax / 1000)
+                      : 0,
+                  )
+                : brazilCurrencyFormatter(
+                    expensesTotalValue
+                      ? expensesTotalValue.expense_value *
+                          (intervention.expense_administration_tax / 1000)
+                      : 0,
+                  )
+            }`,
+          ],
+          [
+            'EXPENSES',
+            '-',
+            `${
+              intervention.currency === 'USD'
+                ? genericCurrencyFormatter(
+                    expensesTotalValue ? expensesTotalValue.expense_value : 0,
+                  )
+                : brazilCurrencyFormatter(
+                    expensesTotalValue ? expensesTotalValue.expense_value : 0,
+                  )
+            }`,
+          ],
+        ],
+      };
+
+      const tableOfValuesOptions = {
+        x: 60 + 40,
+        y: 170 + 150 + 50,
+        padding: [1, 1, 5],
+        columnsSize: [120, 120, 120],
+        divider: {
+          header: {
+            width: 1,
+          },
+        },
+      };
+
+      doc.table(tableOfValues, tableOfValuesOptions);
       doc
         .fontSize(14)
         .font('Helvetica-Bold')
         .text('TOTAL', 60, 170 + 150 + 50 + 130)
         .text(
           brazilCurrencyFormatter(
-            intervention.total_value ? intervention.total_value : 0,
+            intervention.total_value
+              ? intervention.total_value +
+                  (expensesTotalValue?.expense_value
+                    ? expensesTotalValue?.expense_value
+                    : 0) +
+                  (expensesTotalValue
+                    ? expensesTotalValue.expense_value *
+                      (intervention.expense_administration_tax / 1000)
+                    : 0)
+              : 0,
           ),
           20,
           170 + 150 + 50 + 130,
@@ -1003,6 +1101,11 @@ export async function generateResumeForApproval(
       doc.text('PROJECT MANAGER SIGNATURE', 50, 700, {
         align: 'right',
       });
+
+      // generateTimesheetResumingTable(
+      //   doc,
+      //   intervention as unknown as InterventionResponseData,
+      // );
 
       doc.end();
       return reply.status(200).send(doc);
