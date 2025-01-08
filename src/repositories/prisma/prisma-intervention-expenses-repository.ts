@@ -103,6 +103,14 @@ export class PrismaInterventionExpensesRepository
   }
 
   async totalMonthlyInterventionsExpensesValue(year: number, month: number) {
+    const startOfMonth =
+      month === 0
+        ? new Date(Date.UTC(year, month, 1))
+        : new Date(Date.UTC(year, month, 1));
+    const endOfMonth =
+      month === 0
+        ? new Date(Date.UTC(year, month + 1, 0))
+        : new Date(Date.UTC(year, month + 1, 0));
     const totalMonthInterventionExpenses =
       await prisma.interventionExpense.aggregate({
         _sum: {
@@ -111,8 +119,8 @@ export class PrismaInterventionExpensesRepository
         where: {
           isDeleted: false,
           expense_date: {
-            gte: new Date(year, month - 1, 1),
-            lt: new Date(year, month, 1),
+            gte: startOfMonth,
+            lt: endOfMonth,
           },
         },
       });
@@ -121,8 +129,25 @@ export class PrismaInterventionExpensesRepository
   }
 
   async createMany(data: Prisma.InterventionExpenseCreateManyInput[]) {
+    const now = new Date();
+    const createdAtUTC = new Date(
+      Date.UTC(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        now.getHours(),
+        now.getMinutes(),
+        now.getSeconds(),
+        now.getMilliseconds(),
+      ),
+    ).toISOString();
+
+    const dataToCreate = data.map((item) => ({
+      ...item,
+      created_at: createdAtUTC,
+    }));
     await prisma.interventionExpense.createMany({
-      data,
+      data: dataToCreate,
     });
 
     return;

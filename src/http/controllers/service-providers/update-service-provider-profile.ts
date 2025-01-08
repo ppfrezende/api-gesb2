@@ -1,5 +1,6 @@
 import { makeUpdateServiceProviderProfileUseCase } from '@/use-cases/_factories/service-providers_factories/make-update-service-provider-use-case';
 import { makeUpdateTechnicianUseCase } from '@/use-cases/_factories/technicians_factories/make-update-technician-use-case';
+import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-get-user-profile';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
@@ -60,8 +61,15 @@ export async function updateServiceProviderProfile(
       makeUpdateServiceProviderProfileUseCase();
     const updateTechnician = makeUpdateTechnicianUseCase();
 
+    const getUserProfile = makeGetUserProfileUseCase();
+
+    const { user: userLoggedIn } = await getUserProfile.execute({
+      userId: request.user.sub,
+    });
+
     const updatedServiceProvider = await updateServiceProviderProfile.execute({
       serviceProviderId: serviceProviderId,
+      updatedBy: userLoggedIn.name,
       data: {
         name,
         company,
@@ -85,6 +93,7 @@ export async function updateServiceProviderProfile(
 
     const { updatedTechnician } = await updateTechnician.execute({
       technicianId: serviceProviderId,
+      updatedBy: userLoggedIn.name,
       data: {
         name,
         email,

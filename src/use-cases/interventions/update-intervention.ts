@@ -4,6 +4,7 @@ import { ResourceNotFoundError } from '../errors/resource-not-found-error';
 
 interface UpdateInterventionUseCaseRequest {
   interventionId: string;
+  updatedBy: string;
   data: Prisma.InterventionUncheckedUpdateInput;
 }
 
@@ -16,6 +17,7 @@ export class UpdateInterventionUseCase {
 
   async execute({
     interventionId,
+    updatedBy,
     data,
   }: UpdateInterventionUseCaseRequest): Promise<UpdateInterventionUseCaseResponse> {
     const intervention = await this.interventionsRepository.findById(
@@ -28,6 +30,7 @@ export class UpdateInterventionUseCase {
 
     const updatedIntervention = await this.interventionsRepository.update(
       interventionId,
+      updatedBy,
       data,
     );
 

@@ -5,6 +5,7 @@ import { deleteFile } from '@/utils/file';
 
 interface UpdateServiceProviderProfileUseCaseRequest {
   serviceProviderId: string;
+  updatedBy: string;
   data: Prisma.ServiceProviderUpdateInput;
 }
 
@@ -17,6 +18,7 @@ export class UpdateServiceProviderProfileUseCase {
 
   async execute({
     serviceProviderId,
+    updatedBy,
     data,
   }: UpdateServiceProviderProfileUseCaseRequest): Promise<UpdateEServiceProviderProfileUseCaseResponse> {
     const service_provider = await this.serviceProviderRepository.findById(
@@ -33,6 +35,7 @@ export class UpdateServiceProviderProfileUseCase {
 
     const updatedServiceProvider = await this.serviceProviderRepository.update(
       serviceProviderId,
+      updatedBy,
       data,
     );
 

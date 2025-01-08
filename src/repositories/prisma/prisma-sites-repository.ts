@@ -101,19 +101,40 @@ export class PrismaSitesRepository implements SitesRepository {
   }
 
   async create(data: Prisma.SiteUncheckedCreateInput) {
+    const now = new Date();
+    const createdAtUTC = new Date(
+      Date.UTC(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        now.getHours(),
+        now.getMinutes(),
+        now.getSeconds(),
+        now.getMilliseconds(),
+      ),
+    ).toISOString();
+
+    const dataToCreate = {
+      ...data,
+      created_at: createdAtUTC,
+    };
     const site = await prisma.site.create({
-      data,
+      data: dataToCreate,
     });
 
     return site;
   }
 
-  async update(id: string, data: Prisma.SiteUpdateInput) {
+  async update(id: string, updatedBy: string, data: Prisma.SiteUpdateInput) {
+    const dataToUpdate = {
+      ...data,
+      updatedBy,
+    };
     const site = await prisma.site.update({
       where: {
         id,
       },
-      data,
+      data: dataToUpdate,
     });
 
     return site;

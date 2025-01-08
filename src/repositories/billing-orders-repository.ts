@@ -8,6 +8,7 @@ export interface BillingOrdersRepository {
   create(data: Prisma.BillingOrderUncheckedCreateInput): Promise<BillingOrder>;
   update(
     id: string,
+    updatedBy: string,
     data: Prisma.BillingOrderUpdateInput,
   ): Promise<BillingOrder | null>;
   delete(id: string, deletedBy: string): Promise<unknown>;

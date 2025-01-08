@@ -9,6 +9,7 @@ export interface CustomersRepository {
   create(data: Prisma.CustomerUncheckedCreateInput): Promise<Customer>;
   update(
     id: string,
+    updatedBy: string,
     data: Prisma.CustomerUpdateInput,
   ): Promise<Customer | null>;
   delete(id: string, deletedBy: string): Promise<unknown | null>;

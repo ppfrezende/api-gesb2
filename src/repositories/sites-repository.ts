@@ -7,6 +7,10 @@ export interface SitesRepository {
   listAllSitesTrash(): Promise<Site[]>;
   searchMany(query: string, page: number): Promise<Site[]>;
   create(data: Prisma.SiteUncheckedCreateInput): Promise<Site>;
-  update(id: string, data: Prisma.SiteUpdateInput): Promise<Site | null>;
+  update(
+    id: string,
+    updatedBy: string,
+    data: Prisma.SiteUpdateInput,
+  ): Promise<Site | null>;
   delete(id: string, deletedBy: string): Promise<void | null>;
 }

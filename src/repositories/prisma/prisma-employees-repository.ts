@@ -119,19 +119,44 @@ export class PrismaEmployeesRepository implements EmployeesRepository {
   }
 
   async create(data: Prisma.EmployeeUncheckedCreateInput) {
+    const now = new Date();
+    const createdAtUTC = new Date(
+      Date.UTC(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        now.getHours(),
+        now.getMinutes(),
+        now.getSeconds(),
+        now.getMilliseconds(),
+      ),
+    ).toISOString();
+
+    const dataToCreate = {
+      ...data,
+      created_at: createdAtUTC,
+    };
     const employee = await prisma.employee.create({
-      data,
+      data: dataToCreate,
     });
 
     return employee;
   }
 
-  async update(id: string, data: Prisma.EmployeeUpdateInput) {
+  async update(
+    id: string,
+    updatedBy: string,
+    data: Prisma.EmployeeUpdateInput,
+  ) {
+    const dataToUpdate = {
+      ...data,
+      updatedBy,
+    };
     const employee = await prisma.employee.update({
       where: {
         id,
       },
-      data,
+      data: dataToUpdate,
     });
 
     return employee;

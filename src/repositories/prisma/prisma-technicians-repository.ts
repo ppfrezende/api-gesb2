@@ -123,19 +123,44 @@ export class PrismaTechniciansRepository implements TechniciansRepository {
   }
 
   async create(data: Prisma.TechnicianUncheckedCreateInput) {
+    const now = new Date();
+    const createdAtUTC = new Date(
+      Date.UTC(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        now.getHours(),
+        now.getMinutes(),
+        now.getSeconds(),
+        now.getMilliseconds(),
+      ),
+    ).toISOString();
+
+    const dataToCreate = {
+      ...data,
+      created_at: createdAtUTC,
+    };
     const technician = await prisma.technician.create({
-      data,
+      data: dataToCreate,
     });
 
     return technician;
   }
 
-  async update(id: string, data: Prisma.TechnicianUpdateInput) {
+  async update(
+    id: string,
+    updatedBy: string,
+    data: Prisma.TechnicianUpdateInput,
+  ) {
+    const dataToUpdate = {
+      ...data,
+      updatedBy,
+    };
     const technician = await prisma.technician.update({
       where: {
         id,
       },
-      data,
+      data: dataToUpdate,
     });
 
     return technician;

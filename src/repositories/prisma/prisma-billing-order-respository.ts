@@ -85,19 +85,44 @@ export class PrismaBillingOrdersRepository implements BillingOrdersRepository {
   }
 
   async create(data: Prisma.BillingOrderUncheckedCreateInput) {
+    const now = new Date();
+    const createdAtUTC = new Date(
+      Date.UTC(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        now.getHours(),
+        now.getMinutes(),
+        now.getSeconds(),
+        now.getMilliseconds(),
+      ),
+    ).toISOString();
+
+    const dataToCreate = {
+      ...data,
+      created_at: createdAtUTC,
+    };
     const billing_order = await prisma.billingOrder.create({
-      data,
+      data: dataToCreate,
     });
 
     return billing_order;
   }
 
-  async update(id: string, data: Prisma.BillingOrderUpdateInput) {
+  async update(
+    id: string,
+    updatedBy: string,
+    data: Prisma.BillingOrderUpdateInput,
+  ) {
+    const dataToUpdate = {
+      ...data,
+      updatedBy,
+    };
     const purchase_order = await prisma.billingOrder.update({
       where: {
         id,
       },
-      data,
+      data: dataToUpdate,
     });
 
     return purchase_order;

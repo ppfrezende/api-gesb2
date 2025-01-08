@@ -14,6 +14,7 @@ export interface EmployeesRepository {
   create(data: Prisma.EmployeeUncheckedCreateInput): Promise<Employee>;
   update(
     id: string,
+    updatedBy: string,
     data: Prisma.EmployeeUpdateInput,
   ): Promise<Employee | null>;
   delete(id: string, deletedBy: string): Promise<void | null>;

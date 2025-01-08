@@ -181,19 +181,44 @@ export class PrismaCustomersRepository implements CustomersRepository {
   }
 
   async create(data: Prisma.CustomerUncheckedCreateInput) {
+    const now = new Date();
+    const createdAtUTC = new Date(
+      Date.UTC(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        now.getHours(),
+        now.getMinutes(),
+        now.getSeconds(),
+        now.getMilliseconds(),
+      ),
+    ).toISOString();
+
+    const dataToCreate = {
+      ...data,
+      created_at: createdAtUTC,
+    };
     const customer = await prisma.customer.create({
-      data,
+      data: dataToCreate,
     });
 
     return customer;
   }
 
-  async update(id: string, data: Prisma.CustomerUpdateInput) {
+  async update(
+    id: string,
+    updatedBy: string,
+    data: Prisma.CustomerUpdateInput,
+  ) {
+    const dataToUpdate = {
+      ...data,
+      updatedBy,
+    };
     const customer = await prisma.customer.update({
       where: {
         id,
       },
-      data,
+      data: dataToUpdate,
     });
 
     return customer;

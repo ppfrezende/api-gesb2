@@ -433,19 +433,23 @@ export async function generateResumeForApproval(
         },
       );
 
-      const total =
+      const expensesFinalTotalValue =
         (expensesTotalValue
-          ? expensesTotalValue.expense_value *
+          ? (expensesTotalValue.expense_value / 1000) *
             (intervention.expense_administration_tax / 1000)
           : 0) +
-        expensesTotalValue!.expense_value +
-        overWorkedTotalValues!.additionalNightHoursValue +
-        overWorkedTotalValues!.extraHoursValue +
-        overWorkedTotalValues!.normalHoursValue +
+        expensesTotalValue!.expense_value / 1000;
+
+      const total = Math.ceil(
         traveledHoursValue +
-        notOverWorkedTotalValues!.additionalNightHoursValue +
-        notOverWorkedTotalValues!.extraHoursValue +
-        notOverWorkedTotalValues!.normalHoursValue;
+          notOverWorkedTotalValues!.normalHoursValue +
+          notOverWorkedTotalValues!.extraHoursValue +
+          notOverWorkedTotalValues!.additionalNightHoursValue +
+          (overWorkedTotalValues!.normalHoursValue +
+            overWorkedTotalValues!.extraHoursValue +
+            overWorkedTotalValues!.additionalNightHoursValue) +
+          expensesFinalTotalValue,
+      );
 
       await updateInterventionUseCase.execute({
         interventionId: interventionId,
@@ -754,13 +758,13 @@ export async function generateResumeForApproval(
               intervention.currency === 'USD'
                 ? genericCurrencyFormatter(
                     expensesTotalValue
-                      ? expensesTotalValue.expense_value *
+                      ? (expensesTotalValue.expense_value / 1000) *
                           (intervention.expense_administration_tax / 1000)
                       : 0,
                   )
                 : brazilCurrencyFormatter(
                     expensesTotalValue
-                      ? expensesTotalValue.expense_value *
+                      ? (expensesTotalValue.expense_value / 1000) *
                           (intervention.expense_administration_tax / 1000)
                       : 0,
                   )
@@ -773,10 +777,14 @@ export async function generateResumeForApproval(
             `${
               intervention.currency === 'USD'
                 ? genericCurrencyFormatter(
-                    expensesTotalValue ? expensesTotalValue.expense_value : 0,
+                    expensesTotalValue
+                      ? expensesTotalValue.expense_value / 1000
+                      : 0,
                   )
                 : brazilCurrencyFormatter(
-                    expensesTotalValue ? expensesTotalValue.expense_value : 0,
+                    expensesTotalValue
+                      ? expensesTotalValue.expense_value / 1000
+                      : 0,
                   )
             }`,
           ],

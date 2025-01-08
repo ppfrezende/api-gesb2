@@ -12,6 +12,7 @@ export interface TechniciansRepository {
   create(data: Prisma.TechnicianUncheckedCreateInput): Promise<Technician>;
   update(
     id: string,
+    updatedBy: string,
     data: Prisma.TechnicianUpdateInput,
   ): Promise<Technician | null>;
   delete(id: string, deletedBy: string): Promise<void | null>;

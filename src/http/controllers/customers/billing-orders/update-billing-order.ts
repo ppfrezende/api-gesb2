@@ -2,6 +2,7 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
 import { makeUpdateBillingOrderUseCase } from '@/use-cases/_factories/customers_factories/billing-orders_factories/make-update-purchase-order-use-case';
+import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-get-user-profile';
 
 export async function updateBillingOrder(
   request: FastifyRequest,
@@ -62,8 +63,15 @@ export async function updateBillingOrder(
   try {
     const updateBillingOrder = makeUpdateBillingOrderUseCase();
 
+    const getUserProfile = makeGetUserProfileUseCase();
+
+    const { user: userLoggedIn } = await getUserProfile.execute({
+      userId: request.user.sub,
+    });
+
     const updatedBillingOrder = await updateBillingOrder.execute({
       billingOrderId: billingOrderId,
+      updatedBy: userLoggedIn.name,
       data: {
         description,
         isDoubled,

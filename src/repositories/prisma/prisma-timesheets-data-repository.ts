@@ -114,19 +114,44 @@ export class PrismaTimeSheetsDataRepository
   }
 
   async create(data: Prisma.TimeSheetDataUncheckedCreateInput) {
+    const now = new Date();
+    const createdAtUTC = new Date(
+      Date.UTC(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        now.getHours(),
+        now.getMinutes(),
+        now.getSeconds(),
+        now.getMilliseconds(),
+      ),
+    ).toISOString();
+
+    const dataToCreate = {
+      ...data,
+      created_at: createdAtUTC,
+    };
     const timesheetdata = await prisma.timeSheetData.create({
-      data,
+      data: dataToCreate,
     });
 
     return timesheetdata;
   }
 
-  async update(id: string, data: Prisma.TimeSheetDataUpdateInput) {
+  async update(
+    id: string,
+    updatedBy: string,
+    data: Prisma.TimeSheetDataUpdateInput,
+  ) {
+    const dataToUpdate = {
+      ...data,
+      updatedBy,
+    };
     const timesheetdata = await prisma.timeSheetData.update({
       where: {
         id,
       },
-      data,
+      data: dataToUpdate,
     });
 
     return timesheetdata;

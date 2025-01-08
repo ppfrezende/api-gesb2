@@ -30,8 +30,25 @@ export class PrismaCustomerProjectManagersRepository
   }
 
   async create(data: Prisma.CustomerProjectManagerUncheckedCreateInput) {
+    const now = new Date();
+    const createdAtUTC = new Date(
+      Date.UTC(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        now.getHours(),
+        now.getMinutes(),
+        now.getSeconds(),
+        now.getMilliseconds(),
+      ),
+    ).toISOString();
+
+    const dataToCreate = {
+      ...data,
+      created_at: createdAtUTC,
+    };
     const project_manager = await prisma.customerProjectManager.create({
-      data,
+      data: dataToCreate,
     });
 
     return project_manager;

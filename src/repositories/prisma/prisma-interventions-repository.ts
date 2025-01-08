@@ -301,9 +301,9 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
       where: {
         isApproved: true,
         isDeleted: false,
-        initial_at: {
-          gte: new Date(year, 0, 1),
-          lt: new Date(year + 1, 0, 1),
+        finished_at: {
+          gte: new Date(Date.UTC(year, 0, 1)),
+          lt: new Date(Date.UTC(year + 1, 0, 1)),
         },
       },
     });
@@ -320,9 +320,9 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
         where: {
           isApproved: false,
           isDeleted: false,
-          initial_at: {
-            gte: new Date(year, 0, 1),
-            lt: new Date(year + 1, 0, 1),
+          finished_at: {
+            gte: new Date(Date.UTC(year, 0, 1)),
+            lt: new Date(Date.UTC(year + 1, 0, 1)),
           },
         },
       });
@@ -331,6 +331,14 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
   }
 
   async totalMonthlyInterventionsProfitValue(year: number, month: number) {
+    const startOfMonth =
+      month === 0
+        ? new Date(Date.UTC(year, month, 1))
+        : new Date(Date.UTC(year, month, 1));
+    const endOfMonth =
+      month === 0
+        ? new Date(Date.UTC(year, month + 1, 0))
+        : new Date(Date.UTC(year, month + 1, 0));
     const totalMonthInterventionProfit = await prisma.intervention.aggregate({
       _sum: {
         total_value: true,
@@ -339,8 +347,8 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
         isApproved: true,
         isDeleted: false,
         initial_at: {
-          gte: new Date(year, month - 1, 1),
-          lt: new Date(year, month, 1),
+          gte: startOfMonth,
+          lte: endOfMonth,
         },
       },
     });
@@ -349,12 +357,20 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
   }
 
   async totalMonthlyInterventionsCount(year: number, month: number) {
+    const startOfMonth =
+      month === 0
+        ? new Date(Date.UTC(year, month, 1))
+        : new Date(Date.UTC(year, month, 1));
+    const endOfMonth =
+      month === 0
+        ? new Date(Date.UTC(year, month + 1, 0))
+        : new Date(Date.UTC(year, month + 1, 0));
     const totalMonthInterventionCount = await prisma.intervention.count({
       where: {
         isDeleted: false,
         initial_at: {
-          gte: new Date(year, month - 1, 1),
-          lte: new Date(year, month, 1),
+          gte: startOfMonth,
+          lte: endOfMonth,
         },
       },
     });
@@ -363,8 +379,25 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
   }
 
   async create(data: Prisma.InterventionUncheckedCreateInput) {
+    const now = new Date();
+    const createdAtUTC = new Date(
+      Date.UTC(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        now.getHours(),
+        now.getMinutes(),
+        now.getSeconds(),
+        now.getMilliseconds(),
+      ),
+    ).toISOString();
+
+    const dataToCreate = {
+      ...data,
+      created_at: createdAtUTC,
+    };
     const intervention = await prisma.intervention.create({
-      data,
+      data: dataToCreate,
       include: {
         Site: true,
         Technician: true,
@@ -377,12 +410,20 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
     return intervention;
   }
 
-  async update(id: string, data: Prisma.InterventionUncheckedUpdateInput) {
+  async update(
+    id: string,
+    updatedBy: string,
+    data: Prisma.InterventionUncheckedUpdateInput,
+  ) {
+    const dataToUpdate = {
+      ...data,
+      updatedBy,
+    };
     const intervention = await prisma.intervention.update({
       where: {
         id,
       },
-      data,
+      data: dataToUpdate,
     });
 
     return intervention;

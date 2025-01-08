@@ -17,6 +17,7 @@ export interface ServiceProvidersRepository {
   ): Promise<ServiceProvider>;
   update(
     id: string,
+    updatedBy: string,
     data: Prisma.ServiceProviderUpdateInput,
   ): Promise<ServiceProvider | null>;
   delete(id: string, deletedBy: string): Promise<void | null>;

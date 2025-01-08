@@ -2,6 +2,7 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
 import { makeUpdateCustomerUseCase } from '@/use-cases/_factories/customers_factories/make-update-customer-use-case';
+import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-get-user-profile';
 
 export async function updateCustomer(
   request: FastifyRequest,
@@ -40,8 +41,15 @@ export async function updateCustomer(
   try {
     const updateCustomer = makeUpdateCustomerUseCase();
 
+    const getUserProfile = makeGetUserProfileUseCase();
+
+    const { user: userLoggedIn } = await getUserProfile.execute({
+      userId: request.user.sub,
+    });
+
     const updatedCustomer = await updateCustomer.execute({
       customerId: customerId,
+      updatedBy: userLoggedIn.name,
       data: {
         company_name,
         cnpj,

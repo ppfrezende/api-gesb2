@@ -133,19 +133,44 @@ export class PrismaServiceProvidersRepository
   }
 
   async create(data: Prisma.ServiceProviderUncheckedCreateInput) {
+    const now = new Date();
+    const createdAtUTC = new Date(
+      Date.UTC(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        now.getHours(),
+        now.getMinutes(),
+        now.getSeconds(),
+        now.getMilliseconds(),
+      ),
+    ).toISOString();
+
+    const dataToCreate = {
+      ...data,
+      created_at: createdAtUTC,
+    };
     const service_provider = await prisma.serviceProvider.create({
-      data,
+      data: dataToCreate,
     });
 
     return service_provider;
   }
 
-  async update(id: string, data: Prisma.ServiceProviderUpdateInput) {
+  async update(
+    id: string,
+    updatedBy: string,
+    data: Prisma.ServiceProviderUpdateInput,
+  ) {
+    const dataToUpdate = {
+      ...data,
+      updatedBy,
+    };
     const service_provider = await prisma.serviceProvider.update({
       where: {
         id,
       },
-      data,
+      data: dataToUpdate,
     });
 
     return service_provider;

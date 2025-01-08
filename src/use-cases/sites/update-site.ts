@@ -4,6 +4,7 @@ import { ResourceNotFoundError } from '../errors/resource-not-found-error';
 
 interface UpdateSiteUseCaseRequest {
   siteId: string;
+  updatedBy: string;
   data: Prisma.SiteUpdateInput;
 }
 
@@ -16,6 +17,7 @@ export class UpdateSiteUseCase {
 
   async execute({
     siteId,
+    updatedBy,
     data,
   }: UpdateSiteUseCaseRequest): Promise<UpdateSiteUseCaseResponse> {
     const site = await this.sitesRepository.findById(siteId);
@@ -24,7 +26,11 @@ export class UpdateSiteUseCase {
       throw new ResourceNotFoundError();
     }
 
-    const updatedSite = await this.sitesRepository.update(siteId, data);
+    const updatedSite = await this.sitesRepository.update(
+      siteId,
+      updatedBy,
+      data,
+    );
 
     return {
       updatedSite,

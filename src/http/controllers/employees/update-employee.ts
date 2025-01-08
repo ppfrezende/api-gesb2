@@ -1,5 +1,6 @@
 import { makeUpdateEmployeeProfileUseCase } from '@/use-cases/_factories/employee_factories/make-update-employee-profile-use-case';
 import { makeUpdateTechnicianUseCase } from '@/use-cases/_factories/technicians_factories/make-update-technician-use-case';
+import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-get-user-profile';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
@@ -53,8 +54,15 @@ export async function updateEmployeeProfile(
     const updateEmployeeProfile = makeUpdateEmployeeProfileUseCase();
     const updateTechnician = makeUpdateTechnicianUseCase();
 
+    const getUserProfile = makeGetUserProfileUseCase();
+
+    const { user: userLoggedIn } = await getUserProfile.execute({
+      userId: request.user.sub,
+    });
+
     const { updatedEmployee } = await updateEmployeeProfile.execute({
       employeeId: employeeId,
+      updatedBy: userLoggedIn.name,
       data: {
         name,
         registration_number,
@@ -76,6 +84,7 @@ export async function updateEmployeeProfile(
 
     const { updatedTechnician } = await updateTechnician.execute({
       technicianId: employeeId,
+      updatedBy: userLoggedIn.name,
       data: {
         name,
         email,

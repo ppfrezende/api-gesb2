@@ -4,6 +4,7 @@ import { TimeSheetData, Prisma } from '@prisma/client';
 
 interface UpdateTimeSheetDataUseCaseRequest {
   timesheetdataId: string;
+  updatedBy: string;
   data: Prisma.TimeSheetDataUpdateInput;
 }
 
@@ -16,6 +17,7 @@ export class UpdateTimeSheetDataUseCase {
 
   async execute({
     timesheetdataId,
+    updatedBy,
     data,
   }: UpdateTimeSheetDataUseCaseRequest): Promise<UpdateTimeSheetDataUseCaseResponse> {
     const timeshetdata = await this.timesheetdataRepository.findById(
@@ -28,6 +30,7 @@ export class UpdateTimeSheetDataUseCase {
 
     const updatedTimeSheetData = await this.timesheetdataRepository.update(
       timesheetdataId,
+      updatedBy,
       data,
     );
 

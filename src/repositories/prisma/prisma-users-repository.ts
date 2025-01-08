@@ -89,8 +89,25 @@ export class PrismaUsersRepository implements UsersRepository {
   }
 
   async create(data: Prisma.UserCreateInput) {
+    const now = new Date();
+    const createdAtUTC = new Date(
+      Date.UTC(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        now.getHours(),
+        now.getMinutes(),
+        now.getSeconds(),
+        now.getMilliseconds(),
+      ),
+    ).toISOString();
+
+    const dataToCreate = {
+      ...data,
+      created_at: createdAtUTC,
+    };
     const user = await prisma.user.create({
-      data,
+      data: dataToCreate,
     });
 
     return user;

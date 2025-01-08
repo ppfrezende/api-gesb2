@@ -2,6 +2,7 @@ import { makeUpdateSiteUseCase } from '@/use-cases/_factories/sites_factories/ma
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
+import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-get-user-profile';
 
 export async function updateSite(request: FastifyRequest, reply: FastifyReply) {
   const updateSiteBodySchema = z.object({
@@ -37,8 +38,15 @@ export async function updateSite(request: FastifyRequest, reply: FastifyReply) {
   try {
     const updateSite = makeUpdateSiteUseCase();
 
+    const getUserProfile = makeGetUserProfileUseCase();
+
+    const { user: userLoggedIn } = await getUserProfile.execute({
+      userId: request.user.sub,
+    });
+
     const { updatedSite } = await updateSite.execute({
       siteId: siteId,
+      updatedBy: userLoggedIn.name,
       data: {
         name,
         description,

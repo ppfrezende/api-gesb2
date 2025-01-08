@@ -13,6 +13,7 @@ export interface TimeSheetsDataRepository {
   ): Promise<TimeSheetData>;
   update(
     id: string,
+    updatedBy: string,
     data: Prisma.TimeSheetDataUpdateInput,
   ): Promise<TimeSheetData | null>;
   delete(id: string, deletedBy: string): Promise<unknown>;

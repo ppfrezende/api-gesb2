@@ -24,6 +24,7 @@ export interface InterventionsRepository {
   create(data: Prisma.InterventionUncheckedCreateInput): Promise<Intervention>;
   update(
     id: string,
+    updatedBy: string,
     data: Prisma.InterventionUncheckedUpdateInput,
   ): Promise<Intervention | null>;
   delete(id: string, deletedBy: string): Promise<unknown>;

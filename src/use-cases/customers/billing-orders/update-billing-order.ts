@@ -4,6 +4,7 @@ import { ResourceNotFoundError } from '../../errors/resource-not-found-error';
 
 interface UpdateBillingOrderUseCaseRequest {
   billingOrderId: string;
+  updatedBy: string;
   data: Prisma.BillingOrderUpdateInput;
 }
 
@@ -16,6 +17,7 @@ export class UpdateBillingOrderUseCase {
 
   async execute({
     billingOrderId,
+    updatedBy,
     data,
   }: UpdateBillingOrderUseCaseRequest): Promise<UpdateBillingOrderUseCaseResponse> {
     const billing_order = await this.billingOrderRepository.findById(
@@ -28,6 +30,7 @@ export class UpdateBillingOrderUseCase {
 
     const updatedBillingOrder = await this.billingOrderRepository.update(
       billingOrderId,
+      updatedBy,
       data,
     );
 

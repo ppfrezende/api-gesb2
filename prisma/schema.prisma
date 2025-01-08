@@ -65,6 +65,7 @@ model Employee {
   created_at          DateTime  @default(now())
   User                User?     @relation(fields: [userId], references: [id])
   userId              String?
+  updatedBy           String?
   updated_at          DateTime  @updatedAt
   isDeleted           Boolean   @default(false)
   deleted_at          DateTime?
@@ -93,6 +94,7 @@ model ServiceProvider {
   job_title           String
   avatar              String?
   skills              String?
+  updatedBy           String?
   updated_at          DateTime  @updatedAt
   isDeleted           Boolean   @default(false)
   deleted_at          DateTime?
@@ -121,6 +123,7 @@ model Technician {
   technicianExpenses  TechnicianExpense[]
   User                User?               @relation(fields: [userId], references: [id])
   userId              String?
+  updatedBy           String?
   updated_at          DateTime            @updatedAt
   isDeleted           Boolean             @default(false)
   deleted_at          DateTime?
@@ -147,6 +150,7 @@ model Site {
   timesheetsdata      TimeSheetData[]
   TechSite            TechSite[]
   interventions       Intervention[]
+  updatedBy           String?
   updated_at          DateTime        @updatedAt
   isDeleted           Boolean         @default(false)
   deleted_at          DateTime?
@@ -192,6 +196,7 @@ model BillingOrder {
   interventions Intervention[]
   Customer      Customer?      @relation(fields: [customerId], references: [id])
   customerId    String?
+  updatedBy     String?
   updated_at    DateTime       @updatedAt
   isDeleted     Boolean        @default(false)
   deleted_at    DateTime?
@@ -243,6 +248,7 @@ model TimeSheetData {
   customerId          String?
   Site                Site?          @relation(fields: [siteId], references: [id])
   siteId              String?
+  updatedBy           String?
   updated_at          DateTime       @updatedAt
   isDeleted           Boolean        @default(false)
   deleted_at          DateTime?
@@ -280,6 +286,7 @@ model Intervention {
   timesheets                 TimeSheetData[]
 
   interventionExpenses InterventionExpense[]
+  updatedBy            String?
   updated_at           DateTime              @updatedAt
   isDeleted            Boolean               @default(false)
   deleted_at           DateTime?
@@ -302,6 +309,7 @@ model InterventionExpense {
   interventionId  String?
   User            User?         @relation(fields: [userId], references: [id])
   userId          String?
+  updatedBy       String?
   updated_at      DateTime      @updatedAt
   isDeleted       Boolean       @default(false)
   deleted_at      DateTime?
@@ -325,6 +333,7 @@ model TechnicianExpense {
   userId       String?
   Technician   Technician? @relation(fields: [technicianId], references: [id])
   technicianId String?
+  updatedBy    String?
   updated_at   DateTime    @updatedAt
   isDeleted    Boolean     @default(false)
   deleted_at   DateTime?
@@ -352,10 +361,12 @@ model Customer {
   timesheetsdata   TimeSheetData[]
   User             User?                    @relation(fields: [userId], references: [id])
   userId           String?
+  updatedBy        String?
   updated_at       DateTime                 @updatedAt
-  isDeleted        Boolean                  @default(false)
-  deleted_at       DateTime?
-  deletedBy        String?
+
+  isDeleted  Boolean   @default(false)
+  deleted_at DateTime?
+  deletedBy  String?
 
   @@map("customers")
 }
@@ -371,6 +382,7 @@ model CustomerProjectManager {
   interventions Intervention[]
   Customer      Customer?      @relation(fields: [customerId], references: [id])
   customerId    String?
+  updatedBy     String?
   updated_at    DateTime       @updatedAt
   isDeleted     Boolean        @default(false)
   deleted_at    DateTime?

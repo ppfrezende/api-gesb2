@@ -2,6 +2,7 @@ import { makeGetInterventionUseCase } from '@/use-cases/_factories/interventions
 import { makeUpdateInterventionUseCase } from '@/use-cases/_factories/interventions_factories/make-update-intervention-use-case';
 import { makeUpdateSiteUseCase } from '@/use-cases/_factories/sites_factories/make-update-site-use-case';
 import { makeUpdateTechnicianUseCase } from '@/use-cases/_factories/technicians_factories/make-update-technician-use-case';
+import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-get-user-profile';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
@@ -49,6 +50,12 @@ export async function updateInterventions(
     const updateSite = makeUpdateSiteUseCase();
     const getIntervention = makeGetInterventionUseCase();
 
+    const getUserProfile = makeGetUserProfileUseCase();
+
+    const { user: userLoggedIn } = await getUserProfile.execute({
+      userId: request.user.sub,
+    });
+
     const { intervention } = await getIntervention.execute({ interventionId });
     const oldTechnicianId = intervention.technicianId;
     const oldSiteId = intervention.siteId;
@@ -94,6 +101,7 @@ export async function updateInterventions(
 
     const { updatedIntervention } = await updateInterventionUseCase.execute({
       interventionId: interventionId,
+      updatedBy: userLoggedIn.name,
       data: {
         progressive,
         intervention_number,

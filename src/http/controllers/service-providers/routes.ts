@@ -18,44 +18,77 @@ const uploadAvatar = multer(uploadConfig.upload('tmp/avatar'));
 export async function serviceProvidersRoutes(app: FastifyInstance) {
   app.post(
     '/service-providers',
-    { onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])] },
+    {
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE', 'RH']),
+      ],
+    },
     registerServiceProvider,
   );
 
   app.get(
     '/service-providers/search',
-    { onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])] },
+    {
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE', 'RH']),
+      ],
+    },
     searchServiceProviders,
   );
 
   app.put(
     '/service-providers/:serviceProviderId',
-    { onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])] },
+    {
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE', 'RH']),
+      ],
+    },
     updateServiceProviderProfile,
   );
 
   app.get(
     '/service-providers/:serviceProviderId',
-    { onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])] },
+    {
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE', 'RH']),
+      ],
+    },
     getServiceProviderProfile,
   );
 
   app.delete(
     '/service-providers/:serviceProviderId',
-    { onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])] },
+    {
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE', 'RH']),
+      ],
+    },
     deleteServiceProviderProfile,
   );
 
   app.get(
     '/service-providers',
-    { onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])] },
+    {
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE', 'RH']),
+      ],
+    },
     getServiceProvidersList,
   );
 
   app.patch(
     '/service-providers/avatar/:id',
     {
-      onRequest: [verifyJWT, verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE'])],
+      onRequest: [
+        verifyJWT,
+        verifyUserRole(['SERVICE', 'ADMIN', 'FINANCE', 'RH']),
+      ],
       preHandler: uploadAvatar.single('avatar'),
     },
     updateServiceProviderAvatar,

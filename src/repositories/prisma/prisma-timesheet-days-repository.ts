@@ -43,8 +43,25 @@ export class PrismaTimeSheetDaysRepository implements TimeSheetDaysRepository {
   }
 
   async createMany(data: Prisma.TimeSheetDayCreateManyInput[]) {
+    const now = new Date();
+    const createdAtUTC = new Date(
+      Date.UTC(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        now.getHours(),
+        now.getMinutes(),
+        now.getSeconds(),
+        now.getMilliseconds(),
+      ),
+    ).toISOString();
+
+    const dataToCreate = data.map((item) => ({
+      ...item,
+      created_at: createdAtUTC,
+    }));
     await prisma.timeSheetDay.createMany({
-      data,
+      data: dataToCreate,
     });
 
     return;
