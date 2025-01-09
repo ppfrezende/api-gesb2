@@ -7,6 +7,7 @@ interface SearchServiceProvidersUseCaseRequest {
 }
 
 interface SearchServiceProvidersUseCaseResponse {
+  numberOfRegisters: string;
   service_providers: ServiceProvider[];
 }
 
@@ -24,8 +25,11 @@ export class SearchServiceProvidersUseCase {
       page,
     );
 
+    const numberOfRegisters = service_providers.length.toString();
+
     return {
       service_providers,
+      numberOfRegisters,
     };
   }
 }

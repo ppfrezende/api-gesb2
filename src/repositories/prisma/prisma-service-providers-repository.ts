@@ -106,21 +106,56 @@ export class PrismaServiceProvidersRepository
     const service_providers = await prisma.serviceProvider.findMany({
       where: {
         isDeleted: false,
-        name: {
-          contains: query,
-        },
-        email: {
-          contains: query,
-        },
-        job_title: {
-          contains: query,
-        },
-        cpf: {
-          contains: query,
-        },
-        skills: {
-          contains: query,
-        },
+        OR: [
+          {
+            name: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+          {
+            registration_number: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+          {
+            company: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+          {
+            email: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+          {
+            cpf: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+          {
+            cnpj: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+          {
+            job_title: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+          {
+            skills: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+        ],
       },
       take: 10,
       skip: (page - 1) * 10,

@@ -25,7 +25,7 @@ export async function searchCustomers(
 
     return reply
       .status(200)
-      .headers({ 'x-total-count': numberOfRegisters })
+      .headers({ 'x-page-count': numberOfRegisters })
       .send({ customers });
   } catch (err) {
     if (err instanceof ResourceNotFoundError) {

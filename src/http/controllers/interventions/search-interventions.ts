@@ -25,7 +25,7 @@ export async function searchInterventions(
 
     return reply
       .status(200)
-      .headers({ 'x-total-count': numberOfRegisters })
+      .headers({ 'x-page-count': numberOfRegisters })
 
       .send({ interventions });
   } catch (err) {

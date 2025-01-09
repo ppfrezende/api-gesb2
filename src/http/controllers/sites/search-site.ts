@@ -24,7 +24,7 @@ export async function searchSites(
 
     return reply
       .status(201)
-      .headers({ 'x-total-count': numberOfRegisters })
+      .headers({ 'x-page-count': numberOfRegisters })
       .send({ sites });
   } catch (err) {
     if (err instanceof ResourceNotFoundError) {

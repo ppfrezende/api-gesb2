@@ -17,15 +17,17 @@ export async function searchUsers(
   try {
     const searchUserUseCase = makeSearchUserUseCase();
 
-    const users = await searchUserUseCase.execute({
+    const { users, numberOfRegisters } = await searchUserUseCase.execute({
       query: q,
       page,
     });
 
-    return reply.status(200).send({
-      ...users,
-      password_hash: undefined,
-    });
+    return reply
+      .status(200)
+      .headers({
+        'x-page-count': numberOfRegisters,
+      })
+      .send({ users });
   } catch (err) {
     if (err instanceof ResourceNotFoundError) {
       return reply.status(409).send({ message: err.message });

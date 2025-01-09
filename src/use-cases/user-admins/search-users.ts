@@ -7,6 +7,7 @@ interface SearchUsersUseCaseRequest {
 }
 
 interface SearchUsersUseCaseResponse {
+  numberOfRegisters: string;
   users: User[];
 }
 
@@ -24,6 +25,8 @@ export class SearchUsersUseCase {
       return user;
     });
 
-    return { users };
+    const numberOfRegisters = users.length.toString();
+
+    return { numberOfRegisters, users };
   }
 }

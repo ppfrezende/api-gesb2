@@ -7,6 +7,7 @@ interface SearchEmployeesUseCaseRequest {
 }
 
 interface SearchEmployeesUseCaseResponse {
+  numberOfRegisters: string;
   employees: Employee[];
 }
 
@@ -19,8 +20,11 @@ export class SearchEmployeesUseCase {
   }: SearchEmployeesUseCaseRequest): Promise<SearchEmployeesUseCaseResponse> {
     const employees = await this.employeesRepository.searchMany(query, page);
 
+    const numberOfRegisters = employees.length.toString();
+
     return {
       employees,
+      numberOfRegisters,
     };
   }
 }

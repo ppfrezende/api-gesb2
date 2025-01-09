@@ -17,14 +17,18 @@ export async function searchServiceProviders(
   try {
     const searchServiceProvidersUseCase = makeSearchServiceProviderUseCase();
 
-    const service_providers = await searchServiceProvidersUseCase.execute({
-      query: q,
-      page,
-    });
+    const { service_providers, numberOfRegisters } =
+      await searchServiceProvidersUseCase.execute({
+        query: q,
+        page,
+      });
 
-    return reply.status(200).send({
-      service_providers,
-    });
+    return reply
+      .status(200)
+      .headers({
+        'x-page-count': numberOfRegisters,
+      })
+      .send({ service_providers });
   } catch (err) {
     if (err instanceof ResourceNotFoundError) {
       return reply.status(409).send({ message: err.message });
