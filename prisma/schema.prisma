@@ -51,6 +51,8 @@ model Employee {
   name                String
   email               String
   admission_at        DateTime  @default(now())
+  dismissed_at        DateTime?
+  isActive            Boolean   @default(true)
   phone               String
   cep                 String
   street              String
@@ -84,6 +86,8 @@ model ServiceProvider {
   email               String
   start_of_contract   DateTime  @default(now())
   contract_validity   DateTime  @default(now())
+  dismissed_at        DateTime?
+  isActive            Boolean   @default(true)
   phone               String
   cep                 String
   street              String
@@ -114,6 +118,7 @@ model Technician {
   job_title           String
   registration_number String?
   skills              String?
+  isActive            Boolean             @default(true)
   created_at          DateTime            @default(now())
   timesheetdata       TimeSheetData[]
   timesheetday        TimeSheetDay[]

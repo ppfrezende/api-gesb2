@@ -66,8 +66,8 @@ export class PrismaServiceProvidersRepository
       where: {
         isDeleted: false,
       },
-      take: 10,
-      skip: (page - 1) * 10,
+      take: 50,
+      skip: (page - 1) * 50,
       orderBy: {
         created_at: 'desc',
       },
@@ -157,8 +157,8 @@ export class PrismaServiceProvidersRepository
           },
         ],
       },
-      take: 10,
-      skip: (page - 1) * 10,
+      take: 50,
+      skip: (page - 1) * 50,
       orderBy: {
         created_at: 'desc',
       },
