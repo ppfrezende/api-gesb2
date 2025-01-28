@@ -3,18 +3,17 @@ import { BillingOrder } from '@prisma/client';
 
 interface CreateBillingOrderUseCaseRequest {
   description: string;
-  isDoubled: boolean;
+  isOffshore: boolean;
   over_days?: number;
-  onshore_travel_hour_value?: number;
+  currency: string;
+  expense_administration_tax: number;
+  travel_hour_value?: number;
   onshore_normal_hour_value?: number;
   onshore_extra_hour_value?: number;
-  onshore_double_hour_value?: number;
   onshore_night_hour_value?: number;
   onshore_over_hour_value?: number;
-  offshore_travel_hour_value?: number;
   offshore_normal_hour_value?: number;
   offshore_extra_hour_value?: number;
-  offshore_double_hour_value?: number;
   offshore_night_hour_value?: number;
   offshore_over_hour_value?: number;
   max_hours_day_onshore?: number;
@@ -34,18 +33,17 @@ export class CreateBillingOrderUseCase {
 
   async execute({
     description,
-    isDoubled,
+    isOffshore,
     over_days,
-    onshore_travel_hour_value,
+    currency,
+    expense_administration_tax,
+    travel_hour_value,
     onshore_normal_hour_value,
     onshore_extra_hour_value,
-    onshore_double_hour_value,
     onshore_night_hour_value,
     onshore_over_hour_value,
-    offshore_travel_hour_value,
     offshore_normal_hour_value,
     offshore_extra_hour_value,
-    offshore_double_hour_value,
     offshore_night_hour_value,
     offshore_over_hour_value,
     max_hours_day_onshore,
@@ -57,18 +55,17 @@ export class CreateBillingOrderUseCase {
   }: CreateBillingOrderUseCaseRequest): Promise<CreateBillingOrderUseCaseResponse> {
     const billing_order = await this.billingOrderRepository.create({
       description,
-      isDoubled,
+      isOffshore,
       over_days,
-      onshore_travel_hour_value,
+      currency,
+      expense_administration_tax,
+      travel_hour_value,
       onshore_normal_hour_value,
       onshore_extra_hour_value,
-      onshore_double_hour_value,
       onshore_night_hour_value,
       onshore_over_hour_value,
-      offshore_travel_hour_value,
       offshore_normal_hour_value,
       offshore_extra_hour_value,
-      offshore_double_hour_value,
       offshore_night_hour_value,
       offshore_over_hour_value,
       max_hours_day_onshore,

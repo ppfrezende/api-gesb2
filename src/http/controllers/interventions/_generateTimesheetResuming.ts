@@ -3,77 +3,77 @@ import { formatWeekday } from '@/utils/convertDate';
 import { convertDecimalToHour } from '@/utils/convertHour';
 import PDFDocumentWithTables from 'pdfkit-table';
 
+export type DayData = {
+  date?: Date;
+  travelRangeSum: number;
+  normalHours: number;
+  additionalNightHours: number;
+  extraHours: number;
+  isOver: boolean;
+};
+
 export function generateTimesheetResumingTable(
   doc: PDFDocumentWithTables,
   intervention: InterventionResponseData,
+  onlyTraveledDays: Partial<DayData>[],
+  calculatedDayHoursValueArray: Partial<DayData>[],
 ) {
   if (intervention.timesheets) {
-    const calculatedDayHoursArray = intervention.timesheets.flatMap(
-      (timesheet) =>
-        timesheet.timesheetdays.map((day) => {
-          const values = [
-            day.rangeAfrom,
-            day.rangeAto,
-            day.rangeBfrom,
-            day.rangeBto,
-            day.rangeCfrom,
-            day.rangeCto,
-            day.rangeDfrom,
-            day.rangeDto,
-          ].filter((value) => value !== null);
-          const minHour = Math.min(...values);
-          const maxHour = Math.max(...values);
-          const rangeSums = [
-            day.rangeAto - day.rangeAfrom,
-            day.rangeBto - day.rangeBfrom,
-            day.rangeCto - day.rangeCfrom,
-            day.rangeDto - day.rangeDfrom,
-          ]
-            .filter((value) => !isNaN(value))
-            .reduce((acc, val) => acc + val, 0);
-          const rangeTravelSums = [day.arrival - day.departure]
-            .filter((value) => !isNaN(value))
-            .reduce((acc, val) => acc + val, 0);
-          const morningNightHoursLimit = 0.25;
-          const eveningNightHoursLimit = 0.9166666666666666;
-          const normalHoursOnshore = 0.333333333333333;
-          const normalHoursOffshore = 0.5;
-          let additionalNightHours = 0;
-          let normalHours = 0;
-          let extraHours = 0;
-          if (minHour <= morningNightHoursLimit) {
-            additionalNightHours += morningNightHoursLimit - minHour;
-          }
-          if (maxHour >= eveningNightHoursLimit) {
-            additionalNightHours += maxHour - eveningNightHoursLimit;
-          }
-          if (!day.isOffshore) {
-            if (rangeSums <= normalHoursOnshore) {
-              normalHours = rangeSums;
-            } else {
-              extraHours = rangeSums - normalHoursOnshore;
-              normalHours = normalHoursOnshore;
-            }
-          } else if (rangeSums <= normalHoursOffshore) {
-            normalHours = rangeSums;
-          } else {
-            extraHours = rangeSums - normalHoursOffshore;
-            normalHours = normalHoursOffshore;
-          }
-          const dates = formatWeekday(
-            day.day,
-            intervention.currency === 'USD' ? 'USD' : 'BRL',
-          );
-          return [
-            dates.dateFormatted || '',
-            dates.weekday || '',
-            convertDecimalToHour(rangeTravelSums) || '',
-            convertDecimalToHour(normalHours) || '',
-            convertDecimalToHour(extraHours) || '',
-            convertDecimalToHour(additionalNightHours) || '',
-          ];
-        }),
-    );
+    const concatenateDataToShow = (
+      onlyTraveledDays: Partial<DayData>[],
+      calculatedDayHoursValueArray: Partial<DayData>[],
+    ): DayData[] => {
+      return [
+        ...onlyTraveledDays.map((day) => ({
+          date: day.date,
+          travelRangeSum: day.travelRangeSum ?? 0,
+          normalHours: day.normalHours ?? 0,
+          additionalNightHours: day.additionalNightHours ?? 0,
+          extraHours: day.extraHours ?? 0,
+          isOver: day.isOver ?? false,
+        })),
+        ...calculatedDayHoursValueArray.map((day) => ({
+          date: day.date,
+          travelRangeSum: day.travelRangeSum ?? 0,
+          normalHours: day.normalHours ?? 0,
+          additionalNightHours: day.additionalNightHours ?? 0,
+          extraHours: day.extraHours ?? 0,
+          isOver: day.isOver ?? false,
+        })),
+      ];
+    };
+
+    const toShowDaysDataArray = concatenateDataToShow(
+      onlyTraveledDays,
+      calculatedDayHoursValueArray,
+    ).map((day) => {
+      const dates = formatWeekday(
+        day.date!,
+        intervention.BillingOrder.currency === 'USD' ? 'USD' : 'BRL',
+      );
+
+      return [
+        dates.dateFormatted || '',
+        dates.weekday || '',
+        day.travelRangeSum > 0 ? convertDecimalToHour(day.travelRangeSum) : '',
+        day.isOver === false && day.normalHours > 0
+          ? convertDecimalToHour(day.normalHours)
+          : '',
+        day.isOver === false && day.extraHours > 0
+          ? convertDecimalToHour(day.extraHours)
+          : '',
+        day.isOver === false &&
+        day.additionalNightHours > 0 &&
+        day.travelRangeSum === 0
+          ? convertDecimalToHour(day.additionalNightHours)
+          : '',
+        day.isOver === false
+          ? ''
+          : convertDecimalToHour(
+              day.additionalNightHours + day.extraHours + day.normalHours,
+            ),
+      ];
+    });
 
     doc.addPage();
     doc
@@ -123,14 +123,15 @@ export function generateTimesheetResumingTable(
         },
         { label: 'EXTRA', align: 'center' },
         { label: 'NIGHT', align: 'center' },
+        { label: 'OVER', align: 'center' },
       ],
-      rows: calculatedDayHoursArray,
+      rows: toShowDaysDataArray,
     };
     const timesheetResumingTableOptions = {
       x: 50,
       y: 160,
       padding: [1, 1, 5, 4],
-      columnsSize: [80, 80, 80, 80, 80, 80],
+      columnsSize: [80, 80, 65, 65, 65, 65, 65],
       divider: {
         header: {
           width: 1,

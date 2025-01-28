@@ -45,9 +45,11 @@ export async function deleteInterventionExpense(
     if (intervention.total_value !== null) {
       await updateInterventionUseCase.execute({
         interventionId: interventionId,
+        updatedBy: userLoggedIn.name,
         data: {
           total_value:
-            intervention.total_value - interventionExpense.expense_value,
+            Number(intervention.total_value) -
+            Number(interventionExpense.expense_value),
         },
       });
     }

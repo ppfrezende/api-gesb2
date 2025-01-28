@@ -36,6 +36,7 @@ export async function deleteIntervention(
     if (technicianId && siteId) {
       await updateTechnician.execute({
         technicianId: technicianId,
+        updatedBy: userLoggedIn.name,
         data: {
           sites: {
             disconnect: {

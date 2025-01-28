@@ -11,11 +11,14 @@ import { formatDateToDDMMYYYY } from '@/utils/convertDate';
 import { convertDecimalToHour } from '@/utils/convertHour';
 import {
   brazilCurrencyFormatter,
+  euroCurrencyFormatter,
   genericCurrencyFormatter,
 } from '@/utils/currencyFormat';
 import { generateTimesheetResumingTable } from './_generateTimesheetResuming';
 import { InterventionResponseData } from '@/@types/intervention';
 import { makeUpdateInterventionUseCase } from '@/use-cases/_factories/interventions_factories/make-update-intervention-use-case';
+import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-get-user-profile';
+import { Decimal as PrismaDecimal } from '@prisma/client/runtime/library';
 
 export async function generateResumeForApproval(
   request: FastifyRequest,
@@ -28,6 +31,12 @@ export async function generateResumeForApproval(
   const { interventionId } = generateResumeForApprovalQuerySchema.parse(
     request.params,
   );
+
+  const getUserProfile = makeGetUserProfileUseCase();
+
+  const { user: userLoggedIn } = await getUserProfile.execute({
+    userId: request.user.sub,
+  });
 
   try {
     const getInterventionUseCase = makeGetInterventionUseCase();
@@ -43,9 +52,10 @@ export async function generateResumeForApproval(
 
     if (
       intervention.isMonthly === false &&
-      intervention.BillingOrder !== undefined
+      intervention.BillingOrder !== undefined &&
+      intervention.timesheets
     ) {
-      const calculatedDayHoursArray = intervention.timesheets?.flatMap(
+      const calculatedDayHoursArray = intervention.timesheets.flatMap(
         (timesheet) =>
           timesheet.timesheetdays.map((day) => {
             const hourRanges = [
@@ -57,47 +67,68 @@ export async function generateResumeForApproval(
               day.rangeCto,
               day.rangeDfrom,
               day.rangeDto,
-            ].filter((value) => value !== null);
-
-            const minHour = hourRanges.length > 0 ? Math.min(...hourRanges) : 0;
-            const maxHour = hourRanges.length > 0 ? Math.max(...hourRanges) : 0;
-
-            const rangeSums = [
-              day.rangeAto! - day.rangeAfrom!,
-              day.rangeBto! - day.rangeBfrom!,
-              day.rangeCto! - day.rangeCfrom!,
-              day.rangeDto! - day.rangeDfrom!,
             ]
-              .filter((value) => !isNaN(value))
-              .reduce((acc, val) => acc + val, 0);
+              .filter((value) => value !== null)
+              .map((value) =>
+                value instanceof PrismaDecimal ? value.toNumber() : value,
+              );
 
-            const travelRangeSum = [day.arrival! - day.departure!]
-              .filter((value) => !isNaN(value))
-              .reduce((acc, val) => acc + val, 0);
+            const minHour =
+              hourRanges.length > 0
+                ? Number(Math.min(...hourRanges).toFixed(3))
+                : 0;
+            const maxHour =
+              hourRanges.length > 0
+                ? Number(Math.max(...hourRanges).toFixed(3))
+                : 0;
+
+            const rangeSums = Number(
+              [
+                day.rangeAto && day.rangeAfrom
+                  ? day.rangeAto.toNumber() - day.rangeAfrom.toNumber()
+                  : 0,
+                day.rangeBto && day.rangeBfrom
+                  ? day.rangeBto.toNumber() - day.rangeBfrom.toNumber()
+                  : 0,
+                day.rangeCto && day.rangeCfrom
+                  ? day.rangeCto.toNumber() - day.rangeCfrom.toNumber()
+                  : 0,
+                day.rangeDto && day.rangeDfrom
+                  ? day.rangeDto.toNumber() - day.rangeDfrom.toNumber()
+                  : 0,
+              ]
+                .filter((value) => !isNaN(value))
+                .reduce((acc, val) => acc + val, 0)
+                .toFixed(2),
+            );
+
+            const travelRangeSum = Number(
+              [
+                day.arrival && day.departure
+                  ? day.arrival.toNumber() - day.departure.toNumber()
+                  : 0,
+              ]
+                .filter((value) => !isNaN(value))
+                .reduce((acc, val) => acc + val, 0)
+                .toFixed(3),
+            );
 
             const morningNightHoursLimit = 0.25;
-            const eveningNightHoursLimit = 0.9166666666666666;
-            const normalHoursOnshore = 0.333333333333333;
+            const eveningNightHoursLimit = 0.916;
+            const normalHoursOnshore = 0.333;
             const normalHoursOffshore = 0.5;
 
             let additionalNightHours = 0;
             let normalHours = 0;
             let extraHours = 0;
-            let travelRangeSumValue = 0;
 
-            if (day.isOffshore) {
-              travelRangeSumValue = intervention.BillingOrder
-                ?.offshore_travel_hour_value
+            const travelRangeSumValue = Number(
+              (intervention.BillingOrder?.travel_hour_value
                 ? travelRangeSum *
-                  intervention.BillingOrder?.offshore_travel_hour_value
-                : 0;
-            } else {
-              travelRangeSumValue = intervention.BillingOrder
-                ?.onshore_travel_hour_value
-                ? travelRangeSum *
-                  intervention.BillingOrder?.onshore_travel_hour_value
-                : 0;
-            }
+                  Number(intervention.BillingOrder?.travel_hour_value)
+                : 0
+              ).toFixed(3),
+            );
 
             if (minHour <= morningNightHoursLimit) {
               additionalNightHours += morningNightHoursLimit - minHour;
@@ -138,9 +169,14 @@ export async function generateResumeForApproval(
           }),
       );
 
-      const onlyTraveledDays = calculatedDayHoursArray?.filter((day) => {
-        return day.rangeSums === 0 && day.travelRangeSum > 0;
-      });
+      const onlyTraveledDays = calculatedDayHoursArray
+        .filter((day) => {
+          return day.rangeSums === 0 && day.travelRangeSum > 0;
+        })
+        .map((day) => ({
+          ...day,
+          isOver: false,
+        }));
 
       const workedDays = calculatedDayHoursArray?.filter((day) => {
         return day.rangeSums > 0;
@@ -148,12 +184,13 @@ export async function generateResumeForApproval(
 
       const calculatedOnlyTraveledHoursValueArray = onlyTraveledDays?.map(
         (day) => {
-          const travelRangeSumValue =
-            day.travelRangeSum *
-            24 *
-            (day.isOffshore === true
-              ? intervention.BillingOrder!.offshore_travel_hour_value
-              : intervention.BillingOrder!.onshore_travel_hour_value);
+          const travelRangeSumValue = Number(
+            (
+              day.travelRangeSum *
+              24 *
+              Number(intervention.BillingOrder?.travel_hour_value)
+            ).toFixed(2),
+          );
 
           return {
             date: day.date,
@@ -169,33 +206,43 @@ export async function generateResumeForApproval(
           intervention.BillingOrder?.over_days &&
           index < intervention.BillingOrder?.over_days
         ) {
-          const travelRangeSumValue =
-            day.travelRangeSum *
-            24 *
-            (day.isOffshore === true
-              ? intervention.BillingOrder!.offshore_travel_hour_value
-              : intervention.BillingOrder!.onshore_travel_hour_value);
+          const travelRangeSumValue = Number(
+            (
+              day.travelRangeSum *
+              24 *
+              Number(intervention.BillingOrder?.travel_hour_value)
+            ).toFixed(2),
+          );
 
-          const additionalNightHoursValue =
-            day.additionalNightHours *
-            24 *
-            (day.isOffshore === true
-              ? intervention.BillingOrder!.offshore_night_hour_value
-              : intervention.BillingOrder!.onshore_night_hour_value);
+          const additionalNightHoursValue = Number(
+            (
+              day.additionalNightHours *
+              24 *
+              (day.isOffshore === true
+                ? Number(intervention.BillingOrder!.offshore_night_hour_value)
+                : Number(intervention.BillingOrder!.onshore_night_hour_value))
+            ).toFixed(2),
+          );
 
-          const extraHoursValue =
-            day.extraHours *
-            24 *
-            (day.isOffshore === true
-              ? intervention.BillingOrder!.offshore_extra_hour_value
-              : intervention.BillingOrder!.onshore_extra_hour_value);
+          const extraHoursValue = Number(
+            (
+              day.extraHours *
+              24 *
+              (day.isOffshore === true
+                ? Number(intervention.BillingOrder!.offshore_extra_hour_value)
+                : Number(intervention.BillingOrder!.onshore_extra_hour_value))
+            ).toFixed(2),
+          );
 
-          const normalHoursValue =
-            day.normalHours *
-            24 *
-            (day.isOffshore === true
-              ? intervention.BillingOrder!.offshore_normal_hour_value
-              : intervention.BillingOrder!.onshore_normal_hour_value);
+          const normalHoursValue = Number(
+            (
+              day.normalHours *
+              24 *
+              (day.isOffshore === true
+                ? Number(intervention.BillingOrder!.offshore_normal_hour_value)
+                : Number(intervention.BillingOrder!.onshore_normal_hour_value))
+            ).toFixed(2),
+          );
 
           return {
             date: day.date,
@@ -211,33 +258,44 @@ export async function generateResumeForApproval(
             isOver: false,
           };
         } else {
-          const travelRangeSumValue =
-            day.travelRangeSum *
-            24 *
-            (day.isOffshore === true
-              ? intervention.BillingOrder!.offshore_over_hour_value
-              : intervention.BillingOrder!.onshore_over_hour_value);
+          const travelRangeSumValue = Number(
+            (
+              day.travelRangeSum *
+              24 *
+              (day.isOffshore === true
+                ? Number(intervention.BillingOrder!.offshore_over_hour_value)
+                : Number(intervention.BillingOrder!.onshore_over_hour_value))
+            ).toFixed(2),
+          );
 
-          const additionalNightHoursValue =
-            day.additionalNightHours *
-            24 *
-            (day.isOffshore === true
-              ? intervention.BillingOrder!.offshore_over_hour_value
-              : intervention.BillingOrder!.onshore_over_hour_value);
+          const additionalNightHoursValue = Number(
+            (
+              day.additionalNightHours *
+              24 *
+              (day.isOffshore === true
+                ? Number(intervention.BillingOrder!.offshore_over_hour_value)
+                : Number(intervention.BillingOrder!.onshore_over_hour_value))
+            ).toFixed(2),
+          );
+          const extraHoursValue = Number(
+            (
+              day.extraHours *
+              24 *
+              (day.isOffshore === true
+                ? Number(intervention.BillingOrder!.offshore_over_hour_value)
+                : Number(intervention.BillingOrder!.onshore_over_hour_value))
+            ).toFixed(2),
+          );
 
-          const extraHoursValue =
-            day.extraHours *
-            24 *
-            (day.isOffshore === true
-              ? intervention.BillingOrder!.offshore_over_hour_value
-              : intervention.BillingOrder!.onshore_over_hour_value);
-
-          const normalHoursValue =
-            day.normalHours *
-            24 *
-            (day.isOffshore === true
-              ? intervention.BillingOrder!.offshore_over_hour_value
-              : intervention.BillingOrder!.onshore_over_hour_value);
+          const normalHoursValue = Number(
+            (
+              day.normalHours *
+              24 *
+              (day.isOffshore === true
+                ? Number(intervention.BillingOrder!.offshore_over_hour_value)
+                : Number(intervention.BillingOrder!.onshore_over_hour_value))
+            ).toFixed(2),
+          );
 
           return {
             date: day.date,
@@ -284,15 +342,13 @@ export async function generateResumeForApproval(
         },
       );
 
-      const roundedTraveledHours = traveledHours
-        ? (traveledHours?.travelRangeSum * 24).toFixed(0)
-        : 0;
+      const roundedTraveledHours = Number(
+        traveledHours ? (traveledHours?.travelRangeSum * 24).toFixed(0) : 0,
+      );
 
       const traveledHoursValue = traveledHours
-        ? Number(roundedTraveledHours) *
-          (intervention.Site?.isOffshore
-            ? intervention.BillingOrder.offshore_travel_hour_value
-            : intervention.BillingOrder.onshore_travel_hour_value)
+        ? roundedTraveledHours *
+          Number(intervention.BillingOrder.travel_hour_value)
         : 0;
 
       const notOverWorkedDaysArray = calculatedDayHoursValueArray?.filter(
@@ -422,8 +478,8 @@ export async function generateResumeForApproval(
 
       const expensesTotalValue = intervention.interventionExpenses?.reduce(
         (acc, item) => {
-          acc.expense_value = parseFloat(
-            (acc.expense_value + (item.expense_value || 0)).toFixed(3),
+          acc.expense_value = Number(
+            (acc.expense_value + (Number(item.expense_value) || 0)).toFixed(2),
           );
 
           return acc;
@@ -433,32 +489,34 @@ export async function generateResumeForApproval(
         },
       );
 
-      const expensesFinalTotalValue =
-        (expensesTotalValue
-          ? (expensesTotalValue.expense_value / 1000) *
-            (intervention.expense_administration_tax / 1000)
-          : 0) +
-        expensesTotalValue!.expense_value / 1000;
-
-      const total = Math.ceil(
-        traveledHoursValue +
-          notOverWorkedTotalValues!.normalHoursValue +
-          notOverWorkedTotalValues!.extraHoursValue +
-          notOverWorkedTotalValues!.additionalNightHoursValue +
-          (overWorkedTotalValues!.normalHoursValue +
-            overWorkedTotalValues!.extraHoursValue +
-            overWorkedTotalValues!.additionalNightHoursValue) +
-          expensesFinalTotalValue,
+      const expensesFinalTotalValue = Number(
+        (
+          (expensesTotalValue
+            ? expensesTotalValue.expense_value *
+              (intervention.BillingOrder.expense_administration_tax / 100)
+            : 0) + expensesTotalValue!.expense_value
+        ).toFixed(2),
       );
+
+      const total =
+        traveledHoursValue +
+        (notOverWorkedTotalValues!.normalHoursValue +
+          notOverWorkedTotalValues!.extraHoursValue +
+          notOverWorkedTotalValues!.additionalNightHoursValue) +
+        (overWorkedTotalValues!.normalHoursValue +
+          overWorkedTotalValues!.extraHoursValue +
+          overWorkedTotalValues!.additionalNightHoursValue) +
+        expensesFinalTotalValue;
 
       await updateInterventionUseCase.execute({
         interventionId: interventionId,
+        updatedBy: userLoggedIn.name,
         data: {
           total_value: total,
         },
       });
 
-      // gerar PDF
+      //gerar PDF
 
       reply.header('Content-Type', 'application/pdf');
       reply.header(
@@ -505,9 +563,14 @@ export async function generateResumeForApproval(
         .text(
           `${format(
             new Date(),
-            `${intervention.currency === 'USD' ? 'MM/dd/yyyy' : 'dd/MM/yyyy'}`,
+            `${
+              intervention.BillingOrder.currency === 'USD'
+                ? 'MM/dd/yyyy'
+                : 'dd/MM/yyyy'
+            }`,
             {
-              locale: intervention.currency === 'USD' ? enUS : ptBR,
+              locale:
+                intervention.BillingOrder.currency === 'BRL' ? ptBR : enUS,
             },
           )}`,
           0,
@@ -532,11 +595,21 @@ export async function generateResumeForApproval(
         .text(
           `${
             intervention.initial_at
-              ? formatDateToDDMMYYYY(intervention.initial_at.toDateString())
+              ? new Date(intervention.initial_at).toLocaleDateString('pt-BR', {
+                  day: '2-digit',
+                  month: 'short',
+                  year: 'numeric',
+                  timeZone: 'UTC',
+                })
               : 'N/A'
           } - ${
             intervention.finished_at
-              ? formatDateToDDMMYYYY(intervention.finished_at.toDateString())
+              ? new Date(intervention.finished_at).toLocaleDateString('pt-BR', {
+                  day: '2-digit',
+                  month: 'short',
+                  year: 'numeric',
+                  timeZone: 'UTC',
+                })
               : 'N/A'
           }`,
           50 + 145,
@@ -568,7 +641,7 @@ export async function generateResumeForApproval(
         .text('PURCHASE ORDER:', 50, 170 + 120)
         .text(intervention.customer_po_number, 50 + 145, 170 + 120)
         .text('CURRENCY:', 50, 170 + 135)
-        .text(intervention.currency, 50 + 145, 170 + 135)
+        .text(intervention.BillingOrder.currency, 50 + 145, 170 + 135)
         .moveDown();
 
       //Table Informations
@@ -578,12 +651,22 @@ export async function generateResumeForApproval(
           { label: 'DESCRIPTION', align: 'center' },
           { label: 'HOURS', align: 'center' },
           {
-            label: `${intervention.currency === 'USD' ? '$/HOUR' : 'R$/HOUR'}`,
+            label: `${
+              intervention.BillingOrder.currency === 'BRL'
+                ? 'R$/HOUR'
+                : intervention.BillingOrder.currency === 'EUR'
+                ? '£/HOUR'
+                : '$/HOUR'
+            }`,
             align: 'center',
           },
           {
             label: `${
-              intervention.currency === 'USD' ? 'TOTAL $' : 'TOTAL R$'
+              intervention.BillingOrder.currency === 'BRL'
+                ? 'TOTAL R$'
+                : intervention.BillingOrder.currency === 'EUR'
+                ? 'TOTAL £'
+                : 'TOTAL $'
             }`,
             align: 'center',
           },
@@ -595,22 +678,30 @@ export async function generateResumeForApproval(
               traveledHours ? traveledHours.travelRangeSum : 0,
             )}`,
             `${
-              intervention.currency === 'USD'
-                ? genericCurrencyFormatter(
-                    intervention.Site?.isOffshore
-                      ? intervention.BillingOrder.offshore_travel_hour_value
-                      : intervention.BillingOrder.onshore_travel_hour_value,
+              intervention.BillingOrder.currency === 'BRL'
+                ? brazilCurrencyFormatter(
+                    Number(intervention.BillingOrder.travel_hour_value),
                   )
-                : brazilCurrencyFormatter(
-                    intervention.Site?.isOffshore
-                      ? intervention.BillingOrder.offshore_travel_hour_value
-                      : intervention.BillingOrder.onshore_travel_hour_value,
+                : intervention.BillingOrder.currency === 'EUR'
+                ? euroCurrencyFormatter(
+                    Number(intervention.BillingOrder.travel_hour_value),
+                  )
+                : genericCurrencyFormatter(
+                    Number(intervention.BillingOrder.travel_hour_value),
                   )
             }`,
             `${
-              intervention.currency === 'USD'
-                ? genericCurrencyFormatter(traveledHoursValue)
-                : brazilCurrencyFormatter(traveledHoursValue)
+              intervention.BillingOrder.currency === 'BRL'
+                ? brazilCurrencyFormatter(
+                    Number(intervention.BillingOrder.travel_hour_value),
+                  )
+                : intervention.BillingOrder.currency === 'EUR'
+                ? euroCurrencyFormatter(
+                    Number(intervention.BillingOrder.travel_hour_value),
+                  )
+                : genericCurrencyFormatter(
+                    Number(intervention.BillingOrder.travel_hour_value),
+                  )
             }`,
           ],
           [
@@ -619,26 +710,50 @@ export async function generateResumeForApproval(
               notOverWorkedTotalHours ? notOverWorkedTotalHours.normalHours : 0,
             )}`,
             `${
-              intervention.currency === 'USD'
-                ? genericCurrencyFormatter(
-                    intervention.Site?.isOffshore
-                      ? intervention.BillingOrder.offshore_normal_hour_value
-                      : intervention.BillingOrder.onshore_normal_hour_value,
+              intervention.BillingOrder.currency === 'BRL'
+                ? brazilCurrencyFormatter(
+                    intervention.BillingOrder?.isOffshore
+                      ? Number(
+                          intervention.BillingOrder.offshore_normal_hour_value,
+                        )
+                      : Number(
+                          intervention.BillingOrder.onshore_normal_hour_value,
+                        ),
                   )
-                : brazilCurrencyFormatter(
-                    intervention.Site?.isOffshore
-                      ? intervention.BillingOrder.offshore_normal_hour_value
-                      : intervention.BillingOrder.onshore_normal_hour_value,
+                : intervention.BillingOrder.currency === 'EUR'
+                ? euroCurrencyFormatter(
+                    intervention.BillingOrder?.isOffshore
+                      ? Number(
+                          intervention.BillingOrder.offshore_normal_hour_value,
+                        )
+                      : Number(
+                          intervention.BillingOrder.onshore_normal_hour_value,
+                        ),
+                  )
+                : genericCurrencyFormatter(
+                    intervention.BillingOrder?.isOffshore
+                      ? Number(
+                          intervention.BillingOrder.offshore_normal_hour_value,
+                        )
+                      : Number(
+                          intervention.BillingOrder.onshore_normal_hour_value,
+                        ),
                   )
             }`,
             `${
-              intervention.currency === 'USD'
-                ? genericCurrencyFormatter(
+              intervention.BillingOrder.currency === 'BRL'
+                ? brazilCurrencyFormatter(
                     notOverWorkedTotalValues
                       ? notOverWorkedTotalValues.normalHoursValue
                       : 0,
                   )
-                : brazilCurrencyFormatter(
+                : intervention.BillingOrder.currency === 'EUR'
+                ? euroCurrencyFormatter(
+                    notOverWorkedTotalValues
+                      ? notOverWorkedTotalValues.normalHoursValue
+                      : 0,
+                  )
+                : genericCurrencyFormatter(
                     notOverWorkedTotalValues
                       ? notOverWorkedTotalValues.normalHoursValue
                       : 0,
@@ -651,26 +766,50 @@ export async function generateResumeForApproval(
               notOverWorkedTotalHours ? notOverWorkedTotalHours.extraHours : 0,
             )}`,
             `${
-              intervention.currency === 'USD'
-                ? genericCurrencyFormatter(
-                    intervention.Site?.isOffshore
-                      ? intervention.BillingOrder.offshore_extra_hour_value
-                      : intervention.BillingOrder.onshore_extra_hour_value,
+              intervention.BillingOrder.currency === 'BRL'
+                ? brazilCurrencyFormatter(
+                    intervention.BillingOrder?.isOffshore
+                      ? Number(
+                          intervention.BillingOrder.offshore_extra_hour_value,
+                        )
+                      : Number(
+                          intervention.BillingOrder.onshore_extra_hour_value,
+                        ),
                   )
-                : brazilCurrencyFormatter(
-                    intervention.Site?.isOffshore
-                      ? intervention.BillingOrder.offshore_extra_hour_value
-                      : intervention.BillingOrder.onshore_extra_hour_value,
+                : intervention.BillingOrder.currency === 'EUR'
+                ? euroCurrencyFormatter(
+                    intervention.BillingOrder?.isOffshore
+                      ? Number(
+                          intervention.BillingOrder.offshore_extra_hour_value,
+                        )
+                      : Number(
+                          intervention.BillingOrder.onshore_extra_hour_value,
+                        ),
+                  )
+                : genericCurrencyFormatter(
+                    intervention.BillingOrder?.isOffshore
+                      ? Number(
+                          intervention.BillingOrder.offshore_extra_hour_value,
+                        )
+                      : Number(
+                          intervention.BillingOrder.onshore_extra_hour_value,
+                        ),
                   )
             }`,
             `${
-              intervention.currency === 'USD'
-                ? genericCurrencyFormatter(
+              intervention.BillingOrder.currency === 'BRL'
+                ? brazilCurrencyFormatter(
                     notOverWorkedTotalValues
                       ? notOverWorkedTotalValues.extraHoursValue
                       : 0,
                   )
-                : brazilCurrencyFormatter(
+                : intervention.BillingOrder.currency === 'EUR'
+                ? euroCurrencyFormatter(
+                    notOverWorkedTotalValues
+                      ? notOverWorkedTotalValues.extraHoursValue
+                      : 0,
+                  )
+                : genericCurrencyFormatter(
                     notOverWorkedTotalValues
                       ? notOverWorkedTotalValues.extraHoursValue
                       : 0,
@@ -686,26 +825,50 @@ export async function generateResumeForApproval(
                 : 0,
             )}`,
             `${
-              intervention.currency === 'USD'
-                ? genericCurrencyFormatter(
-                    intervention.Site?.isOffshore
-                      ? intervention.BillingOrder.offshore_night_hour_value
-                      : intervention.BillingOrder.onshore_night_hour_value,
+              intervention.BillingOrder.currency === 'BRL'
+                ? brazilCurrencyFormatter(
+                    intervention.BillingOrder?.isOffshore
+                      ? Number(
+                          intervention.BillingOrder.offshore_night_hour_value,
+                        )
+                      : Number(
+                          intervention.BillingOrder.onshore_night_hour_value,
+                        ),
                   )
-                : brazilCurrencyFormatter(
-                    intervention.Site?.isOffshore
-                      ? intervention.BillingOrder.offshore_night_hour_value
-                      : intervention.BillingOrder.onshore_night_hour_value,
+                : intervention.BillingOrder.currency === 'EUR'
+                ? euroCurrencyFormatter(
+                    intervention.BillingOrder?.isOffshore
+                      ? Number(
+                          intervention.BillingOrder.offshore_night_hour_value,
+                        )
+                      : Number(
+                          intervention.BillingOrder.onshore_night_hour_value,
+                        ),
+                  )
+                : genericCurrencyFormatter(
+                    intervention.BillingOrder?.isOffshore
+                      ? Number(
+                          intervention.BillingOrder.offshore_night_hour_value,
+                        )
+                      : Number(
+                          intervention.BillingOrder.onshore_night_hour_value,
+                        ),
                   )
             }`,
             `${
-              intervention.currency === 'USD'
-                ? genericCurrencyFormatter(
+              intervention.BillingOrder.currency === 'BRL'
+                ? brazilCurrencyFormatter(
                     notOverWorkedTotalValues
                       ? notOverWorkedTotalValues.additionalNightHoursValue
                       : 0,
                   )
-                : brazilCurrencyFormatter(
+                : intervention.BillingOrder.currency === 'EUR'
+                ? euroCurrencyFormatter(
+                    notOverWorkedTotalValues
+                      ? notOverWorkedTotalValues.additionalNightHoursValue
+                      : 0,
+                  )
+                : genericCurrencyFormatter(
                     notOverWorkedTotalValues
                       ? notOverWorkedTotalValues.additionalNightHoursValue
                       : 0,
@@ -719,28 +882,54 @@ export async function generateResumeForApproval(
               overWorkedTotalHoursSum ? overWorkedTotalHoursSum : 0,
             )}`,
             `${
-              intervention.currency === 'USD'
-                ? genericCurrencyFormatter(
-                    intervention.Site?.isOffshore
-                      ? intervention.BillingOrder.offshore_over_hour_value
-                      : intervention.BillingOrder.onshore_over_hour_value,
+              intervention.BillingOrder.currency === 'BRL'
+                ? brazilCurrencyFormatter(
+                    intervention.BillingOrder?.isOffshore
+                      ? Number(
+                          intervention.BillingOrder.offshore_over_hour_value,
+                        )
+                      : Number(
+                          intervention.BillingOrder.onshore_over_hour_value,
+                        ),
                   )
-                : brazilCurrencyFormatter(
-                    intervention.Site?.isOffshore
-                      ? intervention.BillingOrder.offshore_over_hour_value
-                      : intervention.BillingOrder.onshore_over_hour_value,
+                : intervention.BillingOrder.currency === 'EUR'
+                ? euroCurrencyFormatter(
+                    intervention.BillingOrder?.isOffshore
+                      ? Number(
+                          intervention.BillingOrder.offshore_over_hour_value,
+                        )
+                      : Number(
+                          intervention.BillingOrder.onshore_over_hour_value,
+                        ),
+                  )
+                : genericCurrencyFormatter(
+                    intervention.BillingOrder?.isOffshore
+                      ? Number(
+                          intervention.BillingOrder.offshore_over_hour_value,
+                        )
+                      : Number(
+                          intervention.BillingOrder.onshore_over_hour_value,
+                        ),
                   )
             }`,
             `${
-              intervention.currency === 'USD'
-                ? genericCurrencyFormatter(
+              intervention.BillingOrder.currency === 'BRL'
+                ? brazilCurrencyFormatter(
                     overWorkedTotalValues
                       ? overWorkedTotalValues.additionalNightHoursValue +
                           overWorkedTotalValues.extraHoursValue +
                           overWorkedTotalValues.normalHoursValue
                       : 0,
                   )
-                : brazilCurrencyFormatter(
+                : intervention.BillingOrder.currency === 'EUR'
+                ? euroCurrencyFormatter(
+                    overWorkedTotalValues
+                      ? overWorkedTotalValues.additionalNightHoursValue +
+                          overWorkedTotalValues.extraHoursValue +
+                          overWorkedTotalValues.normalHoursValue
+                      : 0,
+                  )
+                : genericCurrencyFormatter(
                     overWorkedTotalValues
                       ? overWorkedTotalValues.additionalNightHoursValue +
                           overWorkedTotalValues.extraHoursValue +
@@ -755,17 +944,30 @@ export async function generateResumeForApproval(
             '-',
             '-',
             `${
-              intervention.currency === 'USD'
-                ? genericCurrencyFormatter(
+              intervention.BillingOrder.currency === 'BRL'
+                ? brazilCurrencyFormatter(
                     expensesTotalValue
-                      ? (expensesTotalValue.expense_value / 1000) *
-                          (intervention.expense_administration_tax / 1000)
+                      ? expensesTotalValue.expense_value *
+                          (intervention.BillingOrder
+                            .expense_administration_tax /
+                            100)
                       : 0,
                   )
-                : brazilCurrencyFormatter(
+                : intervention.BillingOrder.currency === 'EUR'
+                ? euroCurrencyFormatter(
                     expensesTotalValue
-                      ? (expensesTotalValue.expense_value / 1000) *
-                          (intervention.expense_administration_tax / 1000)
+                      ? expensesTotalValue.expense_value *
+                          (intervention.BillingOrder
+                            .expense_administration_tax /
+                            100)
+                      : 0,
+                  )
+                : genericCurrencyFormatter(
+                    expensesTotalValue
+                      ? expensesTotalValue.expense_value *
+                          (intervention.BillingOrder
+                            .expense_administration_tax /
+                            100)
                       : 0,
                   )
             }`,
@@ -775,16 +977,16 @@ export async function generateResumeForApproval(
             '-',
             '-',
             `${
-              intervention.currency === 'USD'
-                ? genericCurrencyFormatter(
-                    expensesTotalValue
-                      ? expensesTotalValue.expense_value / 1000
-                      : 0,
+              intervention.BillingOrder.currency === 'BRL'
+                ? brazilCurrencyFormatter(
+                    expensesTotalValue ? expensesTotalValue.expense_value : 0,
                   )
-                : brazilCurrencyFormatter(
-                    expensesTotalValue
-                      ? expensesTotalValue.expense_value / 1000
-                      : 0,
+                : intervention.BillingOrder.currency === 'EUR'
+                ? euroCurrencyFormatter(
+                    expensesTotalValue ? expensesTotalValue.expense_value : 0,
+                  )
+                : genericCurrencyFormatter(
+                    expensesTotalValue ? expensesTotalValue.expense_value : 0,
                   )
             }`,
           ],
@@ -810,9 +1012,11 @@ export async function generateResumeForApproval(
         .text('TOTAL', 60, 170 + 150 + 50 + 130)
         .text(
           `${
-            intervention.currency === 'USD'
-              ? genericCurrencyFormatter(total)
-              : brazilCurrencyFormatter(total)
+            intervention.BillingOrder.currency === 'BRL'
+              ? brazilCurrencyFormatter(total)
+              : intervention.BillingOrder.currency === 'EUR'
+              ? euroCurrencyFormatter(total)
+              : genericCurrencyFormatter(total)
           }`,
           20,
           170 + 150 + 50 + 130,
@@ -846,6 +1050,8 @@ export async function generateResumeForApproval(
       generateTimesheetResumingTable(
         doc,
         intervention as unknown as InterventionResponseData,
+        onlyTraveledDays,
+        calculatedDayHoursValueArray,
       );
 
       doc.end();
@@ -853,8 +1059,8 @@ export async function generateResumeForApproval(
     } else if (intervention.isMonthly) {
       const expensesTotalValue = intervention.interventionExpenses?.reduce(
         (acc, item) => {
-          acc.expense_value = parseFloat(
-            (acc.expense_value + (item.expense_value || 0)).toFixed(3),
+          acc.expense_value = Number(
+            (acc.expense_value + (Number(item.expense_value) || 0)).toFixed(2),
           );
 
           return acc;
@@ -864,24 +1070,18 @@ export async function generateResumeForApproval(
         },
       );
 
-      const total = intervention.total_value
-        ? intervention.total_value +
-          (expensesTotalValue?.expense_value
-            ? expensesTotalValue?.expense_value
-            : 0) +
-          (expensesTotalValue
-            ? expensesTotalValue.expense_value *
-              (intervention.expense_administration_tax / 1000)
-            : 0)
-        : 0;
-
       await updateInterventionUseCase.execute({
         interventionId: interventionId,
+        updatedBy: userLoggedIn.name,
         data: {
-          total_value: total,
+          total_value: intervention.total_value
+            ? Number(intervention.total_value) +
+              (expensesTotalValue?.expense_value
+                ? expensesTotalValue?.expense_value
+                : 0)
+            : 0,
         },
       });
-
       reply.header('Content-Type', 'application/pdf');
       reply.header(
         'Content-Disposition',
@@ -890,7 +1090,6 @@ export async function generateResumeForApproval(
       const doc = new PDFDocumentWithTables({ size: 'A4' });
       const filePath = 'tmp/invoice.pdf';
       doc.pipe(fs.createWriteStream(filePath));
-
       doc
         .image('logo.png', 50, 32, { width: 50 })
         .fillColor('#000000')
@@ -935,9 +1134,7 @@ export async function generateResumeForApproval(
           },
         )
         .moveDown();
-
       // //Intervention Information
-
       doc
         .fontSize(12)
         .font('Helvetica')
@@ -986,19 +1183,15 @@ export async function generateResumeForApproval(
         .text('PURCHASE ORDER:', 50, 170 + 120)
         .text(intervention.customer_po_number, 50 + 145, 170 + 120)
         .text('CURRENCY:', 50, 170 + 135)
-        .text(intervention.currency, 50 + 145, 170 + 135)
+        .text('BRL', 50 + 145, 170 + 135)
         .moveDown();
-
       //Table Informations
-
       const tableOfValues = {
         headers: [
           { label: 'DESCRIPTION', align: 'center' },
           { label: 'MONTH', align: 'center' },
           {
-            label: `${
-              intervention.currency === 'USD' ? 'TOTAL $' : 'TOTAL R$'
-            }`,
+            label: 'TOTAL R$',
             align: 'center',
           },
         ],
@@ -1006,51 +1199,19 @@ export async function generateResumeForApproval(
           [
             `${intervention.Site?.isOffshore ? 'OFFSHORE' : 'ONSHORE'}`,
             `1`,
-            `${
-              intervention.currency === 'USD'
-                ? genericCurrencyFormatter(
-                    intervention.total_value ? intervention.total_value : 0,
-                  )
-                : brazilCurrencyFormatter(
-                    intervention.total_value ? intervention.total_value : 0,
-                  )
-            }`,
-          ],
-          [
-            'EXPENSES ADMIN. COST',
-            '-',
-            `${
-              intervention.currency === 'USD'
-                ? genericCurrencyFormatter(
-                    expensesTotalValue
-                      ? expensesTotalValue.expense_value *
-                          (intervention.expense_administration_tax / 1000)
-                      : 0,
-                  )
-                : brazilCurrencyFormatter(
-                    expensesTotalValue
-                      ? expensesTotalValue.expense_value *
-                          (intervention.expense_administration_tax / 1000)
-                      : 0,
-                  )
-            }`,
+            `${brazilCurrencyFormatter(
+              intervention.total_value ? Number(intervention.total_value) : 0,
+            )}`,
           ],
           [
             'EXPENSES',
             '-',
-            `${
-              intervention.currency === 'USD'
-                ? genericCurrencyFormatter(
-                    expensesTotalValue ? expensesTotalValue.expense_value : 0,
-                  )
-                : brazilCurrencyFormatter(
-                    expensesTotalValue ? expensesTotalValue.expense_value : 0,
-                  )
-            }`,
+            `${brazilCurrencyFormatter(
+              expensesTotalValue ? expensesTotalValue.expense_value : 0,
+            )}`,
           ],
         ],
       };
-
       const tableOfValuesOptions = {
         x: 60 + 40,
         y: 170 + 150 + 50,
@@ -1062,7 +1223,6 @@ export async function generateResumeForApproval(
           },
         },
       };
-
       doc.table(tableOfValues, tableOfValuesOptions);
       doc
         .fontSize(14)
@@ -1071,13 +1231,9 @@ export async function generateResumeForApproval(
         .text(
           brazilCurrencyFormatter(
             intervention.total_value
-              ? intervention.total_value +
+              ? Number(intervention.total_value) +
                   (expensesTotalValue?.expense_value
                     ? expensesTotalValue?.expense_value
-                    : 0) +
-                  (expensesTotalValue
-                    ? expensesTotalValue.expense_value *
-                      (intervention.expense_administration_tax / 1000)
                     : 0)
               : 0,
           ),
@@ -1087,7 +1243,6 @@ export async function generateResumeForApproval(
             align: 'right',
           },
         );
-
       doc
         .fontSize(12)
         .font('Helvetica')
@@ -1109,12 +1264,10 @@ export async function generateResumeForApproval(
       doc.text('PROJECT MANAGER SIGNATURE', 50, 700, {
         align: 'right',
       });
-
       // generateTimesheetResumingTable(
       //   doc,
       //   intervention as unknown as InterventionResponseData,
       // );
-
       doc.end();
       return reply.status(200).send(doc);
     }

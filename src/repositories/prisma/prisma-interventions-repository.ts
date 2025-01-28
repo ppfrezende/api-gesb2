@@ -294,40 +294,90 @@ export class PrismaInterventionsRepository implements InterventionsRepository {
   }
 
   async totalAnualInterventionsProfitValue(year: number) {
-    const totalAnualInterventionProfit = await prisma.intervention.aggregate({
-      _sum: {
-        total_value: true,
-      },
-      where: {
-        isApproved: true,
-        isDeleted: false,
-        finished_at: {
-          gte: new Date(Date.UTC(year, 0, 1)),
-          lt: new Date(Date.UTC(year + 1, 0, 1)),
-        },
-      },
-    });
+    const currencies = ['USD', 'EUR', 'BRL'];
 
-    return totalAnualInterventionProfit._sum.total_value ?? 0;
+    const currencyAggregations = await Promise.all(
+      currencies.map((currency) =>
+        prisma.intervention.aggregate({
+          _sum: { total_value: true },
+          where: {
+            isApproved: true,
+            isDeleted: false,
+            finished_at: {
+              gte: new Date(Date.UTC(year, 0, 1)),
+              lt: new Date(Date.UTC(year + 1, 0, 1)),
+            },
+            OR: [
+              { BillingOrder: { currency } },
+              ...(currency === 'BRL' ? [{ billingOrderId: null }] : []),
+            ],
+          },
+        }),
+      ),
+    );
+
+    const result = {
+      USD: Number(currencyAggregations[0]._sum.total_value ?? 0),
+      EUR: Number(currencyAggregations[1]._sum.total_value ?? 0),
+      BRL: Number(currencyAggregations[2]._sum.total_value ?? 0),
+    };
+
+    return result;
   }
 
-  async expectedAnualInterventionsProfitValue(year: number) {
-    const expectedAnualInterventionsProfit =
-      await prisma.intervention.aggregate({
-        _sum: {
-          total_value: true,
-        },
-        where: {
-          isApproved: false,
-          isDeleted: false,
-          finished_at: {
-            gte: new Date(Date.UTC(year, 0, 1)),
-            lt: new Date(Date.UTC(year + 1, 0, 1)),
-          },
-        },
-      });
+  // async expectedAnualInterventionsProfitValue(year: number) {
+  //   const expectedUSDAnualInterventionsProfit =
+  //     await prisma.intervention.aggregate({
+  //       _sum: {
+  //         total_value: true,
+  //       },
+  //       where: {
+  //         isApproved: false,
+  //         BillingOrder: {
+  //           currency: 'USD',
+  //         },
+  //         isDeleted: false,
+  //         finished_at: {
+  //           gte: new Date(Date.UTC(year, 0, 1)),
+  //           lt: new Date(Date.UTC(year + 1, 0, 1)),
+  //         },
+  //       },
+  //     });
+  //   console.log(expectedUSDAnualInterventionsProfit._sum.total_value);
 
-    return expectedAnualInterventionsProfit._sum.total_value ?? 0;
+  //   return expectedUSDAnualInterventionsProfit._sum.total_value ?? 0;
+  // }
+
+  async expectedAnualInterventionsProfitValue(year: number) {
+    const currencies = ['USD', 'EUR', 'BRL'];
+
+    const currencyAggregations = await Promise.all(
+      currencies.map((currency) =>
+        prisma.intervention.aggregate({
+          _sum: { total_value: true },
+          where: {
+            isApproved: false,
+            isDeleted: false,
+            finished_at: {
+              gte: new Date(Date.UTC(year, 0, 1)),
+              lt: new Date(Date.UTC(year + 1, 0, 1)),
+            },
+            OR: [
+              { BillingOrder: { currency } },
+              ...(currency === 'BRL' ? [{ billingOrderId: null }] : []),
+            ],
+          },
+        }),
+      ),
+    );
+
+    const result = {
+      USD: Number(currencyAggregations[0]._sum.total_value ?? 0),
+      EUR: Number(currencyAggregations[1]._sum.total_value ?? 0),
+      BRL: Number(currencyAggregations[2]._sum.total_value ?? 0),
+    };
+
+    return result;
   }
 
   async totalMonthlyInterventionsProfitValue(year: number, month: number) {

@@ -7,7 +7,6 @@ type InterventionExpenseData = {
   currency: string;
   currency_quote: number;
   expense_value: number;
-  total_converted: number;
   interventionId: string;
   userId: string;
 };

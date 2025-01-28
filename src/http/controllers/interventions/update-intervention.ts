@@ -1,3 +1,4 @@
+import { makeUpdateBillingOrderUseCase } from '@/use-cases/_factories/customers_factories/billing-orders_factories/make-update-purchase-order-use-case';
 import { makeGetInterventionUseCase } from '@/use-cases/_factories/interventions_factories/make-get-intervention-use-case';
 import { makeUpdateInterventionUseCase } from '@/use-cases/_factories/interventions_factories/make-update-intervention-use-case';
 import { makeUpdateSiteUseCase } from '@/use-cases/_factories/sites_factories/make-update-site-use-case';
@@ -18,9 +19,9 @@ export async function updateInterventions(
     job_number: z.string().optional(),
     initial_at: z.coerce.date().optional(),
     finished_at: z.coerce.date().or(z.string().max(0)).optional(),
-    currency: z.string().optional(),
     technicianId: z.string().optional(),
     siteId: z.string().optional(),
+    billingOrderId: z.string().optional().nullable(),
     customerProjectManagerId: z.string().optional(),
   });
   const updateInterventionQuerySchema = z.object({
@@ -36,8 +37,8 @@ export async function updateInterventions(
     finished_at,
     technicianId,
     customerProjectManagerId,
+    billingOrderId,
     siteId,
-    currency,
   } = updateInterventionBodySchema.parse(request.body);
 
   const { interventionId } = updateInterventionQuerySchema.parse(
@@ -48,6 +49,7 @@ export async function updateInterventions(
     const updateInterventionUseCase = makeUpdateInterventionUseCase();
     const updateTechnician = makeUpdateTechnicianUseCase();
     const updateSite = makeUpdateSiteUseCase();
+    const updateBillingOrder = makeUpdateBillingOrderUseCase();
     const getIntervention = makeGetInterventionUseCase();
 
     const getUserProfile = makeGetUserProfileUseCase();
@@ -59,10 +61,38 @@ export async function updateInterventions(
     const { intervention } = await getIntervention.execute({ interventionId });
     const oldTechnicianId = intervention.technicianId;
     const oldSiteId = intervention.siteId;
+    const oldBillingOrderId = intervention.billingOrderId;
+
+    if (billingOrderId && billingOrderId !== oldBillingOrderId) {
+      await updateBillingOrder.execute({
+        billingOrderId: billingOrderId,
+        updatedBy: userLoggedIn.name,
+        data: {
+          interventions: {
+            connect: {
+              id: intervention.id,
+            },
+          },
+        },
+      });
+    } else if (billingOrderId === null) {
+      await updateBillingOrder.execute({
+        billingOrderId: intervention.billingOrderId!,
+        updatedBy: userLoggedIn.name,
+        data: {
+          interventions: {
+            disconnect: {
+              id: intervention.id!,
+            },
+          },
+        },
+      });
+    }
 
     if (technicianId && technicianId !== oldTechnicianId) {
       await updateSite.execute({
         siteId: intervention.siteId!,
+        updatedBy: userLoggedIn.name,
         data: {
           technicians: {
             disconnect: {
@@ -73,6 +103,7 @@ export async function updateInterventions(
       });
       await updateTechnician.execute({
         technicianId: technicianId,
+        updatedBy: userLoggedIn.name,
         data: {
           sites: {
             connect: {
@@ -85,6 +116,7 @@ export async function updateInterventions(
       if (siteId && siteId !== oldSiteId) {
         await updateTechnician.execute({
           technicianId: technicianId,
+          updatedBy: userLoggedIn.name,
           data: {
             sites: {
               disconnect: {
@@ -111,7 +143,6 @@ export async function updateInterventions(
         finished_at,
         technicianId,
         customerProjectManagerId,
-        currency,
       },
     });
 

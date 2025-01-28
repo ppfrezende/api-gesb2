@@ -43,7 +43,6 @@ export async function createTechnicianExpenses(
     const technicianExpensesData = technicianExpenseArray.map((expense) => ({
       ...expense,
       expense_date: new Date(expense.expense_date),
-      total_converted: (expense.expense_value * expense.currency_quote) / 100,
       technicianId,
       userId: user.id,
     }));

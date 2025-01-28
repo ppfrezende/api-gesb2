@@ -9,7 +9,10 @@ export interface ServiceProvidersRepository {
     registration_number: string,
   ): Promise<ServiceProvider | null>;
   listMany(page: number): Promise<ServiceProvider[]>;
+  listManyInactive(page: number): Promise<ServiceProvider[]>;
   listAll(): Promise<ServiceProvider[]>;
+  listAllActive(): Promise<ServiceProvider[]>;
+  listAllInactive(): Promise<ServiceProvider[]>;
   listAllServiceProvidersTrash(): Promise<ServiceProvider[]>;
   searchMany(query: string, page: number): Promise<ServiceProvider[]>;
   create(

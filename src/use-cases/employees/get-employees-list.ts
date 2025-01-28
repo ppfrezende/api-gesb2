@@ -3,6 +3,7 @@ import { Employee } from '@prisma/client';
 
 interface GetEmployeesUseCaseRequest {
   page: number;
+  isActive: boolean;
 }
 
 interface GetEmployeesUseCaseResponse {
@@ -16,17 +17,30 @@ export class GetEmployeesUseCase {
 
   async execute({
     page,
+    isActive,
   }: GetEmployeesUseCaseRequest): Promise<GetEmployeesUseCaseResponse> {
-    const employees = await this.employeesRepository.listMany(page);
-    const allEmployees = await this.employeesRepository.listAll();
+    if (isActive === true) {
+      const employees = await this.employeesRepository.listMany(page);
+      const allEmployees = await this.employeesRepository.listAllActive();
 
-    const numberOfRegisters = employees.length.toString();
-    const totalCount = allEmployees.length.toString();
+      const numberOfRegisters = employees.length.toString();
+      const totalCount = allEmployees.length.toString();
+      return {
+        employees,
+        numberOfRegisters,
+        totalCount,
+      };
+    } else {
+      const employees = await this.employeesRepository.listManyInactive(page);
+      const allEmployees = await this.employeesRepository.listAllInactive();
 
-    return {
-      employees,
-      numberOfRegisters,
-      totalCount,
-    };
+      const numberOfRegisters = employees.length.toString();
+      const totalCount = allEmployees.length.toString();
+      return {
+        employees,
+        numberOfRegisters,
+        totalCount,
+      };
+    }
   }
 }

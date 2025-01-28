@@ -74,6 +74,7 @@ export class PrismaTechniciansRepository implements TechniciansRepository {
     const technicians = await prisma.technician.findMany({
       where: {
         isDeleted: false,
+        isActive: true,
       },
     });
 

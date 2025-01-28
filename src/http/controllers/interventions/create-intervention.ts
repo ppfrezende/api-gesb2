@@ -17,8 +17,6 @@ export async function createIntervention(
     isMonthly: z.boolean(),
     initial_at: z.coerce.date(),
     finished_at: z.coerce.date().or(z.string().max(0)),
-    currency: z.string(),
-    expense_administration_tax: z.number(),
     technicianId: z.string(),
     siteId: z.string(),
     customerId: z.string(),
@@ -47,8 +45,6 @@ export async function createIntervention(
     customerProjectManagerId,
     billingOrderId,
     total_value,
-    currency,
-    expense_administration_tax,
   } = createInterventionBodySchema.parse(request.body);
 
   try {
@@ -57,6 +53,7 @@ export async function createIntervention(
 
     await updateTechnician.execute({
       technicianId: technicianId,
+      updatedBy: user.name,
       data: {
         sites: {
           connect: {
@@ -81,8 +78,6 @@ export async function createIntervention(
       billingOrderId,
       total_value,
       userId: user.id,
-      currency,
-      expense_administration_tax,
     });
 
     return reply.status(201).send({

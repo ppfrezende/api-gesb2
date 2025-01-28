@@ -51,6 +51,23 @@ export class PrismaEmployeesRepository implements EmployeesRepository {
     const employees = await prisma.employee.findMany({
       where: {
         isDeleted: false,
+        isActive: true,
+      },
+      take: 50,
+      skip: (page - 1) * 50,
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+
+    return employees;
+  }
+
+  async listManyInactive(page: number) {
+    const employees = await prisma.employee.findMany({
+      where: {
+        isDeleted: false,
+        isActive: false,
       },
       take: 50,
       skip: (page - 1) * 50,
@@ -66,6 +83,34 @@ export class PrismaEmployeesRepository implements EmployeesRepository {
     const employees = await prisma.employee.findMany({
       where: {
         isDeleted: false,
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+
+    return employees;
+  }
+
+  async listAllActive() {
+    const employees = await prisma.employee.findMany({
+      where: {
+        isDeleted: false,
+        isActive: true,
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+
+    return employees;
+  }
+
+  async listAllInactive() {
+    const employees = await prisma.employee.findMany({
+      where: {
+        isDeleted: false,
+        isActive: false,
       },
       orderBy: {
         created_at: 'desc',

@@ -1,8 +1,9 @@
+import { z } from 'zod';
+import Decimal from 'decimal.js';
 import { makeCreateInterventionExpensesUseCase } from '@/use-cases/_factories/interventions_factories/intervention_expenses_factories/make-create-intervention-expenses-use-case';
 import { makeGetUserProfileUseCase } from '@/use-cases/_factories/user_factories/make-get-user-profile';
 import { ResourceAlreadyExists } from '@/use-cases/errors/resource-already-exists';
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { z } from 'zod';
 
 export async function createInterventionExpenses(
   request: FastifyRequest,
@@ -42,8 +43,11 @@ export async function createInterventionExpenses(
     const interventionExpensesData = interventionExpenseArray.map(
       (expense) => ({
         ...expense,
+        currency_quote: Number(new Decimal(expense.currency_quote).toFixed(2)),
+        expense_value: Number(
+          new Decimal(expense.expense_value).dividedBy(100).toFixed(2),
+        ),
         expense_date: new Date(expense.expense_date),
-        total_converted: (expense.expense_value * expense.currency_quote) / 100,
         interventionId,
         userId: user.id,
       }),

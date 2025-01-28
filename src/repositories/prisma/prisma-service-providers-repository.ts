@@ -65,6 +65,23 @@ export class PrismaServiceProvidersRepository
     const service_providers = await prisma.serviceProvider.findMany({
       where: {
         isDeleted: false,
+        isActive: true,
+      },
+      take: 50,
+      skip: (page - 1) * 50,
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+
+    return service_providers;
+  }
+
+  async listManyInactive(page: number) {
+    const service_providers = await prisma.serviceProvider.findMany({
+      where: {
+        isDeleted: false,
+        isActive: false,
       },
       take: 50,
       skip: (page - 1) * 50,
@@ -80,6 +97,34 @@ export class PrismaServiceProvidersRepository
     const service_providers = await prisma.serviceProvider.findMany({
       where: {
         isDeleted: false,
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+
+    return service_providers;
+  }
+
+  async listAllActive() {
+    const service_providers = await prisma.serviceProvider.findMany({
+      where: {
+        isDeleted: false,
+        isActive: true,
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+
+    return service_providers;
+  }
+
+  async listAllInactive() {
+    const service_providers = await prisma.serviceProvider.findMany({
+      where: {
+        isDeleted: false,
+        isActive: false,
       },
       orderBy: {
         created_at: 'desc',

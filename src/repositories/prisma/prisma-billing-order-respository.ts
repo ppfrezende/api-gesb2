@@ -21,8 +21,8 @@ export class PrismaBillingOrdersRepository implements BillingOrdersRepository {
       where: {
         isDeleted: false,
       },
-      take: 10,
-      skip: (page - 1) * 10,
+      take: 50,
+      skip: (page - 1) * 50,
       include: {
         interventions: true,
       },
@@ -67,8 +67,8 @@ export class PrismaBillingOrdersRepository implements BillingOrdersRepository {
           },
         ],
       },
-      take: 10,
-      skip: (page - 1) * 10,
+      take: 50,
+      skip: (page - 1) * 50,
       include: {
         interventions: {
           where: {

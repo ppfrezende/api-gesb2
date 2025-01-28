@@ -66,33 +66,6 @@ export async function createTimeSheetData(
       userId: user.id,
     });
 
-    // const dayHoursArray = day.map((item, index) => {
-    //   return {
-    //     day: new Date(convertDate(item.__EMPTY_1)),
-    //     departure: convertHourToDecimal(departure[index].__EMPTY_3),
-    //     arrival: convertHourToDecimal(arrival[index].__EMPTY_5),
-    //     rangeAfrom:
-    //       rangeAfrom[index].__EMPTY_7 === '00:00h'
-    //         ? convertHourToDecimal('00:01h')
-    //         : convertHourToDecimal(rangeAfrom[index].__EMPTY_7),
-    //     rangeAto: convertHourToDecimal(rangeAto[index].__EMPTY_8),
-    //     rangeBfrom: convertHourToDecimal(rangeBfrom[index].__EMPTY_10),
-    //     rangeBto: convertHourToDecimal(rangeBto[index].__EMPTY_12),
-    //     rangeCfrom: convertHourToDecimal(rangeCfrom[index].__EMPTY_13),
-    //     rangeCto: convertHourToDecimal(rangeCto[index].__EMPTY_14),
-    //     rangeDfrom: convertHourToDecimal(rangeDfrom[index].__EMPTY_15),
-    //     rangeDto: convertHourToDecimal(rangeDto[index].__EMPTY_17),
-    //     isOffshore:
-    //       on_offshore[index].__EMPTY_25 === 'OffShore'
-    //         ? true
-    //         : on_offshore[index].__EMPTY_25 === 'OnShore'
-    //         ? false
-    //         : undefined,
-    //     technicianId: technicianId,
-    //     timeSheetDataId: timesheetdata.id!,
-    //   };
-    // });
-
     const dayHoursArray = day
       .map((item, index) => {
         const departureDecimal = convertHourToDecimal(
@@ -162,6 +135,7 @@ export async function createTimeSheetData(
 
     const updatedTimeSheetData = await updateTimeSheetData.execute({
       timesheetdataId: timesheetdata.id!,
+      updatedBy: user.name,
       data: {
         first_date: serialNumberToDate(firstDate),
         second_date: serialNumberToDate(secondDate),

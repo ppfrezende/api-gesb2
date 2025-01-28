@@ -25,11 +25,11 @@ export async function authenticate(
     const { id, name, sector, role, avatar } = user;
 
     const token = await reply.jwtSign(
-      { role: user.role },
+      { role: user.role, name: user.name },
       {
         sign: {
           sub: user.id,
-          expiresIn: '1d',
+          expiresIn: '7d',
         },
       },
     );
@@ -39,7 +39,7 @@ export async function authenticate(
       {
         sign: {
           sub: user.id,
-          expiresIn: '7d',
+          expiresIn: '30d',
         },
       },
     );

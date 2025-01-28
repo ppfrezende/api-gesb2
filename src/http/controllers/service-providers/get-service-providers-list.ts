@@ -9,16 +9,21 @@ export async function getServiceProvidersList(
 ) {
   const getServiceProvidersQuerySchema = z.object({
     page: z.coerce.number().min(1).default(1),
+    isActive: z.string(),
   });
 
-  const { page } = getServiceProvidersQuerySchema.parse(request.query);
+  const { isActive, page } = getServiceProvidersQuerySchema.parse(
+    request.query,
+  );
 
   try {
     const getServiceProvidersListUseCase = makeGetServiceProvidersListUseCase();
+    const isActiveFilter = isActive === 'true';
 
     const { service_providers, numberOfRegisters, totalCount } =
       await getServiceProvidersListUseCase.execute({
         page,
+        isActive: isActiveFilter,
       });
 
     return reply

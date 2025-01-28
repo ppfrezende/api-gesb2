@@ -10,8 +10,6 @@ interface CreateInterventionUseCaseRequest {
   isMonthly: boolean;
   initial_at: Date;
   finished_at?: Date | string;
-  currency: string;
-  expense_administration_tax: number;
   technicianId: string;
   siteId: string;
   customerId: string;
@@ -36,8 +34,6 @@ export class CreateInterventionUseCase {
     isMonthly,
     initial_at,
     finished_at,
-    currency,
-    expense_administration_tax,
     technicianId,
     siteId,
     customerId,
@@ -61,8 +57,6 @@ export class CreateInterventionUseCase {
       isMonthly,
       initial_at,
       finished_at,
-      currency,
-      expense_administration_tax,
       technicianId,
       siteId,
       customerId,

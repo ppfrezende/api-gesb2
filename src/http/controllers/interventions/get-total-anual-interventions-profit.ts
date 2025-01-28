@@ -26,9 +26,8 @@ export async function getAnualInterventionsProfitTotalValue(
 
     return reply
       .status(200)
-      .headers({ 'x-year-value': totalAnualInterventionsProfit })
 
-      .send();
+      .send(totalAnualInterventionsProfit);
   } catch (err) {
     if (err instanceof ResourceNotFoundError) {
       return reply.status(409).send({ message: err.message });

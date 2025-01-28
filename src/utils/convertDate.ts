@@ -23,7 +23,7 @@ export function formatDateToDDMMYYYY(date: string) {
   return `${day}/${month}/${year}`;
 }
 
-export function formatWeekday(dateString: string, locale: string) {
+export function formatWeekday(dateString: Date | string, locale: string) {
   const date = new Date(dateString);
   const day = date.getUTCDate();
   const month = date.getUTCMonth();

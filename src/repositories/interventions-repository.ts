@@ -1,4 +1,5 @@
 import { Intervention, Prisma } from '@prisma/client';
+import { Decimal } from '@prisma/client/runtime';
 
 export interface InterventionsRepository {
   findById(id: string | undefined): Promise<Intervention | null>;
@@ -14,12 +15,16 @@ export interface InterventionsRepository {
   listAll(): Promise<Intervention[]>;
   listAllInterventionsTrash(): Promise<Intervention[]>;
   searchMany(query: string, page: number): Promise<Intervention[]>;
-  totalAnualInterventionsProfitValue(year: number): Promise<number>;
-  expectedAnualInterventionsProfitValue(year: number): Promise<number>;
+  totalAnualInterventionsProfitValue(
+    year: number,
+  ): Promise<{ USD: number; EUR: number; BRL: number }>;
+  expectedAnualInterventionsProfitValue(
+    year: number,
+  ): Promise<{ USD: number; EUR: number; BRL: number }>;
   totalMonthlyInterventionsProfitValue(
     year: number,
     month: number,
-  ): Promise<number>;
+  ): Promise<Decimal | 0>;
   totalMonthlyInterventionsCount(year: number, month: number): Promise<number>;
   create(data: Prisma.InterventionUncheckedCreateInput): Promise<Intervention>;
   update(

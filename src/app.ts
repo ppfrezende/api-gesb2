@@ -17,6 +17,7 @@ import { customersRoutes } from './http/controllers/customers/route';
 import { technicianExpensesRoutes } from './http/controllers/technicians/technician-expenses/routes';
 import { customerProjectManegerRoutes } from './http/controllers/customers/customer-project-mangers/routes';
 import { billingOrdersRoutes } from './http/controllers/customers/billing-orders/routes';
+import { selfEmployeesRoutes } from './http/controllers/self-employess/routes';
 
 export const app = fastify();
 
@@ -47,6 +48,26 @@ app.register(fastifyJwt, {
 
 app.register(fastifyCookie);
 
+// app.addHook('onRequest', async (request) => {
+//   try {
+//     await request.jwtVerify();
+
+//     const user = request.user as { sub: string; name: string; role: string };
+
+//     console.log(
+//       `[${new Date().toISOString()}] ${request.method} ${
+//         request.url
+//       } - UserId: ${user.sub}, UserName: ${user.name}, Role: ${user.role}`,
+//     );
+//   } catch (err) {
+//     console.log(
+//       `[${new Date().toISOString()}] ${request.method} ${
+//         request.url
+//       } - User: Not Authenticated`,
+//     );
+//   }
+// });
+
 app.register(usersRoutes);
 app.register(employeesRoutes);
 app.register(serviceProvidersRoutes);
@@ -59,6 +80,7 @@ app.register(customersRoutes);
 app.register(interventionsRoutes);
 app.register(interventionExpensesRoutes);
 app.register(customerProjectManegerRoutes);
+app.register(selfEmployeesRoutes);
 
 app.setErrorHandler((error, request, reply) => {
   if (error instanceof ZodError) {

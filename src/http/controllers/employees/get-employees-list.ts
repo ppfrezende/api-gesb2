@@ -9,16 +9,20 @@ export async function getEmployeesList(
 ) {
   const getEmployeesQuerySchema = z.object({
     page: z.coerce.number().min(1).default(1),
+    isActive: z.string(),
   });
 
-  const { page } = getEmployeesQuerySchema.parse(request.query);
+  const { isActive, page } = getEmployeesQuerySchema.parse(request.query);
 
   try {
     const getEmployeesListUseCase = makeGetEmployeesListUserCase();
 
+    const isActiveFilter = isActive === 'true';
+
     const { employees, numberOfRegisters, totalCount } =
       await getEmployeesListUseCase.execute({
         page,
+        isActive: isActiveFilter,
       });
 
     return reply

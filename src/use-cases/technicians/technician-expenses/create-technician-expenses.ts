@@ -7,7 +7,6 @@ type TechnicianExpenseData = {
   currency: string;
   currency_quote: number;
   expense_value: number;
-  total_converted: number;
   technicianId: string;
   userId: string;
 };

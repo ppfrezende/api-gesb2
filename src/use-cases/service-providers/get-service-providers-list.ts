@@ -3,6 +3,7 @@ import { ServiceProvider } from '@prisma/client';
 
 interface GetServiceProvidersUseCaseRequest {
   page: number;
+  isActive: boolean;
 }
 
 interface GetServiceProvidersUseCaseResponse {
@@ -16,19 +17,35 @@ export class GetServiceProvidersUseCase {
 
   async execute({
     page,
+    isActive,
   }: GetServiceProvidersUseCaseRequest): Promise<GetServiceProvidersUseCaseResponse> {
-    const service_providers = await this.serviceProvidersRepository.listMany(
-      page,
-    );
-    const allServiceProviders = await this.serviceProvidersRepository.listAll();
+    if (isActive === true) {
+      const service_providers = await this.serviceProvidersRepository.listMany(
+        page,
+      );
+      const allServiceProviders =
+        await this.serviceProvidersRepository.listAllActive();
 
-    const numberOfRegisters = service_providers.length.toString();
-    const totalCount = allServiceProviders.length.toString();
+      const numberOfRegisters = service_providers.length.toString();
+      const totalCount = allServiceProviders.length.toString();
+      return {
+        service_providers,
+        numberOfRegisters,
+        totalCount,
+      };
+    } else {
+      const service_providers =
+        await this.serviceProvidersRepository.listManyInactive(page);
+      const allServiceProviders =
+        await this.serviceProvidersRepository.listAllInactive();
 
-    return {
-      service_providers,
-      numberOfRegisters,
-      totalCount,
-    };
+      const numberOfRegisters = service_providers.length.toString();
+      const totalCount = allServiceProviders.length.toString();
+      return {
+        service_providers,
+        numberOfRegisters,
+        totalCount,
+      };
+    }
   }
 }

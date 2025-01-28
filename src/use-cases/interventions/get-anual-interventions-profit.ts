@@ -5,7 +5,11 @@ interface GetAnualInterventionsProfitTotalValueUseCaseRequest {
 }
 
 interface GetAnualInterventionsProfitTotalValueUseCaseResponse {
-  totalAnualInterventionsProfit: number;
+  totalAnualInterventionsProfit: {
+    USD: number;
+    EUR: number;
+    BRL: number;
+  };
 }
 
 export class GetAnualInterventionsProfitTotalValueUseCase {

@@ -5,7 +5,11 @@ interface GetAnualInterventionsProfitExpectedValueUseCaseRequest {
 }
 
 interface GetAnualInterventionsProfitExpectedValueUseCaseResponse {
-  expectedAnualInterventionsProfit: number;
+  expectedAnualInterventionsProfit: {
+    USD: number;
+    EUR: number;
+    BRL: number;
+  };
 }
 
 export class GetAnualInterventionsProfitExpectedValueUseCase {

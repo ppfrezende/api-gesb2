@@ -40,6 +40,7 @@ model User {
   deleted_at           DateTime?
   deletedBy            String?
   createdBy            String?
+  SelfEmployed         SelfEmployed[]
 
   @@map("users")
 }
@@ -111,6 +112,40 @@ model ServiceProvider {
   @@map("service_providers")
 }
 
+model SelfEmployed {
+  id                  String    @id @default(uuid())
+  registration_number String
+  document_type       String
+  document_number     String
+  name                String
+  email               String
+  start_of_contract   DateTime  @default(now())
+  contract_validity   DateTime  @default(now())
+  dismissed_at        DateTime?
+  isActive            Boolean   @default(true)
+  phone               String
+  cep                 String
+  street              String
+  number              String
+  complement          String
+  city                String
+  uf                  String
+  job_title           String
+  avatar              String?
+  skills              String?
+  updatedBy           String?
+  updated_at          DateTime  @updatedAt
+  isDeleted           Boolean   @default(false)
+  deleted_at          DateTime?
+  deletedBy           String?
+
+  created_at DateTime @default(now())
+  User       User?    @relation(fields: [userId], references: [id])
+  userId     String?
+
+  @@map("self_employed")
+}
+
 model Technician {
   id                  String              @id
   name                String
@@ -174,22 +209,21 @@ model TechSite {
 }
 
 model BillingOrder {
-  id                         String  @id @default(uuid())
+  id                         String   @id @default(uuid())
   description                String
-  isDoubled                  Boolean @default(false)
+  isOffshore                 Boolean  @default(false)
   over_days                  Int?
-  onshore_travel_hour_value  Int     @default(0)
-  onshore_normal_hour_value  Int     @default(0)
-  onshore_extra_hour_value   Int     @default(0)
-  onshore_double_hour_value  Int     @default(0)
-  onshore_night_hour_value   Int     @default(0)
-  onshore_over_hour_value    Int     @default(0)
-  offshore_travel_hour_value Int     @default(0)
-  offshore_normal_hour_value Int     @default(0)
-  offshore_extra_hour_value  Int     @default(0)
-  offshore_double_hour_value Int     @default(0)
-  offshore_night_hour_value  Int     @default(0)
-  offshore_over_hour_value   Int     @default(0)
+  expense_administration_tax Int      @default(1)
+  currency                   String   @default("BRL")
+  travel_hour_value          Decimal? @default(0) @db.Decimal(20, 2)
+  onshore_normal_hour_value  Decimal? @default(0) @db.Decimal(20, 2)
+  onshore_extra_hour_value   Decimal? @default(0) @db.Decimal(20, 2)
+  onshore_night_hour_value   Decimal? @default(0) @db.Decimal(20, 2)
+  onshore_over_hour_value    Decimal? @default(0) @db.Decimal(20, 2)
+  offshore_normal_hour_value Decimal? @default(0) @db.Decimal(20, 2)
+  offshore_extra_hour_value  Decimal? @default(0) @db.Decimal(20, 2)
+  offshore_night_hour_value  Decimal? @default(0) @db.Decimal(20, 2)
+  offshore_over_hour_value   Decimal? @default(0) @db.Decimal(20, 2)
   max_hours_day_onshore      Int?
   max_hours_day_offshore     Int?
   max_hours_day_travel       Int?
@@ -213,16 +247,16 @@ model BillingOrder {
 model TimeSheetDay {
   id              String         @id @default(uuid())
   day             DateTime       @default(now())
-  departure       Float?
-  arrival         Float?
-  rangeAfrom      Float?
-  rangeAto        Float?
-  rangeBfrom      Float?
-  rangeBto        Float?
-  rangeCfrom      Float?
-  rangeCto        Float?
-  rangeDfrom      Float?
-  rangeDto        Float?
+  departure       Decimal?       @db.Decimal()
+  arrival         Decimal?       @db.Decimal()
+  rangeAfrom      Decimal?       @db.Decimal()
+  rangeAto        Decimal?       @db.Decimal()
+  rangeBfrom      Decimal?       @db.Decimal()
+  rangeBto        Decimal?       @db.Decimal()
+  rangeCfrom      Decimal?       @db.Decimal()
+  rangeCto        Decimal?       @db.Decimal()
+  rangeDfrom      Decimal?       @db.Decimal()
+  rangeDto        Decimal?       @db.Decimal()
   isOffshore      Boolean?       @default(false)
   TimeSheetData   TimeSheetData? @relation(fields: [timeSheetDataId], references: [id])
   timeSheetDataId String?
@@ -263,32 +297,31 @@ model TimeSheetData {
 }
 
 model Intervention {
-  id                         String                  @id @default(uuid())
-  progressive                String
-  intervention_number        String
-  customer_po_number         String
-  job_number                 String
-  isMonthly                  Boolean                 @default(false)
-  initial_at                 DateTime?
-  finished_at                DateTime?
-  total_value                Int?
-  currency                   String
-  expense_administration_tax Int
-  isApproved                 Boolean                 @default(false)
-  created_at                 DateTime                @default(now())
-  Technician                 Technician?             @relation(fields: [technicianId], references: [id])
-  technicianId               String?
-  Site                       Site?                   @relation(fields: [siteId], references: [id])
-  siteId                     String?
-  User                       User?                   @relation(fields: [userId], references: [id])
-  userId                     String?
-  Customer                   Customer?               @relation(fields: [customerId], references: [id])
-  customerId                 String?
-  CustomerProjectManager     CustomerProjectManager? @relation(fields: [customerProjectManagerId], references: [id])
-  customerProjectManagerId   String?
-  BillingOrder               BillingOrder?           @relation(fields: [billingOrderId], references: [id])
-  billingOrderId             String?
-  timesheets                 TimeSheetData[]
+  id                  String    @id @default(uuid())
+  progressive         String
+  intervention_number String
+  customer_po_number  String
+  job_number          String
+  isMonthly           Boolean   @default(false)
+  initial_at          DateTime?
+  finished_at         DateTime?
+  total_value         Decimal?  @db.Decimal(20, 2)
+
+  isApproved               Boolean                 @default(false)
+  created_at               DateTime                @default(now())
+  Technician               Technician?             @relation(fields: [technicianId], references: [id])
+  technicianId             String?
+  Site                     Site?                   @relation(fields: [siteId], references: [id])
+  siteId                   String?
+  User                     User?                   @relation(fields: [userId], references: [id])
+  userId                   String?
+  Customer                 Customer?               @relation(fields: [customerId], references: [id])
+  customerId               String?
+  CustomerProjectManager   CustomerProjectManager? @relation(fields: [customerProjectManagerId], references: [id])
+  customerProjectManagerId String?
+  BillingOrder             BillingOrder?           @relation(fields: [billingOrderId], references: [id])
+  billingOrderId           String?
+  timesheets               TimeSheetData[]
 
   interventionExpenses InterventionExpense[]
   updatedBy            String?
@@ -301,38 +334,36 @@ model Intervention {
 }
 
 model InterventionExpense {
-  id              String        @id @default(uuid())
-  expense_date    DateTime      @default(now())
-  expense_type    String
-  description     String
-  currency        String
-  currency_quote  Int
-  expense_value   Int
-  total_converted Int
-  created_at      DateTime      @default(now())
-  Intervention    Intervention? @relation(fields: [interventionId], references: [id])
-  interventionId  String?
-  User            User?         @relation(fields: [userId], references: [id])
-  userId          String?
-  updatedBy       String?
-  updated_at      DateTime      @updatedAt
-  isDeleted       Boolean       @default(false)
-  deleted_at      DateTime?
-  deletedBy       String?
+  id             String        @id @default(uuid())
+  expense_date   DateTime      @default(now())
+  expense_type   String
+  description    String
+  currency       String
+  currency_quote Decimal       @db.Decimal(20, 2)
+  expense_value  Decimal       @db.Decimal(20, 2)
+  created_at     DateTime      @default(now())
+  Intervention   Intervention? @relation(fields: [interventionId], references: [id])
+  interventionId String?
+  User           User?         @relation(fields: [userId], references: [id])
+  userId         String?
+  updatedBy      String?
+  updated_at     DateTime      @updatedAt
+  isDeleted      Boolean       @default(false)
+  deleted_at     DateTime?
+  deletedBy      String?
 
   @@map("intervention_expenses")
 }
 
 model TechnicianExpense {
-  id              String   @id @default(uuid())
-  expense_date    DateTime @default(now())
-  expense_type    String
-  description     String
-  currency        String
-  currency_quote  Int
-  expense_value   Int
-  total_converted Int
-  created_at      DateTime @default(now())
+  id             String   @id @default(uuid())
+  expense_date   DateTime @default(now())
+  expense_type   String
+  description    String
+  currency       String
+  currency_quote Decimal? @db.Decimal(20, 2)
+  expense_value  Decimal? @db.Decimal(20, 2)
+  created_at     DateTime @default(now())
 
   User         User?       @relation(fields: [userId], references: [id])
   userId       String?
@@ -350,7 +381,7 @@ model TechnicianExpense {
 model Customer {
   id                   String   @id @default(uuid())
   company_name         String
-  cnpj                 String
+  cnpj                 String?
   phone                String?
   cep                  String?
   street               String?
