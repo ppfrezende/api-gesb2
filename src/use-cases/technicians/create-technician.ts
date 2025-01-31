@@ -1,6 +1,5 @@
 import { TechniciansRepository } from '@/repositories/technicians-repository';
 import { Technician } from '@prisma/client';
-import { ResourceAlreadyExists } from '../errors/resource-already-exists';
 
 interface CreateTechnicianUseCaseRequest {
   id: string;
@@ -28,13 +27,6 @@ export class CreateTechnicianUseCase {
     userId,
     skills,
   }: CreateTechnicianUseCaseRequest): Promise<CreateTechnicianUseCaseResponse> {
-    const techniciansWithSameEmail =
-      await this.technicianRepository.findByEmail(email);
-
-    if (techniciansWithSameEmail) {
-      throw new ResourceAlreadyExists();
-    }
-
     const technician = await this.technicianRepository.create({
       id,
       name,
