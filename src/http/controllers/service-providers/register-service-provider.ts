@@ -79,7 +79,7 @@ export async function registerServiceProvider(
     if (tech) {
       return reply
         .status(409)
-        .send({ message: `Resource already exists ${tech}` });
+        .send({ message: `Resource already exists ${tech.name}`, data: tech });
     }
 
     const { service_provider } = await registerServiceProvider.execute({
