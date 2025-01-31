@@ -1,6 +1,6 @@
 import { EmployeesRepository } from '@/repositories/employees-repository';
 import { Employee } from '@prisma/client';
-import { ResourceAlreadyExists } from '../errors/resource-already-exists';
+// import { ResourceAlreadyExists } from '../errors/resource-already-exists';
 
 interface RegisterEmployeeUseCaseRequest {
   name: string;
@@ -46,23 +46,23 @@ export class RegisterEmployeeUseCase {
     userId,
     skills,
   }: RegisterEmployeeUseCaseRequest): Promise<RegisterEmployeeUseCaseResponse> {
-    const employeesWithSameEmail = await this.employeeRepository.findByEmail(
-      email,
-    );
-    const employeesWithSameCpf = await this.employeeRepository.findByCpf(cpf);
+    // const employeesWithSameEmail = await this.employeeRepository.findByEmail(
+    //   email,
+    // );
+    // const employeesWithSameCpf = await this.employeeRepository.findByCpf(cpf);
 
-    const employessWithSameRegistrationNumber =
-      await this.employeeRepository.findByRegistrationNumber(
-        registration_number,
-      );
+    // const employessWithSameRegistrationNumber =
+    //   await this.employeeRepository.findByRegistrationNumber(
+    //     registration_number,
+    //   );
 
-    if (
-      employeesWithSameEmail ||
-      employeesWithSameCpf ||
-      employessWithSameRegistrationNumber
-    ) {
-      throw new ResourceAlreadyExists();
-    }
+    // if (
+    //   employeesWithSameEmail ||
+    //   employeesWithSameCpf ||
+    //   employessWithSameRegistrationNumber
+    // ) {
+    //   throw new ResourceAlreadyExists();
+    // }
 
     const employee = await this.employeeRepository.create({
       name,

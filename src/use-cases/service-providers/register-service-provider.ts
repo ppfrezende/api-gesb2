@@ -1,6 +1,5 @@
 import { ServiceProvidersRepository } from '@/repositories/service-providers-repository';
 import { ServiceProvider } from '@prisma/client';
-import { ResourceAlreadyExists } from '../errors/resource-already-exists';
 
 interface RegisterServiceProviderUseCaseRequest {
   name: string;
@@ -50,25 +49,25 @@ export class RegisterServiceProviderUseCase {
     userId,
     skills,
   }: RegisterServiceProviderUseCaseRequest): Promise<RegisterServiceProviderUseCaseResponse> {
-    const serviceProviderWithSameEmail =
-      await this.serviceProviderRepository.findByEmail(email);
-    const serviceProviderWithSameCpf =
-      await this.serviceProviderRepository.findByCpf(cpf);
-    const serviceProviderWithSameCnpj =
-      await this.serviceProviderRepository.findByCnpj(cnpj);
-    const serviceProviderWithSameRegistrationNumber =
-      await this.serviceProviderRepository.findByRegistrationNumber(
-        registration_number,
-      );
+    // const serviceProviderWithSameEmail =
+    //   await this.serviceProviderRepository.findByEmail(email);
+    // const serviceProviderWithSameCpf =
+    //   await this.serviceProviderRepository.findByCpf(cpf);
+    // const serviceProviderWithSameCnpj =
+    //   await this.serviceProviderRepository.findByCnpj(cnpj);
+    // const serviceProviderWithSameRegistrationNumber =
+    //   await this.serviceProviderRepository.findByRegistrationNumber(
+    //     registration_number,
+    //   );
 
-    if (
-      serviceProviderWithSameEmail ||
-      serviceProviderWithSameCpf ||
-      serviceProviderWithSameCnpj ||
-      serviceProviderWithSameRegistrationNumber
-    ) {
-      throw new ResourceAlreadyExists();
-    }
+    // if (
+    //   serviceProviderWithSameEmail ||
+    //   serviceProviderWithSameCpf ||
+    //   serviceProviderWithSameCnpj ||
+    //   serviceProviderWithSameRegistrationNumber
+    // ) {
+    //   throw new ResourceAlreadyExists();
+    // }
 
     const service_provider = await this.serviceProviderRepository.create({
       name,

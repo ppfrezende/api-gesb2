@@ -1,5 +1,4 @@
 import { SelfEmployed } from '@prisma/client';
-import { ResourceAlreadyExists } from '../errors/resource-already-exists';
 import { SelfEmployeesRepository } from '@/repositories/self-employees-repository';
 
 interface CreateSelfEmployedUseCaseRequest {
@@ -48,17 +47,17 @@ export class CreateSelfEmployedUseCase {
     userId,
     skills,
   }: CreateSelfEmployedUseCaseRequest): Promise<CreateSelfEmployedUseCaseResponse> {
-    const selfEmployedWithSameEmail =
-      await this.selfEmployedRepository.findByEmail(email);
+    // const selfEmployedWithSameEmail =
+    //   await this.selfEmployedRepository.findByEmail(email);
 
-    const selfEmployedWithSameRegistrationNumber =
-      await this.selfEmployedRepository.findByRegistrationNumber(
-        registration_number,
-      );
+    // const selfEmployedWithSameRegistrationNumber =
+    //   await this.selfEmployedRepository.findByRegistrationNumber(
+    //     registration_number,
+    //   );
 
-    if (selfEmployedWithSameEmail || selfEmployedWithSameRegistrationNumber) {
-      throw new ResourceAlreadyExists();
-    }
+    // if (selfEmployedWithSameEmail || selfEmployedWithSameRegistrationNumber) {
+    //   throw new ResourceAlreadyExists();
+    // }
 
     const self_employed = await this.selfEmployedRepository.create({
       name,
