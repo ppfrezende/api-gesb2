@@ -17,6 +17,7 @@ export async function createCustomer(
     complement: z.string(),
     city: z.string(),
     uf: z.string(),
+    country: z.string(),
     establishment_number: z.string(),
     phone: z.string(),
     project_managers: z
@@ -43,6 +44,7 @@ export async function createCustomer(
     cep,
     city,
     complement,
+    country,
     establishment_number,
     phone,
     street,
@@ -60,6 +62,7 @@ export async function createCustomer(
       cep,
       city,
       complement,
+      country,
       establishment_number,
       phone,
       street,

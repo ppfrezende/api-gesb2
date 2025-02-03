@@ -16,6 +16,7 @@ export async function updateCustomer(
     complement: z.string().optional(),
     city: z.string().optional(),
     uf: z.string().optional(),
+    country: z.string().optional(),
     establishment_number: z.string().optional(),
     phone: z.string().optional(),
   });
@@ -30,6 +31,7 @@ export async function updateCustomer(
     cep,
     city,
     complement,
+    country,
     establishment_number,
     phone,
     street,
@@ -60,6 +62,7 @@ export async function updateCustomer(
         phone,
         street,
         uf,
+        country,
       },
     });
 

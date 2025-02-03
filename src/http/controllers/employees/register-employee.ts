@@ -73,7 +73,9 @@ export async function registerEmployee(
     }
 
     if (tech) {
-      return reply.status(409).send({ message: 'Resource already exists' });
+      return reply.status(409).send({
+        message: `${tech.name}`,
+      });
     }
 
     const { employee } = await registerEmployee.execute({

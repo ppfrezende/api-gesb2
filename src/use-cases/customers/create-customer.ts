@@ -11,6 +11,7 @@ interface CreateCustomerUseCaseRequest {
   uf: string;
   establishment_number: string;
   phone: string;
+  country: string;
   userId: string;
 }
 
@@ -28,6 +29,7 @@ export class CreateCustomerUseCase {
     street,
     complement,
     city,
+    country,
     uf,
     establishment_number,
     phone,
@@ -43,6 +45,7 @@ export class CreateCustomerUseCase {
       uf,
       establishment_number,
       phone,
+      country,
       userId,
     });
 

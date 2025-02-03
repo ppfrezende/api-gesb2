@@ -389,6 +389,7 @@ model Customer {
   complement           String?
   city                 String?
   uf                   String?
+  country              String?
   created_at           DateTime @default(now())
 
   project_managers CustomerProjectManager[]
